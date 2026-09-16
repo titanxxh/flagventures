@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pack.schema.json",
+  "title": "Flag playbook v1",
+  "$comment": "语义校验核对全包 ID 唯一性、每个条目恰好在目录出现一次、书目引用及图片内容；缺失 referenceAsset 仅提示对照不可用。",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "flag-playbook"
+    },
+    "version": {
+      "const": 1
+    },
+    "title": {
+      "$ref": "#/$defs/text"
+    },
+    "lessons": {
+      "type": "array",
+      "items": {
+        "$ref": "lesson.schema.json"
+      },
+      "minItems": 0
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/section"
+      },
+      "minItems": 0
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "format",
+    "version",
+    "title",
+    "lessons",
+    "sections"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?![\\s\\S])"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "section": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "lessonIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "lessonIds"
+      ],
+      "additionalProperties": false
+    },
+    "asset": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "mime": {
+          "enum": [
+            "image/png",
+            "image/jpeg"
+          ]
+        },
+        "base64": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?(?![\\s\\S])",
+          "description": "标准 Base64 编码；语义校验还须核对解码内容及实际图片格式。"
+        }
+      },
+      "required": [
+        "id",
+        "mime",
+        "base64"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,19 @@
+# 格式样例目录；仅含 4 个用于评审的条目，不是全书 64 项目录。
+format: "flag-catalog"
+version: 1
+title: "战术文本格式 v1 · 评审样例"
+sections:
+  - id: "source-examples"
+    title: "现有原图样例"
+    entries:
+      - id: "single-back-play-1"
+        file: "examples/single-back-play-1.yaml"
+      - id: "cover-2"
+        file: "examples/cover-2.yaml"
+  - id: "authored-examples"
+    title: "自编格式演示与模板"
+    entries:
+      - id: "route-variants-format-demo"
+        file: "examples/route-variants.yaml"
+      - id: "my-first-play"
+        file: "templates/new-play.yaml"

@@ -1,0 +1,71 @@
+# UTF-8；一份文件一个教学条目。数据可编辑，文字不是可执行代码。
+format: "flag-lesson"
+version: 1
+id: "route-variants-format-demo"
+kind: "route"
+title:
+  zh: "曲线与分支：自编格式演示"
+  en: "Authored route variants: format demo"
+summary: "仅验证同一起点的互斥分支、二次曲线、三次曲线、暂停与直线路段，不演示比赛中的选择条件。"
+field:
+  width: 100
+  height: 55
+  attackDirection: "up"
+players:
+  - id: "X"
+    team: "offense"
+    at: [50, 45]
+    color: "#80d4ff"
+    label:
+      zh: "自编路线分支示例"
+      en: "Authored route variants"
+      description: "选择一条完整路径用于查看格式效果；左右分支互斥，没有比赛正确答案。"
+      basis: "author"
+      note: "不是 PDF 的 6 OPTION，也不是从手册推定出的跑法或选项条件。"
+    motion:
+      type: "choice"
+      startAt: 0
+      prompt: "请选择要演示的完整路径；这是格式示例，不是比赛判断，也没有正确答案。"
+      options:
+        - id: "left-pause"
+          title: "左侧：二次曲线、停顿、直线"
+          steps:
+            - type: "quadratic"
+              control: [38, 45]
+              to: [35, 30]
+              seconds: 3
+            - type: "pause"
+              seconds: 1
+            - type: "line"
+              to: [18, 15]
+              seconds: 4
+        - id: "right-cubic"
+          title: "右侧：三次曲线"
+          steps:
+            - type: "cubic"
+              control1: [50, 27]
+              control2: [78, 35]
+              to: [76, 18]
+              seconds: 8
+timeline:
+  duration: 8
+  basis: "illustration"
+  note: "仅为格式能力验证而自编：两条分支都从 X 的同一起点开始，用时 8 秒。左侧分支含 1 秒停顿；不存在真实比赛选择条件，不来自 PDF OPTION。"
+keyframes:
+  - id: "choose"
+    at: 0
+    label: "先选演示分支"
+    cue: "选择左侧或右侧的一条完整路线；选定前只看起点与备选线。"
+  - id: "three-seconds"
+    at: 3
+    label: "观察不同动作"
+    cue: "左侧分支此时开始停顿；右侧分支仍沿三次曲线前进。"
+  - id: "four-seconds"
+    at: 4
+    label: "观察停顿结束"
+    cue: "若选左侧，停顿结束并开始直线路段；右侧仍在曲线上。"
+  - id: "end"
+    at: 8
+    label: "所选路径结束"
+    cue: "只显示所选分支的结果，不自动转去另一条分支。"
+notes: ["无 source 的作者示例，不对应任何 PDF 页。", "所有曲线控制点与终点都在画布内；曲线段应按弧长推进，不能直接用曲线参数当匀速距离。", "更换分支应回到起点并暂停；没有分支选择时，播放和非零时间跳转应等待选择。"]

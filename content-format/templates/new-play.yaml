@@ -1,0 +1,95 @@
+# UTF-8；一份文件一个教学条目。数据可编辑，文字不是可执行代码。
+format: "flag-lesson"
+version: 1
+id: "my-first-play"
+kind: "offense"
+title:
+  zh: "待命名的自编战术"
+summary: "格式模板：先保留 X 的 Slant 示例，逐项填写其余球员要怎么跑。"
+field:
+  width: 100
+  height: 55
+  attackDirection: "up"
+  lineOfScrimmageY: 33
+players:
+  - id: "Q"
+    team: "offense"
+    at: [50, 40]
+    color: "#ff9690"
+    label:
+      zh: "待填写：Q 的跑法"
+      description: "请填写该球员的讲解和动作；当前只保留示例起点。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "待填写后续动作；当前未知，不表示必须全程站住。"
+  - id: "C"
+    team: "offense"
+    at: [50, 35]
+    color: "#fff1d5"
+    label:
+      zh: "待填写：C 的跑法"
+      description: "请填写该球员的讲解和动作；当前只保留示例起点。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "待填写后续动作；当前未知，不表示必须全程站住。"
+  - id: "X"
+    team: "offense"
+    at: [20, 35]
+    color: "#80d4ff"
+    label:
+      zh: "短斜内切（格式示例）"
+      en: "Slant"
+      description: "先向前一小段，再斜着向中间跑；这条路径仅示范怎样填写数据。"
+      basis: "author"
+    motion:
+      type: "path"
+      startAt: 0
+      steps:
+        - type: "line"
+          to: [20, 28]
+          seconds: 2
+        - type: "line"
+          to: [38, 20]
+          seconds: 4
+  - id: "Y"
+    team: "offense"
+    at: [50, 45]
+    color: "#c7e8a2"
+    label:
+      zh: "待填写：Y 的跑法"
+      description: "请填写该球员的讲解和动作；当前只保留示例起点。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "待填写后续动作；当前未知，不表示必须全程站住。"
+  - id: "Z"
+    team: "offense"
+    at: [80, 35]
+    color: "#ffc078"
+    label:
+      zh: "待填写：Z 的跑法"
+      description: "请填写该球员的讲解和动作；当前只保留示例起点。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "待填写后续动作；当前未知，不表示必须全程站住。"
+timeline:
+  duration: 6
+  basis: "illustration"
+  note: "仅为自编格式示例：X 从 0 秒起用 6 秒走完示例路径，其余四人的动作仍待填写。不是比赛规定，也不来自 PDF。填写较晚 startAt 时须说明教学安排，并扩大总时长以容纳全部动作。"
+keyframes:
+  - id: "start"
+    at: 0
+    label: "示例站位"
+    cue: "检查五人的起点；除 X 外，后续动作还没有填写。"
+  - id: "turn"
+    at: 2
+    label: "X 的转向"
+    cue: "示例 X 将从向前直跑转为斜向中间。"
+  - id: "end"
+    at: 6
+    label: "示例路线结束"
+    cue: "这里仅表示示例路径走完；完善其他人的动作后再安排全队讲解。"
+notes: ["本模板没有 source，也能完整表达自编内容；所有站位和 X 路线都是作者填写的示例。", "修改 id 为你的永久编号；修改标题不会自动改编号。", "填写动作后核对每人的 startAt 与动作时长总和，不能超过 timeline.duration。"]

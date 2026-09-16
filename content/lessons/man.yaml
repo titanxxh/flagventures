@@ -1,0 +1,269 @@
+# UTF-8；教学文字与原图事实分开记录。
+format: flag-lesson
+version: 1
+id: man
+kind: defense
+title:
+  zh: 人盯人防守
+  en: NFL FLAG MAN
+summary: 认识防守起点、原图对位或覆盖区域，以及图中明确画出的冲传方向。
+source:
+  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  page: 57
+  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+field:
+  width: 100
+  height: 55
+  attackDirection: down
+players:
+  - id: Q
+    team: offense
+    at:
+      - 50.169257
+      - 6.326096
+    color: '#ff9690'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 Q 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: C
+    team: offense
+    at:
+      - 50.16922
+      - 14.708293
+    color: '#fff1d5'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 C 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: X
+    team: offense
+    at:
+      - 19.941907
+      - 14.708205
+    color: '#80d4ff'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 X 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: 'Y'
+    team: offense
+    at:
+      - 33.675551
+      - 14.708205
+    color: '#c7e8a2'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 Y 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: Z
+    team: offense
+    at:
+      - 79.146726
+      - 14.708205
+    color: '#ffc078'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 Z 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: D1
+    team: defense
+    at:
+      - 19.048076
+      - 25.956122
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+  - id: D2
+    team: defense
+    at:
+      - 33.302548
+      - 25.956122
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+  - id: D3
+    team: defense
+    at:
+      - 50.040314
+      - 25.956122
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+  - id: D4
+    team: defense
+    at:
+      - 79.146764
+      - 25.956122
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+  - id: R
+    team: defense
+    at:
+      - 41.169064
+      - 32.803746
+    color: '#d7c9ff'
+    label:
+      zh: 冲传手
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: source
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+zones: []
+assignments:
+  - id: assignment-D1
+    player: D1
+    type: matchup
+    guide:
+      from:
+        - 19.204463
+        - 22.836153
+      segments:
+        - type: line
+          to:
+            - 19.972911
+            - 16.900098
+    target: X
+  - id: assignment-D2
+    player: D2
+    type: matchup
+    guide:
+      from:
+        - 33.420157
+        - 22.832932
+      segments:
+        - type: line
+          to:
+            - 33.420157
+            - 16.90345
+    target: 'Y'
+  - id: assignment-D3
+    player: D3
+    type: matchup
+    guide:
+      from:
+        - 49.98979
+        - 22.832932
+      segments:
+        - type: line
+          to:
+            - 49.98979
+            - 16.90345
+    target: C
+  - id: assignment-D4
+    player: D4
+    type: matchup
+    guide:
+      from:
+        - 79.146539
+        - 22.832932
+      segments:
+        - type: line
+          to:
+            - 79.146539
+            - 16.90345
+    target: Z
+  - id: assignment-R
+    player: R
+    type: rush
+    guide:
+      from:
+        - 41.168952
+        - 30.27544
+      segments:
+        - type: line
+          to:
+            - 47.125456
+            - 11.727074
+        - type: line
+          to:
+            - 47.497354
+            - 10.568436
+timeline:
+  duration: 10
+  basis: illustration
+  note: 时间轴只安排教学图层的逐步显示，不代表防守者行动先后。
+keyframes:
+  - id: frame-1
+    at: 0
+    label: 起始站位
+    cue: 找到双方各五名队员。
+    view:
+      zoneIds: []
+      assignmentIds: []
+  - id: frame-2
+    at: 3.3
+    label: 看一组职责
+    cue: 沿当前显示的指示线看对应球员或区域。
+    view:
+      zoneIds: []
+      assignmentIds:
+        - assignment-D1
+        - assignment-D2
+  - id: frame-3
+    at: 6.6
+    label: 看另一组职责
+    cue: 换一组看职责；人物仍只显示已知起点。
+    view:
+      zoneIds: []
+      assignmentIds:
+        - assignment-D3
+        - assignment-D4
+        - assignment-R
+  - id: frame-4
+    at: 10
+    label: 合看全队分工
+    cue: 一起指出每名防守者的对位、覆盖区域或冲传方向。
+    view:
+      zoneIds: []
+      assignmentIds:
+        - assignment-D1
+        - assignment-D2
+        - assignment-D3
+        - assignment-D4
+        - assignment-R
+notes:
+  - D 数字只是教学编号；原图观看方向保持不变。区域和虚线是职责示意，不是持续跑动轨迹。
+  - 指示线保留原始起止位置，不自动连到球员中心，也不追加球、传球、动态追逐或交接。

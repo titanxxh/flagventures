@@ -1,0 +1,93 @@
+# UTF-8；教学文字与原图事实分开记录。
+format: flag-lesson
+version: 1
+id: route-chair
+kind: route
+title:
+  zh: 9 · 椅形路线
+  en: CHAIR
+summary: CHAIR · 先向前、向外横切，再继续向前，看起来像椅子的侧面。
+source:
+  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  page: 4
+  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+field:
+  width: 100
+  height: 55
+  attackDirection: up
+  lineOfScrimmageY: 31.513458
+players:
+  - id: X
+    team: offense
+    at:
+      - 82.861393
+      - 33.644105
+    color: '#80d4ff'
+    label:
+      zh: 椅形路线
+      en: CHAIR
+      description: 先向前、向外横切，再继续向前，看起来像椅子的侧面。
+      basis: source
+      note: 英文名称由本页明确给出，中文为附件学习译文；X 是这里新增的示范球员编号。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 82.802382
+            - 32.592138
+          seconds: 0.307518
+        - type: line
+          to:
+            - 82.802382
+            - 23.990878
+          seconds: 2.510416
+        - type: line
+          to:
+            - 82.89605
+            - 23.897096
+          seconds: 0.038712
+        - type: line
+          to:
+            - 92.023387
+            - 23.898015
+          seconds: 2.667492
+        - type: line
+          to:
+            - 92.117054
+            - 23.804233
+          seconds: 0.038712
+        - type: line
+          to:
+            - 92.117054
+            - 10.190934
+          seconds: 3.973261
+        - type: line
+          to:
+            - 92.117054
+            - 8.601541
+          seconds: 0.463889
+timeline:
+  duration: 10
+  basis: illustration
+  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+keyframes:
+  - id: start
+    at: 0
+    label: 起始站位
+    cue: 找到 X 的起点，用手指从起点沿路线慢慢往前画。
+  - id: early
+    at: 2.5
+    label: 观察前段
+    cue: 沿每个人已画出的路径看方向；没有路线的人后续动作未知。
+  - id: middle
+    at: 5.5
+    label: 观察中段
+    cue: 停住，比较你关注的人和队友分别在哪里。
+  - id: end
+    at: 10
+    label: 路线终点
+    cue: 说出「CHAIR」，再不用动画，用手指画一遍这条路线。
+notes:
+  - 这是原路线树中这一条路径的单独展示；保持原图方向和相对位置，没有按标准距离重画。

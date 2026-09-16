@@ -1,0 +1,27 @@
+node_modules/
+tmp/
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+coverage/
+
+# Local planning, research, prototypes and verification output
+.scratch/
+research/
+checks/
+CONTEXT.md
+content/qa/
+content/conversion-audit.json
+content/terminology-audit.json
+content/assets/page-*.png
+content-format/validation-report.json
+tools/extract-content.py
+tools/enrich-content.mjs
+
+# Rebuildable copies; keep the standalone app and its license in version control
+content/default.flagbook.json
+dist/index.html
+dist/*.flagbook.json
+dist/使用说明.md

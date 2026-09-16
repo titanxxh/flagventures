@@ -1,0 +1,338 @@
+# UTF-8；教学文字与原图事实分开记录。
+format: flag-lesson
+version: 1
+id: cover-3
+kind: defense
+title:
+  zh: 三深区覆盖防守
+  en: NFL FLAG COVER 3
+summary: 认识防守起点、原图对位或覆盖区域，以及图中明确画出的冲传方向。
+source:
+  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  page: 60
+  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+field:
+  width: 100
+  height: 55
+  attackDirection: down
+  lineOfScrimmageY: 21.611372
+players:
+  - id: Q
+    team: offense
+    at:
+      - 50.892258
+      - 13.143495
+    color: '#ff9690'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 Q 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: C
+    team: offense
+    at:
+      - 50.892146
+      - 19.715217
+    color: '#fff1d5'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 C 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: X
+    team: offense
+    at:
+      - 18.385603
+      - 19.715251
+    color: '#80d4ff'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 X 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: 'Y'
+    team: offense
+    at:
+      - 32.899853
+      - 19.715251
+    color: '#c7e8a2'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 Y 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: Z
+    team: offense
+    at:
+      - 82.38869
+      - 19.715251
+    color: '#ffc078'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 Z 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: D1
+    team: defense
+    at:
+      - 35.564188
+      - 28.810884
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+  - id: D2
+    team: defense
+    at:
+      - 66.28805
+      - 28.810884
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+  - id: D3
+    team: defense
+    at:
+      - 17.056349
+      - 37.382597
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+  - id: D4
+    team: defense
+    at:
+      - 52.331497
+      - 38.083712
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+  - id: D5
+    team: defense
+    at:
+      - 82.74043
+      - 37.075058
+    color: '#d7c9ff'
+    label:
+      zh: 防守区域或对位
+      description: 沿原图静态指示线查看职责；不自动追逐进攻队员。
+      basis: description
+      note: R 保留原图标记；D 数字是教学新增编号。
+    motion:
+      type: unspecified
+      note: 原图未给出随时间移动的完整防守路线；静态显示不等于要求站住。
+zones:
+  - id: zone-1
+    type: ellipse
+    label: 原图覆盖区域 1
+    center:
+      - 31.648192
+      - 35.333884
+    radiusX: 9.927258
+    radiusY: 5.263088
+  - id: zone-2
+    type: ellipse
+    label: 原图覆盖区域 2
+    center:
+      - 69.638874
+      - 35.624208
+    radiusX: 9.517743
+    radiusY: 5.174869
+  - id: zone-3
+    type: ellipse
+    label: 原图覆盖区域 3
+    center:
+      - 15.189948
+      - 45.781959
+    radiusX: 13.639208
+    radiusY: 5.203473
+  - id: zone-4
+    type: ellipse
+    label: 原图覆盖区域 4
+    center:
+      - 49.32713
+      - 46.297359
+    radiusX: 15.460666
+    radiusY: 5.203473
+  - id: zone-5
+    type: ellipse
+    label: 原图覆盖区域 5
+    center:
+      - 81.696206
+      - 46.297359
+    radiusX: 15.460666
+    radiusY: 5.203473
+assignments:
+  - id: assignment-D1
+    player: D1
+    type: coverage
+    guide:
+      from:
+        - 35.434926
+        - 30.071002
+      segments:
+        - type: line
+          to:
+            - 33.600729
+            - 31.952382
+        - type: line
+          to:
+            - 32.542755
+            - 33.037401
+    zone: zone-1
+  - id: assignment-D2
+    player: D2
+    type: coverage
+    guide:
+      from:
+        - 66.287938
+        - 30.071002
+      segments:
+        - type: line
+          to:
+            - 67.672344
+            - 32.20613
+        - type: line
+          to:
+            - 68.483448
+            - 33.457177
+    zone: zone-2
+  - id: assignment-D3
+    player: D3
+    type: coverage
+    guide:
+      from:
+        - 16.927162
+        - 38.814342
+      segments:
+        - type: line
+          to:
+            - 17.043497
+            - 42.093486
+        - type: line
+          to:
+            - 17.095108
+            - 43.548235
+    zone: zone-3
+  - id: assignment-D4
+    player: D4
+    type: coverage
+    guide:
+      from:
+        - 52.269639
+        - 38.934465
+      segments:
+        - type: line
+          to:
+            - 52.269639
+            - 42.380254
+        - type: line
+          to:
+            - 52.269639
+            - 43.835794
+    zone: zone-4
+  - id: assignment-D5
+    player: D5
+    type: coverage
+    guide:
+      from:
+        - 82.868924
+        - 38.44188
+      segments:
+        - type: line
+          to:
+            - 82.868924
+            - 40.969056
+        - type: line
+          to:
+            - 82.868924
+            - 42.424647
+    zone: zone-5
+timeline:
+  duration: 10
+  basis: illustration
+  note: 时间轴只安排教学图层的逐步显示，不代表防守者行动先后。
+keyframes:
+  - id: frame-1
+    at: 0
+    label: 起始站位
+    cue: 找到双方各五名队员。
+    view:
+      zoneIds: []
+      assignmentIds: []
+  - id: frame-2
+    at: 3.3
+    label: 看一组职责
+    cue: 沿当前显示的指示线看对应球员或区域。
+    view:
+      zoneIds:
+        - zone-1
+        - zone-2
+      assignmentIds:
+        - assignment-D1
+        - assignment-D2
+  - id: frame-3
+    at: 6.6
+    label: 看另一组职责
+    cue: 换一组看职责；人物仍只显示已知起点。
+    view:
+      zoneIds:
+        - zone-3
+        - zone-4
+        - zone-5
+      assignmentIds:
+        - assignment-D3
+        - assignment-D4
+        - assignment-D5
+  - id: frame-4
+    at: 10
+    label: 合看全队分工
+    cue: 一起指出每名防守者的对位、覆盖区域或冲传方向。
+    view:
+      zoneIds:
+        - zone-1
+        - zone-2
+        - zone-3
+        - zone-4
+        - zone-5
+      assignmentIds:
+        - assignment-D1
+        - assignment-D2
+        - assignment-D3
+        - assignment-D4
+        - assignment-D5
+notes:
+  - D 数字只是教学编号；原图观看方向保持不变。区域和虚线是职责示意，不是持续跑动轨迹。
+  - 指示线保留原始起止位置，不自动连到球员中心，也不追加球、传球、动态追逐或交接。
+  - 本页原图没有 R；保留五名区域防守者，不另加冲传手。

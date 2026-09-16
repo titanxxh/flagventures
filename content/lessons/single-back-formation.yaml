@@ -1,0 +1,96 @@
+# UTF-8；教学文字与原图事实分开记录。
+format: flag-lesson
+version: 1
+id: single-back-formation
+kind: formation
+title:
+  zh: 单跑卫阵型
+  en: SINGLE BACK
+summary: 先认识五个人的起点，再看他们彼此的距离和前后关系。阵型页没有给出后续跑动。
+source:
+  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  page: 6
+  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+field:
+  width: 100
+  height: 55
+  attackDirection: up
+  lineOfScrimmageY: 31.513458
+players:
+  - id: Q
+    team: offense
+    at:
+      - 51.82691
+      - 36.984383
+    color: '#ff9690'
+    label:
+      zh: 中路起始站位
+      description: Q 在画面中路。比较他与 C、Q 和其他队友的前后位置；这张阵型图没有规定后续跑法。
+      basis: description
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: C
+    team: offense
+    at:
+      - 51.826816
+      - 33.304016
+    color: '#fff1d5'
+    label:
+      zh: 中路起始站位
+      description: C 在画面中路。比较他与 C、Q 和其他队友的前后位置；这张阵型图没有规定后续跑法。
+      basis: description
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: X
+    team: offense
+    at:
+      - 22.649648
+      - 33.304073
+    color: '#80d4ff'
+    label:
+      zh: 左侧起始站位
+      description: X 在画面左侧。比较他与 C、Q 和其他队友的前后位置；这张阵型图没有规定后续跑法。
+      basis: description
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: 'Y'
+    team: offense
+    at:
+      - 51.82691
+      - 41.940597
+    color: '#c7e8a2'
+    label:
+      zh: 中路起始站位
+      description: Y 在画面中路。比较他与 C、Q 和其他队友的前后位置；这张阵型图没有规定后续跑法。
+      basis: description
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: Z
+    team: offense
+    at:
+      - 83.67926
+      - 33.304073
+    color: '#ffc078'
+    label:
+      zh: 右侧起始站位
+      description: Z 在画面右侧。比较他与 C、Q 和其他队友的前后位置；这张阵型图没有规定后续跑法。
+      basis: description
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+timeline:
+  duration: 0
+  basis: illustration
+  note: 静态阵型只讲解起始站位，不推断后续动作。
+keyframes:
+  - id: start
+    at: 0
+    label: 起始站位
+    cue: 找到各人的字母，比较相互站位。
+notes:
+  - 球员身份按字母与起点核对，颜色仅作辅助。
+  - 路线从 PDF 轮廓取中心线，标记遮挡的短起点作近似连接。没有加入传球目标或球权变化。

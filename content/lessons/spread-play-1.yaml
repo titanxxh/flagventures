@@ -1,0 +1,212 @@
+# UTF-8；教学文字与原图事实分开记录。
+format: flag-lesson
+version: 1
+id: spread-play-1
+kind: offense
+title:
+  zh: 分散阵型 · 第 1 号战术
+  en: SPREAD PLAY 1
+summary: 沿球员起点与图中箭头认识路线和配合。
+source:
+  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  page: 11
+  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+field:
+  width: 100
+  height: 55
+  attackDirection: up
+  lineOfScrimmageY: 31.513458
+players:
+  - id: Q
+    team: offense
+    at:
+      - 52.658846
+      - 40.604066
+    color: '#ff9690'
+    label:
+      zh: 后续跑法未注明
+      description: 这里显示 Q 的站位；后续动作未在本图标出。
+      basis: unspecified
+    motion:
+      type: unspecified
+      note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+  - id: C
+    team: offense
+    at:
+      - 52.517802
+      - 33.304016
+    color: '#fff1d5'
+    label:
+      zh: 斜向右前方 → 向右横跑
+      description: 先斜向右前方，再向右横跑。左右按画面方向说。
+      basis: description
+      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 52.653882
+            - 32.334867
+          seconds: 0.303771
+        - type: line
+          to:
+            - 56.361814
+            - 27.5
+          seconds: 1.892125
+        - type: line
+          to:
+            - 79.884339
+            - 27.5
+          seconds: 7.310792
+        - type: line
+          to:
+            - 81.471573
+            - 27.500019
+          seconds: 0.493312
+  - id: X
+    team: offense
+    at:
+      - 18.735826
+      - 33.304073
+    color: '#80d4ff'
+    label:
+      en: Post
+      zh: 深斜内切
+      description: 先向前，再斜向场地中间。本图：先向前，再斜向右前方。左右按画面方向说。
+      basis: shape-match
+      note: 对照原书基础路线树的 POST 形态命名；本战术页没有给该球员单独标名，距离与时长不作比赛要求。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 18.718816
+            - 32.208342
+          seconds: 0.344911
+        - type: line
+          to:
+            - 18.646581
+            - 18.602205
+          seconds: 4.282444
+        - type: line
+          to:
+            - 31.6676
+            - 10.255932
+          seconds: 4.872431
+        - type: line
+          to:
+            - 33.004404
+            - 9.399145
+          seconds: 0.500214
+  - id: 'Y'
+    team: offense
+    at:
+      - 71.676723
+      - 36.681211
+    color: '#c7e8a2'
+    label:
+      zh: 多次转向路线
+      description: 先向前，再斜向左前方，再斜向右前方，再向右横跑。左右按画面方向说。
+      basis: description
+      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 71.504282
+            - 35.611742
+          seconds: 0.465263
+        - type: line
+          to:
+            - 71.664782
+            - 25.083315
+          seconds: 4.522266
+        - type: line
+          to:
+            - 69.894829
+            - 23.717634
+          seconds: 0.960933
+        - type: line
+          to:
+            - 71.914604
+            - 20.983679
+          seconds: 1.460534
+        - type: line
+          to:
+            - 72.650687
+            - 22.360935
+          seconds: 0.67088
+        - type: line
+          to:
+            - 75.527863
+            - 22.422757
+          seconds: 1.23761
+        - type: line
+          to:
+            - 77.114928
+            - 22.422813
+          seconds: 0.682514
+  - id: Z
+    team: offense
+    at:
+      - 87.310337
+      - 33.541478
+    color: '#ffc078'
+    label:
+      zh: 斜向右前方 → 向前
+      description: 先斜向右前方，再向前。左右按画面方向说。
+      basis: description
+      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 87.292222
+            - 32.208417
+          seconds: 0.534099
+        - type: line
+          to:
+            - 89.591757
+            - 29.375772
+          seconds: 1.46244
+        - type: line
+          to:
+            - 89.399647
+            - 10.988239
+          seconds: 7.366805
+        - type: line
+          to:
+            - 89.383181
+            - 9.399145
+          seconds: 0.636656
+timeline:
+  duration: 10
+  basis: illustration
+  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+keyframes:
+  - id: start
+    at: 0
+    label: 起始站位
+    cue: 先找 X 和 Z 的起点。今天先扮演其中一位，再换队友的位置试试。
+  - id: early
+    at: 2.5
+    label: 观察前段
+    cue: 观察 X 和 Z 的前段；X 的跑法是「Post」。
+  - id: middle
+    at: 5.5
+    label: 观察中段
+    cue: 停在这里：你关注的人去了哪里？Z 又在哪里？用手指同时指出两条路线。
+  - id: end
+    at: 10
+    label: 路线终点
+    cue: 回想 X 和 Z 从哪里出发、怎样转向。换一名球员讲一遍，再回到全队。
+notes:
+  - 球员身份按字母与起点核对，颜色仅作辅助。
+  - 路线从 PDF 轮廓取中心线，标记遮挡的短起点作近似连接。没有加入传球目标或球权变化。

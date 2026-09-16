@@ -1,0 +1,898 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lesson.schema.json",
+  "title": "Flag lesson v1",
+  "$comment": "仅检查结构。语义校验负责 ID 唯一性与引用、有限数值、画布边界、动作时长求和及关键帧从 0 起严格递增且不超过总时长。",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "flag-lesson"
+    },
+    "version": {
+      "const": 1
+    },
+    "id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "kind": {
+      "enum": [
+        "route",
+        "formation",
+        "offense",
+        "run",
+        "defense"
+      ]
+    },
+    "title": {
+      "$ref": "#/$defs/title"
+    },
+    "summary": {
+      "$ref": "#/$defs/text"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "field": {
+      "$ref": "#/$defs/field"
+    },
+    "players": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/player"
+      },
+      "minItems": 1
+    },
+    "zones": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/zone"
+      },
+      "minItems": 0
+    },
+    "assignments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assignment"
+      },
+      "minItems": 0
+    },
+    "timeline": {
+      "$ref": "#/$defs/timeline"
+    },
+    "keyframes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/keyframe"
+      },
+      "minItems": 1
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "format",
+    "version",
+    "id",
+    "kind",
+    "title",
+    "summary",
+    "field",
+    "players",
+    "timeline",
+    "keyframes"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "formation"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "timeline": {
+            "type": "object",
+            "properties": {
+              "duration": {
+                "const": 0
+              }
+            }
+          },
+          "players": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "motion": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "unspecified",
+                        "still"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          {
+            "properties": {
+              "timeline": {
+                "type": "object",
+                "properties": {
+                  "basis": {
+                    "enum": [
+                      "source",
+                      "coach"
+                    ]
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              }
+            },
+            "required": [
+              "timeline"
+            ]
+          },
+          {
+            "properties": {
+              "players": {
+                "type": "array",
+                "contains": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "object",
+                      "properties": {
+                        "basis": {
+                          "const": "source"
+                        }
+                      },
+                      "required": [
+                        "basis"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "label"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "players"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "required": [
+          "source"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?![\\s\\S])"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nonnegative": {
+      "type": "number",
+      "minimum": 0
+    },
+    "positive": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "point": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "number",
+        "minimum": 0
+      },
+      "description": "画布内的 [x, y]；相对于 field.width/height 的上界由语义校验检查。"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        },
+        "referenceAsset": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "title": {
+      "type": "object",
+      "properties": {
+        "zh": {
+          "$ref": "#/$defs/text"
+        },
+        "en": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "required": [
+        "zh"
+      ],
+      "additionalProperties": false
+    },
+    "field": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "$ref": "#/$defs/positive"
+        },
+        "height": {
+          "$ref": "#/$defs/positive"
+        },
+        "attackDirection": {
+          "enum": [
+            "up",
+            "down"
+          ]
+        },
+        "lineOfScrimmageY": {
+          "$ref": "#/$defs/nonnegative"
+        }
+      },
+      "required": [
+        "width",
+        "height",
+        "attackDirection"
+      ],
+      "additionalProperties": false
+    },
+    "label": {
+      "type": "object",
+      "properties": {
+        "zh": {
+          "$ref": "#/$defs/text"
+        },
+        "en": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "basis": {
+          "enum": [
+            "source",
+            "shape-match",
+            "description",
+            "author",
+            "unspecified"
+          ]
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "required": [
+        "zh",
+        "description",
+        "basis"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "shape-match"
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "note": {
+                "$ref": "#/$defs/text"
+              }
+            },
+            "required": [
+              "note"
+            ]
+          }
+        }
+      ]
+    },
+    "step": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/point"
+            },
+            "seconds": {
+              "$ref": "#/$defs/positive"
+            }
+          },
+          "required": [
+            "type",
+            "to",
+            "seconds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "quadratic"
+            },
+            "control": {
+              "$ref": "#/$defs/point"
+            },
+            "to": {
+              "$ref": "#/$defs/point"
+            },
+            "seconds": {
+              "$ref": "#/$defs/positive"
+            }
+          },
+          "required": [
+            "type",
+            "control",
+            "to",
+            "seconds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "cubic"
+            },
+            "control1": {
+              "$ref": "#/$defs/point"
+            },
+            "control2": {
+              "$ref": "#/$defs/point"
+            },
+            "to": {
+              "$ref": "#/$defs/point"
+            },
+            "seconds": {
+              "$ref": "#/$defs/positive"
+            }
+          },
+          "required": [
+            "type",
+            "control1",
+            "control2",
+            "to",
+            "seconds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "pause"
+            },
+            "seconds": {
+              "$ref": "#/$defs/positive"
+            }
+          },
+          "required": [
+            "type",
+            "seconds"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/step"
+      },
+      "minItems": 1
+    },
+    "choiceOption": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "steps": {
+          "$ref": "#/$defs/steps"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "steps"
+      ],
+      "additionalProperties": false
+    },
+    "motion": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "unspecified"
+            },
+            "note": {
+              "$ref": "#/$defs/text"
+            }
+          },
+          "required": [
+            "type",
+            "note"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "still"
+            },
+            "note": {
+              "$ref": "#/$defs/text"
+            }
+          },
+          "required": [
+            "type",
+            "note"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "path"
+            },
+            "startAt": {
+              "$ref": "#/$defs/nonnegative"
+            },
+            "steps": {
+              "$ref": "#/$defs/steps"
+            }
+          },
+          "required": [
+            "type",
+            "startAt",
+            "steps"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "choice"
+            },
+            "startAt": {
+              "$ref": "#/$defs/nonnegative"
+            },
+            "prompt": {
+              "$ref": "#/$defs/text"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/choiceOption"
+              },
+              "minItems": 2
+            }
+          },
+          "required": [
+            "type",
+            "startAt",
+            "prompt",
+            "options"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "player": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "team": {
+          "enum": [
+            "offense",
+            "defense"
+          ]
+        },
+        "at": {
+          "$ref": "#/$defs/point"
+        },
+        "label": {
+          "$ref": "#/$defs/label"
+        },
+        "motion": {
+          "$ref": "#/$defs/motion"
+        },
+        "name": {
+          "$ref": "#/$defs/text"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "id",
+        "team",
+        "at",
+        "label",
+        "motion"
+      ],
+      "additionalProperties": false
+    },
+    "zone": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/identifier"
+            },
+            "type": {
+              "const": "ellipse"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "center": {
+              "$ref": "#/$defs/point"
+            },
+            "radiusX": {
+              "$ref": "#/$defs/positive"
+            },
+            "radiusY": {
+              "$ref": "#/$defs/positive"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label",
+            "center",
+            "radiusX",
+            "radiusY"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/identifier"
+            },
+            "type": {
+              "const": "polygon"
+            },
+            "label": {
+              "$ref": "#/$defs/text"
+            },
+            "points": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/point"
+              },
+              "minItems": 3
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label",
+            "points"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "guideSegment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/point"
+            }
+          },
+          "required": [
+            "type",
+            "to"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "quadratic"
+            },
+            "control": {
+              "$ref": "#/$defs/point"
+            },
+            "to": {
+              "$ref": "#/$defs/point"
+            }
+          },
+          "required": [
+            "type",
+            "control",
+            "to"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "cubic"
+            },
+            "control1": {
+              "$ref": "#/$defs/point"
+            },
+            "control2": {
+              "$ref": "#/$defs/point"
+            },
+            "to": {
+              "$ref": "#/$defs/point"
+            }
+          },
+          "required": [
+            "type",
+            "control1",
+            "control2",
+            "to"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "guide": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/point"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/guideSegment"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "from",
+        "segments"
+      ],
+      "additionalProperties": false
+    },
+    "assignment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/identifier"
+            },
+            "player": {
+              "$ref": "#/$defs/identifier"
+            },
+            "type": {
+              "const": "coverage"
+            },
+            "zone": {
+              "$ref": "#/$defs/identifier"
+            },
+            "guide": {
+              "$ref": "#/$defs/guide"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "player",
+            "zone"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/identifier"
+            },
+            "player": {
+              "$ref": "#/$defs/identifier"
+            },
+            "type": {
+              "const": "matchup"
+            },
+            "target": {
+              "$ref": "#/$defs/identifier"
+            },
+            "guide": {
+              "$ref": "#/$defs/guide"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "player",
+            "target"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/identifier"
+            },
+            "player": {
+              "$ref": "#/$defs/identifier"
+            },
+            "type": {
+              "const": "rush"
+            },
+            "guide": {
+              "$ref": "#/$defs/guide"
+            }
+          },
+          "required": [
+            "id",
+            "player",
+            "type",
+            "guide"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "timeline": {
+      "type": "object",
+      "properties": {
+        "duration": {
+          "$ref": "#/$defs/nonnegative"
+        },
+        "basis": {
+          "enum": [
+            "illustration",
+            "source",
+            "coach"
+          ]
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "required": [
+        "duration",
+        "basis",
+        "note"
+      ],
+      "additionalProperties": false
+    },
+    "view": {
+      "type": "object",
+      "properties": {
+        "zoneIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "assignmentIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "zoneIds",
+        "assignmentIds"
+      ],
+      "additionalProperties": false
+    },
+    "keyframe": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "at": {
+          "$ref": "#/$defs/nonnegative"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "cue": {
+          "$ref": "#/$defs/text"
+        },
+        "view": {
+          "$ref": "#/$defs/view"
+        }
+      },
+      "required": [
+        "id",
+        "at",
+        "label",
+        "cue"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

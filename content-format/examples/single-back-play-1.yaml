@@ -1,0 +1,146 @@
+# UTF-8；一份文件一个教学条目。数据可编辑，文字不是可执行代码。
+format: "flag-lesson"
+version: 1
+id: "single-back-play-1"
+kind: "offense"
+title:
+  zh: "单跑卫阵型 · 第 1 号战术"
+  en: "SINGLE BACK PLAY 1"
+summary: "认识五名进攻球员的起点，沿各自路径看转向，并对照队友去向。"
+source:
+  title: "NFL FLAG 2024 中英文对照学习译本（用户附件）"
+  page: 7
+  note: "仅核对所附 PDF；中文为非官方学习译文。以下坐标由已核对的原型坐标除以 10，不是实际码数。"
+field:
+  width: 100
+  height: 55
+  attackDirection: "up"
+  lineOfScrimmageY: 31.5135
+players:
+  - id: "Q"
+    team: "offense"
+    at: [49.0326, 36.9844]
+    color: "#ff9690"
+    label:
+      zh: "未画跑动路线"
+      en: "No route shown"
+      description: "原图只画了 Q 的站位，之后怎么移动没有注明。"
+      basis: "unspecified"
+      note: "原图信息 · 第 7 页；不表示 Q 必须站着不动。"
+    motion:
+      type: "unspecified"
+      note: "原图没有 Q 的后续移动路线；显示起点不等于要求全程站住。"
+  - id: "C"
+    team: "offense"
+    at: [49.0325, 33.304]
+    color: "#fff1d5"
+    label:
+      zh: "深斜外切样式"
+      en: "Corner"
+      description: "先向前跑，再斜着往右侧边线方向跑。"
+      basis: "shape-match"
+      note: "形态对照：与第 3 页 Corner 相似；第 7 页未标路线名。"
+    motion:
+      type: "path"
+      startAt: 0
+      steps:
+        - type: "line"
+          to: [49.318, 32.2684]
+          seconds: 0.269229
+        - type: "line"
+          to: [49.3145, 16.9637]
+          seconds: 3.835736
+        - type: "line"
+          to: [70.7113, 7.1948]
+          seconds: 5.895035
+  - id: "X"
+    team: "offense"
+    at: [19.8554, 33.3041]
+    color: "#80d4ff"
+    label:
+      zh: "短斜内切"
+      en: "Slant"
+      description: "先向前跑一小段，再斜着往球场中间跑。"
+      basis: "shape-match"
+      note: "形态对照：参考第 3 页 Slant；第 7 页未标路线名。"
+    motion:
+      type: "path"
+      startAt: 0
+      steps:
+        - type: "line"
+          to: [19.6548, 32.1329]
+          seconds: 0.423660
+        - type: "line"
+          to: [19.6514, 26.8081]
+          seconds: 1.898502
+        - type: "line"
+          to: [39.8232, 19.2698]
+          seconds: 7.677838
+  - id: "Y"
+    team: "offense"
+    at: [49.0326, 41.9406]
+    color: "#c7e8a2"
+    label:
+      zh: "后场向左路线"
+      en: "Backfield route to the left"
+      description: "从 Q 后面斜着向左前方跑，再转向画面左侧。"
+      basis: "description"
+      note: "图示描述 · 第 7 页；不是原书命名的标准路线术语。"
+    motion:
+      type: "path"
+      startAt: 0
+      steps:
+        - type: "line"
+          to: [48.1285, 41.121]
+          seconds: 0.281294
+        - type: "line"
+          to: [39.104, 27.8586]
+          seconds: 3.697768
+        - type: "line"
+          to: [13.2653, 24.0359]
+          seconds: 6.020938
+  - id: "Z"
+    team: "offense"
+    at: [80.8849, 33.3041]
+    color: "#ffc078"
+    label:
+      zh: "短斜内切"
+      en: "Slant"
+      description: "先向前跑一小段，再斜着往球场中间跑。"
+      basis: "shape-match"
+      note: "形态对照：参考第 3 页 Slant；第 7 页未标路线名。"
+    motion:
+      type: "path"
+      startAt: 0
+      steps:
+        - type: "line"
+          to: [80.8706, 32.273]
+          seconds: 0.429836
+        - type: "line"
+          to: [81.0426, 26.2497]
+          seconds: 2.511725
+        - type: "line"
+          to: [65.6145, 19.2698]
+          seconds: 7.058439
+timeline:
+  duration: 10
+  basis: "illustration"
+  note: "四名有路线的球员同时从 0 秒启动，各用 10 秒走完；每人各段时长按自身线段长度分配，形成各自路径内匀速。这不是全员相同跑速，也不是原书规定的起跑或传球时序。"
+keyframes:
+  - id: "start"
+    at: 0
+    label: "起始站位"
+    cue: "找到 Q、C、X、Y、Z，指出每个人的起点。"
+  - id: "spread"
+    at: 2.5
+    label: "向前展开"
+    cue: "沿字母和路线看，你关注的球员与队友分别去了哪里？"
+  - id: "middle"
+    at: 5.5
+    label: "路线中段"
+    cue: "停住，用手指沿路线指向下一段，再看看队友的位置。"
+  - id: "end"
+    at: 10
+    label: "跑至箭头"
+    cue: "连起各人的起点和图中已画出的路线。Q 的后续动作未注明。"
+notes: ["p7 未逐人标路线名；C、X、Z 的标签是与 p3 路线树的形态对照，Y 是图示描述。", "路线保留原型中的短小起点连接；这些连接近似补全被球员标记遮住的部分。", "没有传球目标、球权变化或真假交球数据；路线相交不表示交球。"]

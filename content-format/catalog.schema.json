@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "catalog.schema.json",
+  "title": "Flag catalog v1",
+  "$comment": "文件路径相对于 catalog.yaml；构建时语义校验文件可读、条目 ID 匹配及全目录 ID 唯一性。",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "flag-catalog"
+    },
+    "version": {
+      "const": 1
+    },
+    "title": {
+      "$ref": "#/$defs/text"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/section"
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "format",
+    "version",
+    "title",
+    "sections"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?![\\s\\S])"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "file": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*[:\\\\\\r\\n]).+\\.ya?ml(?![\\s\\S])",
+          "description": "目录文件相对位置的 .yaml/.yml 文件路径；禁止绝对路径、URL、反斜线及 .. 路径段。"
+        }
+      },
+      "required": [
+        "id",
+        "file"
+      ],
+      "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entry"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "entries"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,1013 @@
+{
+  "format": "flag-playbook",
+  "version": 1,
+  "title": "战术文本格式 v1 · 评审样例",
+  "lessons": [
+    {
+      "format": "flag-lesson",
+      "version": 1,
+      "id": "single-back-play-1",
+      "kind": "offense",
+      "title": {
+        "zh": "单跑卫阵型 · 第 1 号战术",
+        "en": "SINGLE BACK PLAY 1"
+      },
+      "summary": "认识五名进攻球员的起点，沿各自路径看转向，并对照队友去向。",
+      "source": {
+        "title": "NFL FLAG 2024 中英文对照学习译本（用户附件）",
+        "page": 7,
+        "note": "仅核对所附 PDF；中文为非官方学习译文。以下坐标由已核对的原型坐标除以 10，不是实际码数。"
+      },
+      "field": {
+        "width": 100,
+        "height": 55,
+        "attackDirection": "up",
+        "lineOfScrimmageY": 31.5135
+      },
+      "players": [
+        {
+          "id": "Q",
+          "team": "offense",
+          "at": [
+            49.0326,
+            36.9844
+          ],
+          "color": "#ff9690",
+          "label": {
+            "zh": "未画跑动路线",
+            "en": "No route shown",
+            "description": "原图只画了 Q 的站位，之后怎么移动没有注明。",
+            "basis": "unspecified",
+            "note": "原图信息 · 第 7 页；不表示 Q 必须站着不动。"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "原图没有 Q 的后续移动路线；显示起点不等于要求全程站住。"
+          }
+        },
+        {
+          "id": "C",
+          "team": "offense",
+          "at": [
+            49.0325,
+            33.304
+          ],
+          "color": "#fff1d5",
+          "label": {
+            "zh": "深斜外切样式",
+            "en": "Corner",
+            "description": "先向前跑，再斜着往右侧边线方向跑。",
+            "basis": "shape-match",
+            "note": "形态对照：与第 3 页 Corner 相似；第 7 页未标路线名。"
+          },
+          "motion": {
+            "type": "path",
+            "startAt": 0,
+            "steps": [
+              {
+                "type": "line",
+                "to": [
+                  49.318,
+                  32.2684
+                ],
+                "seconds": 0.269229
+              },
+              {
+                "type": "line",
+                "to": [
+                  49.3145,
+                  16.9637
+                ],
+                "seconds": 3.835736
+              },
+              {
+                "type": "line",
+                "to": [
+                  70.7113,
+                  7.1948
+                ],
+                "seconds": 5.895035
+              }
+            ]
+          }
+        },
+        {
+          "id": "X",
+          "team": "offense",
+          "at": [
+            19.8554,
+            33.3041
+          ],
+          "color": "#80d4ff",
+          "label": {
+            "zh": "短斜内切",
+            "en": "Slant",
+            "description": "先向前跑一小段，再斜着往球场中间跑。",
+            "basis": "shape-match",
+            "note": "形态对照：参考第 3 页 Slant；第 7 页未标路线名。"
+          },
+          "motion": {
+            "type": "path",
+            "startAt": 0,
+            "steps": [
+              {
+                "type": "line",
+                "to": [
+                  19.6548,
+                  32.1329
+                ],
+                "seconds": 0.42366
+              },
+              {
+                "type": "line",
+                "to": [
+                  19.6514,
+                  26.8081
+                ],
+                "seconds": 1.898502
+              },
+              {
+                "type": "line",
+                "to": [
+                  39.8232,
+                  19.2698
+                ],
+                "seconds": 7.677838
+              }
+            ]
+          }
+        },
+        {
+          "id": "Y",
+          "team": "offense",
+          "at": [
+            49.0326,
+            41.9406
+          ],
+          "color": "#c7e8a2",
+          "label": {
+            "zh": "后场向左路线",
+            "en": "Backfield route to the left",
+            "description": "从 Q 后面斜着向左前方跑，再转向画面左侧。",
+            "basis": "description",
+            "note": "图示描述 · 第 7 页；不是原书命名的标准路线术语。"
+          },
+          "motion": {
+            "type": "path",
+            "startAt": 0,
+            "steps": [
+              {
+                "type": "line",
+                "to": [
+                  48.1285,
+                  41.121
+                ],
+                "seconds": 0.281294
+              },
+              {
+                "type": "line",
+                "to": [
+                  39.104,
+                  27.8586
+                ],
+                "seconds": 3.697768
+              },
+              {
+                "type": "line",
+                "to": [
+                  13.2653,
+                  24.0359
+                ],
+                "seconds": 6.020938
+              }
+            ]
+          }
+        },
+        {
+          "id": "Z",
+          "team": "offense",
+          "at": [
+            80.8849,
+            33.3041
+          ],
+          "color": "#ffc078",
+          "label": {
+            "zh": "短斜内切",
+            "en": "Slant",
+            "description": "先向前跑一小段，再斜着往球场中间跑。",
+            "basis": "shape-match",
+            "note": "形态对照：参考第 3 页 Slant；第 7 页未标路线名。"
+          },
+          "motion": {
+            "type": "path",
+            "startAt": 0,
+            "steps": [
+              {
+                "type": "line",
+                "to": [
+                  80.8706,
+                  32.273
+                ],
+                "seconds": 0.429836
+              },
+              {
+                "type": "line",
+                "to": [
+                  81.0426,
+                  26.2497
+                ],
+                "seconds": 2.511725
+              },
+              {
+                "type": "line",
+                "to": [
+                  65.6145,
+                  19.2698
+                ],
+                "seconds": 7.058439
+              }
+            ]
+          }
+        }
+      ],
+      "timeline": {
+        "duration": 10,
+        "basis": "illustration",
+        "note": "四名有路线的球员同时从 0 秒启动，各用 10 秒走完；每人各段时长按自身线段长度分配，形成各自路径内匀速。这不是全员相同跑速，也不是原书规定的起跑或传球时序。"
+      },
+      "keyframes": [
+        {
+          "id": "start",
+          "at": 0,
+          "label": "起始站位",
+          "cue": "找到 Q、C、X、Y、Z，指出每个人的起点。"
+        },
+        {
+          "id": "spread",
+          "at": 2.5,
+          "label": "向前展开",
+          "cue": "沿字母和路线看，你关注的球员与队友分别去了哪里？"
+        },
+        {
+          "id": "middle",
+          "at": 5.5,
+          "label": "路线中段",
+          "cue": "停住，用手指沿路线指向下一段，再看看队友的位置。"
+        },
+        {
+          "id": "end",
+          "at": 10,
+          "label": "跑至箭头",
+          "cue": "连起各人的起点和图中已画出的路线。Q 的后续动作未注明。"
+        }
+      ],
+      "notes": [
+        "p7 未逐人标路线名；C、X、Z 的标签是与 p3 路线树的形态对照，Y 是图示描述。",
+        "路线保留原型中的短小起点连接；这些连接近似补全被球员标记遮住的部分。",
+        "没有传球目标、球权变化或真假交球数据；路线相交不表示交球。"
+      ]
+    },
+    {
+      "format": "flag-lesson",
+      "version": 1,
+      "id": "cover-2",
+      "kind": "defense",
+      "title": {
+        "zh": "双深区覆盖防守",
+        "en": "NFL FLAG COVER 2"
+      },
+      "summary": "按四个讲解画面认识前后四片覆盖区域及 R 的冲传方向；人物只显示已知站位。",
+      "source": {
+        "title": "NFL FLAG 2024 中英文对照学习译本（用户附件）",
+        "page": 59,
+        "note": "仅核对所附 PDF；中文为非官方学习译文。以下坐标由已核对的原型坐标除以 10，不是实际码数。"
+      },
+      "field": {
+        "width": 100,
+        "height": 55,
+        "attackDirection": "down",
+        "lineOfScrimmageY": 21.6114
+      },
+      "players": [
+        {
+          "id": "Q",
+          "team": "offense",
+          "at": [
+            51.6291,
+            13.2546
+          ],
+          "color": "#ff9690",
+          "label": {
+            "zh": "后续跑法未注明",
+            "description": "图中标出进攻球员 Q 的站位，没有给出其持续跑动路线。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "此防守图仅以该进攻站位作对照；后续移动未知。"
+          }
+        },
+        {
+          "id": "C",
+          "team": "offense",
+          "at": [
+            51.6291,
+            19.8264
+          ],
+          "color": "#fff1d5",
+          "label": {
+            "zh": "后续跑法未注明",
+            "description": "图中标出进攻球员 C 的站位，没有给出其持续跑动路线。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "此防守图仅以该进攻站位作对照；后续移动未知。"
+          }
+        },
+        {
+          "id": "X",
+          "team": "offense",
+          "at": [
+            19.1225,
+            19.8264
+          ],
+          "color": "#80d4ff",
+          "label": {
+            "zh": "后续跑法未注明",
+            "description": "图中标出进攻球员 X 的站位，没有给出其持续跑动路线。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "此防守图仅以该进攻站位作对照；后续移动未知。"
+          }
+        },
+        {
+          "id": "Y",
+          "team": "offense",
+          "at": [
+            33.6368,
+            19.8264
+          ],
+          "color": "#c7e8a2",
+          "label": {
+            "zh": "后续跑法未注明",
+            "description": "图中标出进攻球员 Y 的站位，没有给出其持续跑动路线。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "此防守图仅以该进攻站位作对照；后续移动未知。"
+          }
+        },
+        {
+          "id": "Z",
+          "team": "offense",
+          "at": [
+            83.1256,
+            19.8264
+          ],
+          "color": "#ffc078",
+          "label": {
+            "zh": "后续跑法未注明",
+            "description": "图中标出进攻球员 Z 的站位，没有给出其持续跑动路线。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "此防守图仅以该进攻站位作对照；后续移动未知。"
+          }
+        },
+        {
+          "id": "D1",
+          "team": "defense",
+          "at": [
+            21.5186,
+            28.8109
+          ],
+          "color": "#d7c9ff",
+          "label": {
+            "zh": "前方左侧区域",
+            "description": "原图虚线指向前方左侧区域；这是区域分工，不是绕区域跑动。",
+            "basis": "description",
+            "note": "D1 是本教学资料新增的编号；位置和区域对应取自第 59 页。"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+          }
+        },
+        {
+          "id": "D2",
+          "team": "defense",
+          "at": [
+            32.7647,
+            37.0484
+          ],
+          "color": "#d7c9ff",
+          "label": {
+            "zh": "后方左侧区域",
+            "description": "原图虚线指向后方左侧区域；这是区域分工，不是绕区域跑动。",
+            "basis": "description",
+            "note": "D2 是本教学资料新增的编号；位置和区域对应取自第 59 页。"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+          }
+        },
+        {
+          "id": "D3",
+          "team": "defense",
+          "at": [
+            73.8676,
+            37.0484
+          ],
+          "color": "#d7c9ff",
+          "label": {
+            "zh": "后方右侧区域",
+            "description": "原图虚线指向后方右侧区域；这是区域分工，不是绕区域跑动。",
+            "basis": "description",
+            "note": "D3 是本教学资料新增的编号；位置和区域对应取自第 59 页。"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+          }
+        },
+        {
+          "id": "D4",
+          "team": "defense",
+          "at": [
+            83.9456,
+            28.8109
+          ],
+          "color": "#d7c9ff",
+          "label": {
+            "zh": "前方右侧区域",
+            "description": "原图虚线指向前方右侧区域；这是区域分工，不是绕区域跑动。",
+            "basis": "description",
+            "note": "D4 是本教学资料新增的编号；位置和区域对应取自第 59 页。"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+          }
+        },
+        {
+          "id": "R",
+          "team": "defense",
+          "at": [
+            42.8203,
+            35.9569
+          ],
+          "color": "#e5c2ff",
+          "label": {
+            "zh": "冲传手",
+            "en": "Rusher",
+            "description": "原图用 R 标记，并画出朝画面上方的冲传方向箭头。",
+            "basis": "source",
+            "note": "依据第 59 页 R 标记及该附件的图例说明；箭头没有一直延伸到 Q。"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+          }
+        }
+      ],
+      "zones": [
+        {
+          "id": "front-left",
+          "type": "ellipse",
+          "label": "前方左侧区域",
+          "center": [
+            15.922,
+            36.6226
+          ],
+          "radiusX": 8.8926,
+          "radiusY": 5.1749
+        },
+        {
+          "id": "deep-left",
+          "type": "ellipse",
+          "label": "后方左侧区域",
+          "center": [
+            27.0002,
+            47.2769
+          ],
+          "radiusX": 14.0904,
+          "radiusY": 6.1129
+        },
+        {
+          "id": "deep-right",
+          "type": "ellipse",
+          "label": "后方右侧区域",
+          "center": [
+            77.9175,
+            47.2769
+          ],
+          "radiusX": 14.0904,
+          "radiusY": 6.1129
+        },
+        {
+          "id": "front-right",
+          "type": "ellipse",
+          "label": "前方右侧区域",
+          "center": [
+            90.1151,
+            36.6226
+          ],
+          "radiusX": 8.8926,
+          "radiusY": 5.1749
+        }
+      ],
+      "assignments": [
+        {
+          "id": "cover-D1",
+          "type": "coverage",
+          "player": "D1",
+          "zone": "front-left",
+          "guide": {
+            "from": [
+              21.3894,
+              30.0708
+            ],
+            "segments": [
+              {
+                "type": "line",
+                "to": [
+                  19.1311,
+                  35.9776
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "cover-D2",
+          "type": "coverage",
+          "player": "D2",
+          "zone": "deep-left",
+          "guide": {
+            "from": [
+              32.6353,
+              38.4803
+            ],
+            "segments": [
+              {
+                "type": "line",
+                "to": [
+                  30.377,
+                  44.3869
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "cover-D3",
+          "type": "coverage",
+          "player": "D3",
+          "zone": "deep-right",
+          "guide": {
+            "from": [
+              73.9257,
+              38.4803
+            ],
+            "segments": [
+              {
+                "type": "line",
+                "to": [
+                  76.02,
+                  44.3869
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "cover-D4",
+          "type": "coverage",
+          "player": "D4",
+          "zone": "front-right",
+          "guide": {
+            "from": [
+              83.9454,
+              30.0708
+            ],
+            "segments": [
+              {
+                "type": "line",
+                "to": [
+                  87.5887,
+                  35.6904
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "rush-R",
+          "type": "rush",
+          "player": "R",
+          "guide": {
+            "from": [
+              42.8202,
+              33.9746
+            ],
+            "segments": [
+              {
+                "type": "line",
+                "to": [
+                  49.1486,
+                  18.5235
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "timeline": {
+        "duration": 10,
+        "basis": "illustration",
+        "note": "10 秒只安排区域和指示线的讲解显隐，不安排人物先后起跑，不模拟动态跟防。"
+      },
+      "keyframes": [
+        {
+          "id": "start",
+          "at": 0,
+          "label": "初始站位",
+          "cue": "找到五名防守者。D1–D4 是教学编号，R 保留原图标记。",
+          "view": {
+            "zoneIds": [],
+            "assignmentIds": []
+          }
+        },
+        {
+          "id": "front",
+          "at": 3.3,
+          "label": "前方两区",
+          "cue": "看前方的两片区域及各自对应的防守者；区域表示职责。",
+          "view": {
+            "zoneIds": [
+              "front-left",
+              "front-right"
+            ],
+            "assignmentIds": [
+              "cover-D1",
+              "cover-D4"
+            ]
+          }
+        },
+        {
+          "id": "deep",
+          "at": 6.6,
+          "label": "后方两区",
+          "cue": "看后方的两片区域。人物不用沿椭圆边界跑动。",
+          "view": {
+            "zoneIds": [
+              "deep-left",
+              "deep-right"
+            ],
+            "assignmentIds": [
+              "cover-D2",
+              "cover-D3"
+            ]
+          }
+        },
+        {
+          "id": "all",
+          "at": 10,
+          "label": "合看分工",
+          "cue": "一起看四片覆盖区域与 R 的箭头，指出每人的职责。",
+          "view": {
+            "zoneIds": [
+              "front-left",
+              "deep-left",
+              "deep-right",
+              "front-right"
+            ],
+            "assignmentIds": [
+              "cover-D1",
+              "cover-D2",
+              "cover-D3",
+              "cover-D4",
+              "rush-R"
+            ]
+          }
+        }
+      ],
+      "notes": [
+        "保留 p59 原观看方向：进攻方向朝画面下方，后方覆盖区也在画面下方。",
+        "所有坐标与半径是原型数据除以 10；原型已分别归一化原 PDF 场地区，因此这些数值不是实际码数。",
+        "区域指示线和 R 冲传方向线都是静态 guide；从原始线段起点出发，不强改为球员中心，也不触发人物跑动。",
+        "R 的箭头实际终点在 C 左上方，未追加冲到 Q 的路线或盯人对象。"
+      ]
+    },
+    {
+      "format": "flag-lesson",
+      "version": 1,
+      "id": "route-variants-format-demo",
+      "kind": "route",
+      "title": {
+        "zh": "曲线与分支：自编格式演示",
+        "en": "Authored route variants: format demo"
+      },
+      "summary": "仅验证同一起点的互斥分支、二次曲线、三次曲线、暂停与直线路段，不演示比赛中的选择条件。",
+      "field": {
+        "width": 100,
+        "height": 55,
+        "attackDirection": "up"
+      },
+      "players": [
+        {
+          "id": "X",
+          "team": "offense",
+          "at": [
+            50,
+            45
+          ],
+          "color": "#80d4ff",
+          "label": {
+            "zh": "自编路线分支示例",
+            "en": "Authored route variants",
+            "description": "选择一条完整路径用于查看格式效果；左右分支互斥，没有比赛正确答案。",
+            "basis": "author",
+            "note": "不是 PDF 的 6 OPTION，也不是从手册推定出的跑法或选项条件。"
+          },
+          "motion": {
+            "type": "choice",
+            "startAt": 0,
+            "prompt": "请选择要演示的完整路径；这是格式示例，不是比赛判断，也没有正确答案。",
+            "options": [
+              {
+                "id": "left-pause",
+                "title": "左侧：二次曲线、停顿、直线",
+                "steps": [
+                  {
+                    "type": "quadratic",
+                    "control": [
+                      38,
+                      45
+                    ],
+                    "to": [
+                      35,
+                      30
+                    ],
+                    "seconds": 3
+                  },
+                  {
+                    "type": "pause",
+                    "seconds": 1
+                  },
+                  {
+                    "type": "line",
+                    "to": [
+                      18,
+                      15
+                    ],
+                    "seconds": 4
+                  }
+                ]
+              },
+              {
+                "id": "right-cubic",
+                "title": "右侧：三次曲线",
+                "steps": [
+                  {
+                    "type": "cubic",
+                    "control1": [
+                      50,
+                      27
+                    ],
+                    "control2": [
+                      78,
+                      35
+                    ],
+                    "to": [
+                      76,
+                      18
+                    ],
+                    "seconds": 8
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "timeline": {
+        "duration": 8,
+        "basis": "illustration",
+        "note": "仅为格式能力验证而自编：两条分支都从 X 的同一起点开始，用时 8 秒。左侧分支含 1 秒停顿；不存在真实比赛选择条件，不来自 PDF OPTION。"
+      },
+      "keyframes": [
+        {
+          "id": "choose",
+          "at": 0,
+          "label": "先选演示分支",
+          "cue": "选择左侧或右侧的一条完整路线；选定前只看起点与备选线。"
+        },
+        {
+          "id": "three-seconds",
+          "at": 3,
+          "label": "观察不同动作",
+          "cue": "左侧分支此时开始停顿；右侧分支仍沿三次曲线前进。"
+        },
+        {
+          "id": "four-seconds",
+          "at": 4,
+          "label": "观察停顿结束",
+          "cue": "若选左侧，停顿结束并开始直线路段；右侧仍在曲线上。"
+        },
+        {
+          "id": "end",
+          "at": 8,
+          "label": "所选路径结束",
+          "cue": "只显示所选分支的结果，不自动转去另一条分支。"
+        }
+      ],
+      "notes": [
+        "无 source 的作者示例，不对应任何 PDF 页。",
+        "所有曲线控制点与终点都在画布内；曲线段应按弧长推进，不能直接用曲线参数当匀速距离。",
+        "更换分支应回到起点并暂停；没有分支选择时，播放和非零时间跳转应等待选择。"
+      ]
+    },
+    {
+      "format": "flag-lesson",
+      "version": 1,
+      "id": "my-first-play",
+      "kind": "offense",
+      "title": {
+        "zh": "待命名的自编战术"
+      },
+      "summary": "格式模板：先保留 X 的 Slant 示例，逐项填写其余球员要怎么跑。",
+      "field": {
+        "width": 100,
+        "height": 55,
+        "attackDirection": "up",
+        "lineOfScrimmageY": 33
+      },
+      "players": [
+        {
+          "id": "Q",
+          "team": "offense",
+          "at": [
+            50,
+            40
+          ],
+          "color": "#ff9690",
+          "label": {
+            "zh": "待填写：Q 的跑法",
+            "description": "请填写该球员的讲解和动作；当前只保留示例起点。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "待填写后续动作；当前未知，不表示必须全程站住。"
+          }
+        },
+        {
+          "id": "C",
+          "team": "offense",
+          "at": [
+            50,
+            35
+          ],
+          "color": "#fff1d5",
+          "label": {
+            "zh": "待填写：C 的跑法",
+            "description": "请填写该球员的讲解和动作；当前只保留示例起点。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "待填写后续动作；当前未知，不表示必须全程站住。"
+          }
+        },
+        {
+          "id": "X",
+          "team": "offense",
+          "at": [
+            20,
+            35
+          ],
+          "color": "#80d4ff",
+          "label": {
+            "zh": "短斜内切（格式示例）",
+            "en": "Slant",
+            "description": "先向前一小段，再斜着向中间跑；这条路径仅示范怎样填写数据。",
+            "basis": "author"
+          },
+          "motion": {
+            "type": "path",
+            "startAt": 0,
+            "steps": [
+              {
+                "type": "line",
+                "to": [
+                  20,
+                  28
+                ],
+                "seconds": 2
+              },
+              {
+                "type": "line",
+                "to": [
+                  38,
+                  20
+                ],
+                "seconds": 4
+              }
+            ]
+          }
+        },
+        {
+          "id": "Y",
+          "team": "offense",
+          "at": [
+            50,
+            45
+          ],
+          "color": "#c7e8a2",
+          "label": {
+            "zh": "待填写：Y 的跑法",
+            "description": "请填写该球员的讲解和动作；当前只保留示例起点。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "待填写后续动作；当前未知，不表示必须全程站住。"
+          }
+        },
+        {
+          "id": "Z",
+          "team": "offense",
+          "at": [
+            80,
+            35
+          ],
+          "color": "#ffc078",
+          "label": {
+            "zh": "待填写：Z 的跑法",
+            "description": "请填写该球员的讲解和动作；当前只保留示例起点。",
+            "basis": "unspecified"
+          },
+          "motion": {
+            "type": "unspecified",
+            "note": "待填写后续动作；当前未知，不表示必须全程站住。"
+          }
+        }
+      ],
+      "timeline": {
+        "duration": 6,
+        "basis": "illustration",
+        "note": "仅为自编格式示例：X 从 0 秒起用 6 秒走完示例路径，其余四人的动作仍待填写。不是比赛规定，也不来自 PDF。填写较晚 startAt 时须说明教学安排，并扩大总时长以容纳全部动作。"
+      },
+      "keyframes": [
+        {
+          "id": "start",
+          "at": 0,
+          "label": "示例站位",
+          "cue": "检查五人的起点；除 X 外，后续动作还没有填写。"
+        },
+        {
+          "id": "turn",
+          "at": 2,
+          "label": "X 的转向",
+          "cue": "示例 X 将从向前直跑转为斜向中间。"
+        },
+        {
+          "id": "end",
+          "at": 6,
+          "label": "示例路线结束",
+          "cue": "这里仅表示示例路径走完；完善其他人的动作后再安排全队讲解。"
+        }
+      ],
+      "notes": [
+        "本模板没有 source，也能完整表达自编内容；所有站位和 X 路线都是作者填写的示例。",
+        "修改 id 为你的永久编号；修改标题不会自动改编号。",
+        "填写动作后核对每人的 startAt 与动作时长总和，不能超过 timeline.duration。"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "source-examples",
+      "title": "现有原图样例",
+      "lessonIds": [
+        "single-back-play-1",
+        "cover-2"
+      ]
+    },
+    {
+      "id": "authored-examples",
+      "title": "自编格式演示与模板",
+      "lessonIds": [
+        "route-variants-format-demo",
+        "my-first-play"
+      ]
+    }
+  ]
+}

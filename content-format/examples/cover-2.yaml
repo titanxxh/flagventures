@@ -1,0 +1,239 @@
+# UTF-8；一份文件一个教学条目。数据可编辑，文字不是可执行代码。
+format: "flag-lesson"
+version: 1
+id: "cover-2"
+kind: "defense"
+title:
+  zh: "双深区覆盖防守"
+  en: "NFL FLAG COVER 2"
+summary: "按四个讲解画面认识前后四片覆盖区域及 R 的冲传方向；人物只显示已知站位。"
+source:
+  title: "NFL FLAG 2024 中英文对照学习译本（用户附件）"
+  page: 59
+  note: "仅核对所附 PDF；中文为非官方学习译文。以下坐标由已核对的原型坐标除以 10，不是实际码数。"
+field:
+  width: 100
+  height: 55
+  attackDirection: "down"
+  lineOfScrimmageY: 21.6114
+players:
+  - id: "Q"
+    team: "offense"
+    at: [51.6291, 13.2546]
+    color: "#ff9690"
+    label:
+      zh: "后续跑法未注明"
+      description: "图中标出进攻球员 Q 的站位，没有给出其持续跑动路线。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "此防守图仅以该进攻站位作对照；后续移动未知。"
+  - id: "C"
+    team: "offense"
+    at: [51.6291, 19.8264]
+    color: "#fff1d5"
+    label:
+      zh: "后续跑法未注明"
+      description: "图中标出进攻球员 C 的站位，没有给出其持续跑动路线。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "此防守图仅以该进攻站位作对照；后续移动未知。"
+  - id: "X"
+    team: "offense"
+    at: [19.1225, 19.8264]
+    color: "#80d4ff"
+    label:
+      zh: "后续跑法未注明"
+      description: "图中标出进攻球员 X 的站位，没有给出其持续跑动路线。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "此防守图仅以该进攻站位作对照；后续移动未知。"
+  - id: "Y"
+    team: "offense"
+    at: [33.6368, 19.8264]
+    color: "#c7e8a2"
+    label:
+      zh: "后续跑法未注明"
+      description: "图中标出进攻球员 Y 的站位，没有给出其持续跑动路线。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "此防守图仅以该进攻站位作对照；后续移动未知。"
+  - id: "Z"
+    team: "offense"
+    at: [83.1256, 19.8264]
+    color: "#ffc078"
+    label:
+      zh: "后续跑法未注明"
+      description: "图中标出进攻球员 Z 的站位，没有给出其持续跑动路线。"
+      basis: "unspecified"
+    motion:
+      type: "unspecified"
+      note: "此防守图仅以该进攻站位作对照；后续移动未知。"
+  - id: "D1"
+    team: "defense"
+    at: [21.5186, 28.8109]
+    color: "#d7c9ff"
+    label:
+      zh: "前方左侧区域"
+      description: "原图虚线指向前方左侧区域；这是区域分工，不是绕区域跑动。"
+      basis: "description"
+      note: "D1 是本教学资料新增的编号；位置和区域对应取自第 59 页。"
+    motion:
+      type: "unspecified"
+      note: "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+  - id: "D2"
+    team: "defense"
+    at: [32.7647, 37.0484]
+    color: "#d7c9ff"
+    label:
+      zh: "后方左侧区域"
+      description: "原图虚线指向后方左侧区域；这是区域分工，不是绕区域跑动。"
+      basis: "description"
+      note: "D2 是本教学资料新增的编号；位置和区域对应取自第 59 页。"
+    motion:
+      type: "unspecified"
+      note: "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+  - id: "D3"
+    team: "defense"
+    at: [73.8676, 37.0484]
+    color: "#d7c9ff"
+    label:
+      zh: "后方右侧区域"
+      description: "原图虚线指向后方右侧区域；这是区域分工，不是绕区域跑动。"
+      basis: "description"
+      note: "D3 是本教学资料新增的编号；位置和区域对应取自第 59 页。"
+    motion:
+      type: "unspecified"
+      note: "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+  - id: "D4"
+    team: "defense"
+    at: [83.9456, 28.8109]
+    color: "#d7c9ff"
+    label:
+      zh: "前方右侧区域"
+      description: "原图虚线指向前方右侧区域；这是区域分工，不是绕区域跑动。"
+      basis: "description"
+      note: "D4 是本教学资料新增的编号；位置和区域对应取自第 59 页。"
+    motion:
+      type: "unspecified"
+      note: "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+  - id: "R"
+    team: "defense"
+    at: [42.8203, 35.9569]
+    color: "#e5c2ff"
+    label:
+      zh: "冲传手"
+      en: "Rusher"
+      description: "原图用 R 标记，并画出朝画面上方的冲传方向箭头。"
+      basis: "source"
+      note: "依据第 59 页 R 标记及该附件的图例说明；箭头没有一直延伸到 Q。"
+    motion:
+      type: "unspecified"
+      note: "原图给出站位与职责方向，没有给出该防守者随时间移动的完整路线。静态呈现不表示必须站住。"
+zones:
+  - id: "front-left"
+    type: "ellipse"
+    label: "前方左侧区域"
+    center: [15.922, 36.6226]
+    radiusX: 8.8926
+    radiusY: 5.1749
+  - id: "deep-left"
+    type: "ellipse"
+    label: "后方左侧区域"
+    center: [27.0002, 47.2769]
+    radiusX: 14.0904
+    radiusY: 6.1129
+  - id: "deep-right"
+    type: "ellipse"
+    label: "后方右侧区域"
+    center: [77.9175, 47.2769]
+    radiusX: 14.0904
+    radiusY: 6.1129
+  - id: "front-right"
+    type: "ellipse"
+    label: "前方右侧区域"
+    center: [90.1151, 36.6226]
+    radiusX: 8.8926
+    radiusY: 5.1749
+assignments:
+  - id: "cover-D1"
+    type: "coverage"
+    player: "D1"
+    zone: "front-left"
+    guide:
+      from: [21.3894, 30.0708]
+      segments:
+        - type: "line"
+          to: [19.1311, 35.9776]
+  - id: "cover-D2"
+    type: "coverage"
+    player: "D2"
+    zone: "deep-left"
+    guide:
+      from: [32.6353, 38.4803]
+      segments:
+        - type: "line"
+          to: [30.377, 44.3869]
+  - id: "cover-D3"
+    type: "coverage"
+    player: "D3"
+    zone: "deep-right"
+    guide:
+      from: [73.9257, 38.4803]
+      segments:
+        - type: "line"
+          to: [76.02, 44.3869]
+  - id: "cover-D4"
+    type: "coverage"
+    player: "D4"
+    zone: "front-right"
+    guide:
+      from: [83.9454, 30.0708]
+      segments:
+        - type: "line"
+          to: [87.5887, 35.6904]
+  - id: "rush-R"
+    type: "rush"
+    player: "R"
+    guide:
+      from: [42.8202, 33.9746]
+      segments:
+        - type: "line"
+          to: [49.1486, 18.5235]
+timeline:
+  duration: 10
+  basis: "illustration"
+  note: "10 秒只安排区域和指示线的讲解显隐，不安排人物先后起跑，不模拟动态跟防。"
+keyframes:
+  - id: "start"
+    at: 0
+    label: "初始站位"
+    cue: "找到五名防守者。D1–D4 是教学编号，R 保留原图标记。"
+    view:
+      zoneIds: []
+      assignmentIds: []
+  - id: "front"
+    at: 3.3
+    label: "前方两区"
+    cue: "看前方的两片区域及各自对应的防守者；区域表示职责。"
+    view:
+      zoneIds: ["front-left", "front-right"]
+      assignmentIds: ["cover-D1", "cover-D4"]
+  - id: "deep"
+    at: 6.6
+    label: "后方两区"
+    cue: "看后方的两片区域。人物不用沿椭圆边界跑动。"
+    view:
+      zoneIds: ["deep-left", "deep-right"]
+      assignmentIds: ["cover-D2", "cover-D3"]
+  - id: "all"
+    at: 10
+    label: "合看分工"
+    cue: "一起看四片覆盖区域与 R 的箭头，指出每人的职责。"
+    view:
+      zoneIds: ["front-left", "deep-left", "deep-right", "front-right"]
+      assignmentIds: ["cover-D1", "cover-D2", "cover-D3", "cover-D4", "rush-R"]
+notes: ["保留 p59 原观看方向：进攻方向朝画面下方，后方覆盖区也在画面下方。", "所有坐标与半径是原型数据除以 10；原型已分别归一化原 PDF 场地区，因此这些数值不是实际码数。", "区域指示线和 R 冲传方向线都是静态 guide；从原始线段起点出发，不强改为球员中心，也不触发人物跑动。", "R 的箭头实际终点在 C 左上方，未追加冲到 Q 的路线或盯人对象。"]

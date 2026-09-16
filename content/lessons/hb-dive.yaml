@@ -1,0 +1,203 @@
+# UTF-8；教学文字与原图事实分开记录。
+format: flag-lesson
+version: 1
+id: hb-dive
+kind: run
+title:
+  zh: 半卫直冲
+  en: HB DIVE
+summary: 沿球员起点与图中箭头认识路线和配合。
+source:
+  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  page: 47
+  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+field:
+  width: 100
+  height: 55
+  attackDirection: up
+  lineOfScrimmageY: 31.513439
+players:
+  - id: Q
+    team: offense
+    at:
+      - 48.218166
+      - 37.383091
+    color: '#ff9690'
+    label:
+      zh: 后场绕行路线
+      description: 沿图中很短的右侧弧线移动；原图没有交代接下来的动作。
+      basis: description
+      note: 按该球员的原图线路描述；不是据战术名称推断持球人、真假交球或标准接球路线。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 49.681981
+            - 37.990749
+          seconds: 4.233603
+        - type: line
+          to:
+            - 51.644686
+            - 38.889836
+          seconds: 5.766397
+  - id: C
+    team: offense
+    at:
+      - 48.218185
+      - 33.501673
+    color: '#fff1d5'
+    label:
+      zh: 前跑与转向
+      description: 先向前，再向画面左侧横切。
+      basis: description
+      note: 按该球员的原图线路描述；不是据战术名称推断持球人、真假交球或标准接球路线。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 48.407093
+            - 32.327851
+          seconds: 0.672541
+        - type: line
+          to:
+            - 48.204584
+            - 21.98882
+          seconds: 5.849422
+        - type: line
+          to:
+            - 43.651228
+            - 21.98882
+          seconds: 2.579036
+        - type: line
+          to:
+            - 42.064016
+            - 21.98882
+          seconds: 0.899001
+  - id: X
+    team: offense
+    at:
+      - 31.668852
+      - 33.501729
+    color: '#80d4ff'
+    label:
+      zh: 前跑后短回折
+      description: 先向前，再短短地斜向右后方回折。
+      basis: description
+      note: 按该球员的原图线路描述；不是据战术名称推断持球人、真假交球或标准接球路线。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 31.871286
+            - 32.327964
+          seconds: 0.659647
+        - type: line
+          to:
+            - 31.668777
+            - 19.439112
+          seconds: 7.138663
+        - type: line
+          to:
+            - 33.39338
+            - 21.085906
+          seconds: 1.321481
+        - type: line
+          to:
+            - 34.542079
+            - 22.182819
+          seconds: 0.880209
+  - id: 'Y'
+    team: offense
+    at:
+      - 48.218166
+      - 45.025462
+    color: '#c7e8a2'
+    label:
+      zh: 前跑与转向
+      description: 从后场斜向右前方跑。
+      basis: description
+      note: 按该球员的原图线路描述；不是据战术名称推断持球人、真假交球或标准接球路线。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 49.477261
+            - 44.500135
+          seconds: 1.04549
+        - type: line
+          to:
+            - 56.206323
+            - 36.964349
+          seconds: 7.737908
+        - type: line
+          to:
+            - 57.264277
+            - 35.779497
+          seconds: 1.216602
+  - id: Z
+    team: offense
+    at:
+      - 78.660314
+      - 33.563275
+    color: '#ffc078'
+    label:
+      zh: 前跑后短回折
+      description: 先向前，再短短地斜向右后方回折。
+      basis: description
+      note: 按该球员的原图线路描述；不是据战术名称推断持球人、真假交球或标准接球路线。
+    motion:
+      type: path
+      startAt: 0
+      steps:
+        - type: line
+          to:
+            - 78.862804
+            - 32.327908
+          seconds: 0.684175
+        - type: line
+          to:
+            - 78.660295
+            - 19.439056
+          seconds: 7.044771
+        - type: line
+          to:
+            - 80.64342
+            - 21.064841
+          seconds: 1.402566
+        - type: line
+          to:
+            - 81.871342
+            - 22.071619
+          seconds: 0.868488
+timeline:
+  duration: 10
+  basis: illustration
+  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+keyframes:
+  - id: start
+    at: 0
+    label: 起始站位
+    cue: 先找 X 和 Z 的起点。今天先扮演其中一位，再换队友的位置试试。
+  - id: early
+    at: 2.5
+    label: 观察前段
+    cue: 观察 X 和 Z 的前段；X 的跑法是「前跑后短回折」。
+  - id: middle
+    at: 5.5
+    label: 观察中段
+    cue: 停在这里：你关注的人去了哪里？Z 又在哪里？用手指同时指出两条路线。
+  - id: end
+    at: 10
+    label: 路线终点
+    cue: 回想 X 和 Z 从哪里出发、怎样转向。换一名球员讲一遍，再回到全队。
+notes:
+  - 保留原图可见的直线与贝塞尔曲线；不根据名称推断传球、真假交球或最终持球人。
+  - 路线的共同启动和 10 秒演示时长是读图教学设定，不表示真实交接时序。
