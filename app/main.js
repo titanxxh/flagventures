@@ -22,6 +22,7 @@ let lastTick;
 let fieldNodes = {};
 let assetMap = new Map();
 let catalogNodes = new Map();
+let expandedGroups = new Set();
 
 function text(node, value) { if (node.textContent !== String(value ?? '')) node.textContent = value ?? ''; }
 function node(tag, attributes = {}, value) {
@@ -56,6 +57,7 @@ function download(name, content, mime) {
 }
 function setPack(value, status) {
   pack = value;
+  expandedGroups = new Set();
   order = pack.sections.flatMap(section => section.lessonIds);
   assetMap = new Map((pack.assets || []).map(asset => [asset.id, asset]));
   text($('libraryStatus'), status);
@@ -70,21 +72,50 @@ function buildCatalog() {
   const fragment = document.createDocumentFragment();
   catalogNodes = new Map();
   pack.sections.forEach((section, index) => {
-    const entries = section.lessonIds.map(id => lessons.get(id)).filter(item => {
+    const matches = item => {
       const haystack = [item.title.zh, item.title.en, item.source?.page, ...item.players.flatMap(p => [p.label.en, p.label.zh])].join(' ').toLocaleLowerCase();
       return haystack.includes(query);
-    });
-    if (!entries.length) return;
+    };
     const group = node('div', { class: 'catalog-section' });
     const label = node('div', { class: 'section-label' });
     label.append(node('span', {}, String(index + 1).padStart(2, '0')), document.createTextNode(section.title));
     group.append(label);
-    for (const item of entries) {
-      const button = node('button', { class: 'catalog-entry', 'data-lesson': item.id, 'aria-current': String(item.id === lesson?.id) });
-      button.append(node('strong', {}, item.title.zh), node('small', {}, `${item.title.en || types[item.kind]}${item.source?.page ? ` · p${item.source.page}` : ''}`));
-      group.append(button); catalogNodes.set(item.id, button);
+    const appendEntry = (parent, item, subgroup) => {
+      const button = node('button', { class: 'catalog-entry', 'data-lesson': item.id, 'aria-current': String(item.id === lesson?.id), title: item.title.zh });
+      const prefix = subgroup ? `${subgroup.title} · ` : '';
+      const title = subgroup && item.kind === 'formation' && item.title.zh === subgroup.title ? '阵型站位' : prefix && item.title.zh.startsWith(prefix) ? item.title.zh.slice(prefix.length) : item.title.zh;
+      button.append(node('strong', {}, title), node('small', {}, `${item.title.en || types[item.kind]}${item.source?.page ? ` · p${item.source.page}` : ''}`));
+      parent.append(button); catalogNodes.set(item.id, button);
+    };
+    const starts = new Map((section.groups || []).map(subgroup => [subgroup.lessonIds[0], subgroup]));
+    for (let position = 0; position < section.lessonIds.length;) {
+      const id = section.lessonIds[position];
+      const subgroup = starts.get(id);
+      if (!subgroup) {
+        const item = lessons.get(id);
+        if (matches(item)) appendEntry(group, item);
+        position++;
+        continue;
+      }
+      position += subgroup.lessonIds.length;
+      const groupMatches = subgroup.title.toLocaleLowerCase().includes(query);
+      const entries = subgroup.lessonIds.map(id => lessons.get(id)).filter(item => groupMatches || matches(item));
+      if (!entries.length) continue;
+      const key = JSON.stringify([section.id, subgroup.id]);
+      const details = node('details', { class: 'catalog-group', 'data-catalog-group': subgroup.id });
+      details.open = Boolean(query) || expandedGroups.has(key);
+      const summary = node('summary', { class: 'catalog-group-title' });
+      summary.append(node('strong', {}, subgroup.title), node('span', { class: 'catalog-group-count' }, `${entries.length} 项`));
+      const children = node('div', { class: 'catalog-group-entries' });
+      entries.forEach(item => appendEntry(children, item, subgroup));
+      details.append(summary, children);
+      summary.addEventListener('click', () => {
+        if (query) return;
+        if (details.open) expandedGroups.delete(key); else expandedGroups.add(key);
+      });
+      group.append(details);
     }
-    fragment.append(group);
+    if (group.children.length > 1) fragment.append(group);
   });
   if (!catalogNodes.size) fragment.append(node('p', { class: 'empty-search' }, '没有找到，试试英文跑法或页码。'));
   $('catalog').replaceChildren(fragment);
@@ -110,8 +141,18 @@ function selectLesson(id) {
     return;
   }
   $('exportLesson').disabled = $('reset').disabled = false;
+  if (!catalogNodes.has(id) && $('search').value) {
+    $('search').value = '';
+    buildCatalog();
+  }
   const section = pack.sections.find(item => item.lessonIds.includes(id));
-  text($('breadcrumb'), `${section.title} / ${types[lesson.kind]}`);
+  const subgroup = section.groups?.find(item => item.lessonIds.includes(id));
+  text($('breadcrumb'), [section.title, subgroup?.title, types[lesson.kind]].filter(Boolean).join(' / '));
+  if (subgroup) {
+    expandedGroups.add(JSON.stringify([section.id, subgroup.id]));
+    const details = catalogNodes.get(id)?.closest('.catalog-group');
+    if (details) details.open = true;
+  }
   text($('lessonTitle'), lesson.title.zh);
   text($('lessonEnglish'), `${lesson.title.en || ''}${lesson.source?.page ? ` · 来源第 ${lesson.source.page} 页` : ''}`);
   text($('summary'), lesson.summary);

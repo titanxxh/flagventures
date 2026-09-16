@@ -29,8 +29,8 @@
 | --- | --- |
 | 每条 `*.yaml` | 人可维护的教学条目；包括数据和中文讲解，不写页面代码 |
 | `lesson.schema.json` | 机器可检查的结构约定，避免漏字段、拼错字段和类型错误 |
-| `catalog.yaml` | 默认书目顺序；按编号引用内容文件，不依赖 PDF 页码排序 |
-| `*.flagbook.json` | 网页导出的完整内容包，内含条目、顺序和可选原页图片；下次整包导入 |
+| `catalog.yaml` | 默认书目顺序与可选分组；按编号引用内容文件，不依赖 PDF 页码排序 |
+| `*.flagbook.json` | 网页导出的完整内容包，内含条目、顺序、可选分组与可选原页图片；下次整包导入 |
 | 网页渲染器 | 负责图形、样式、悬停、播放和暂停；依据内容类型选择相应呈现 |
 
 YAML 便于加中文注释和逐行编辑；JSON 内容包便于可靠导出。二者解析后使用同一份数据结构。格式固定 `version: 1`，未知版本报告不支持，不能悄悄按当前版本解释。
@@ -186,14 +186,44 @@ keyframes:
 - 先全部解析与校验，再显示预览并一次应用；取消或出错不改动当前目录。报错应指明文件、球员和字段，例如“X 的第 2 段 seconds 必须大于 0”“D2 引用的区域 deep-left 不存在”。
 - 不认识的字段与版本报错；数值必须有限。检查坐标边界、重复 ID、悬空引用、时间超界、分支遗漏；不能把错误当作默认值悄悄运行。
 - 本地源文件目录按 `catalog.yaml` 的章节和 entries 数组决定顺序；文件名仅用于维护和构建，不要求页面用 `fetch` 读取相邻文件。构建时核对引用文件的条目 ID。
-- `catalog.yaml` 固定 `format: flag-catalog`、`version: 1`，`title` 为字符串，`sections` 每项含 `id`、`title`、`entries`；每个 entry 含 `id` 和相对路径 `file`（`.yaml` / `.yml`）。路径相对该 catalog，不能是绝对路径、URL 或含 `..` 的上级目录跳转。
-- 网页导出的 `flag-playbook` 包含 `version: 1`、`title`、完整 `lessons` 数组与 `sections` 数组。每个 section 含 `id`、`title`、有序 `lessonIds`；每个条目恰好出现一次。书目和内容不可失配。
-- 包的 `title` 和 section 的 `title` 都是字符串；只有教学条目的 `title` 是含 `zh` 与可选 `en` 的对象。
+- `catalog.yaml` 固定 `format: flag-catalog`、`version: 1`，`title` 为字符串，`sections` 每项含 `id`、`title`、`entries`，可选 `groups`；每个 entry 含 `id` 和相对路径 `file`（`.yaml` / `.yml`）。路径相对该 catalog，不能是绝对路径、URL 或含 `..` 的上级目录跳转。
+- 网页导出的 `flag-playbook` 包含 `version: 1`、`title`、完整 `lessons` 数组与 `sections` 数组。每个 section 含 `id`、`title`、有序 `lessonIds`，可选 `groups`；每个条目在各章节的顶层 `lessonIds` 中合计恰好出现一次。分组中的 ID 是对这些条目的引用。书目和内容不可失配。
+- 包、section 和 group 的 `title` 都是字符串；只有教学条目的 `title` 是含 `zh` 与可选 `en` 的对象。
 - 可选 `assets` 为图片列表，每项含 `id`、`mime`（PNG 或 JPEG）、`base64`。`source.referenceAsset` 按 ID 找图；缺图只提示原页对照不可用，不影响站位与路线渲染，不访问外部磁盘路径或网络地址。
 - 新增条目默认追加到“我的战术”，保留内置手册顺序。同 ID 导入显示为更新，不产生第二份同编号；预览说明哪些条目会更新，应用后导出当前完整包保存。导出的包可以再拆成 YAML 维护，语义一致，原 YAML 注释不承诺往返保留。
 - 单条 YAML 更新采用**整条替换、保留原目录位置**；新文件省略的可选字段会移除，不与旧值合并。同一批导入文件内部重复 ID 报错，不能按文件顺序相互覆盖。
 - “载入战术包”采用**整包替换本次活动库**，使用包中完整 lessons 与 sections，不与当前目录合并；应用前预览说明这一效果。程序自带的默认手册仍保留，重新打开网页或选择内置手册可以回到它。完整收录与原书顺序的验收针对默认库；作者自行载入的包按自己的 sections 展示，不被程序暗中重排。
 - 普通内容文件只解析数据，文字按文字显示。建议单条文本不超过 1 MB、整包不超过 50 MB；超限先提示，不尝试部分导入。解析器、校验器和渲染器均随 HTML 打包，不在使用时联网下载。
+
+### 目录的可选分组
+
+章节的 `groups` 每项包含 `id`、`title`、`lessonIds`，只增加可折叠的目录层级。`catalog.yaml` 中原有 `entries` 必须保留；打包后的章节仍保留完整、有序的 `lessonIds`，并复制相同的 `groups`。例如：
+
+```yaml
+format: flag-catalog
+version: 1
+title: 我的战术目录
+sections:
+  - id: offensive-formations
+    title: 进攻阵型与战术
+    entries: # 保留原有条目和顺序
+      - {id: single-back-formation, file: lessons/single-back-formation.yaml}
+      - {id: single-back-play-1, file: lessons/single-back-play-1.yaml}
+      - {id: single-back-play-2, file: lessons/single-back-play-2.yaml}
+      - {id: single-back-play-3, file: lessons/single-back-play-3.yaml}
+    groups:
+      - id: single-back
+        title: 单跑卫阵型
+        lessonIds:
+          - single-back-formation
+          - single-back-play-1
+          - single-back-play-2
+          - single-back-play-3
+```
+
+同一章节内分组 ID 唯一，每组至少包含一个条目；成员必须属于本章、按章节顺序连续排列，且不能重复或属于多个组。允许保留未分组条目。分组不替代或重排原目录，也不依赖 PDF、页码或标题推断；默认库的 10 个阵型组由目录明确配置。
+
+新增战术可不分组，不含 `groups` 的旧目录和战术包继续按原有列表显示。单条教学 YAML 不写 `groups`；直接导入的新条目默认追加到「我的战术」。网页导出完整包时保留分组配置；展开或收起的临时状态不属于教学内容。
 
 ## 10. 校验与格式维护
 

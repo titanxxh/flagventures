@@ -35,6 +35,10 @@ test('editable YAML and catalog exactly reconstruct the built-in lessons', () =>
   }
   validateCatalog(catalog, files);
   assert.deepEqual(catalog.sections.map(s => s.entries.map(e => e.id)), pack.sections.map(s => s.lessonIds));
+  assert.deepEqual(catalog.sections.map(s => s.groups), pack.sections.map(s => s.groups));
+  const groups = pack.sections.find(section => section.id === 'offensive-formations').groups;
+  assert.equal(groups.length, 10);
+  assert.ok(groups.every(group => group.lessonIds.length === 4));
 });
 
 test('all scenes stay finite at keyframes and reverse seeks without changing source data', () => {

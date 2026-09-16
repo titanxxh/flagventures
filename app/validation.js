@@ -168,6 +168,28 @@ function requireRef(ids, id, filename, field, noun) {
   if (!ids.has(id)) fail(filename, field, `${noun} ${id} 不存在`);
 }
 
+function validateGroups(section, lessonIds, filename) {
+  const field = `章节 ${section.id}.groups`;
+  const groups = section.groups || [];
+  unique(groups, filename, field);
+  const positions = new Map(lessonIds.map((id, index) => [id, index]));
+  const grouped = new Set();
+  for (const group of groups) {
+    const membersField = `${field}.${group.id}.lessonIds`;
+    let previous;
+    for (const id of group.lessonIds) {
+      if (!positions.has(id)) fail(filename, membersField, `战术 ${id} 不在本章节中`);
+      if (grouped.has(id)) fail(filename, membersField, `战术 ${id} 不能属于多个分组`);
+      const index = positions.get(id);
+      if (previous !== undefined && index !== previous + 1) {
+        fail(filename, membersField, '分组成员必须按章节目录顺序连续排列');
+      }
+      grouped.add(id);
+      previous = index;
+    }
+  }
+}
+
 function lessonSemantics(lesson, filename) {
   const { width, height, lineOfScrimmageY } = lesson.field;
   const point = (value, field) => {
@@ -267,6 +289,7 @@ export function validatePack(pack, filename = '战术包') {
       if (listed.has(id)) fail(filename, 'sections', `战术 ${id} 在目录出现多次`);
       listed.add(id);
     }
+    validateGroups(section, section.lessonIds, filename);
   }
   const warnings = [];
   for (const lesson of pack.lessons) {
@@ -283,6 +306,7 @@ export function validateCatalog(catalog, lessonsByFile, filename = '目录') {
   unique(catalog.sections, filename, 'sections');
   const entries = catalog.sections.flatMap(section => section.entries);
   unique(entries, filename, 'entries');
+  for (const section of catalog.sections) validateGroups(section, section.entries.map(entry => entry.id), filename);
   const paths = new Set();
   for (const entry of entries) {
     if (paths.has(entry.file)) fail(filename, 'entries.file', `文件 ${entry.file} 被重复引用`);

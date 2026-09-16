@@ -19,6 +19,22 @@ function pack(...lessons) {
   return { format: 'flag-playbook', version: 1, title: '战术包', lessons,
     sections: [{ id: 'book', title: '内置手册', lessonIds: lessons.map(item => item.id) }] };
 }
+function catalogFor(data) {
+  return { format: 'flag-catalog', version: 1, title: data.title,
+    sections: data.sections.map(({ lessonIds, ...section }) => ({ ...clone(section),
+      entries: lessonIds.map(id => ({ id, file: `lessons/${id}.yaml` })) })) };
+}
+function groupedPack() {
+  const data = pack(...['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'other'].map(lesson));
+  data.sections[0].lessonIds.pop();
+  data.sections[0].groups = [
+    { id: 'formation-a', title: '阵型 A', lessonIds: ['second', 'third'] },
+    { id: 'formation-b', title: '阵型 B', lessonIds: ['fifth', 'sixth'] },
+  ];
+  data.sections.push({ id: 'extra', title: '另一章', lessonIds: ['other'],
+    groups: [{ id: 'formation-a', title: '同名编号在另一章', lessonIds: ['other'] }] });
+  return data;
+}
 const file = data => ({ name: `${data.id}.yaml`, text: dump(data, { noRefs: true }) });
 function rejectsEdit(edit, pattern) {
   const data = lesson();
@@ -179,6 +195,82 @@ test('catalog checks path safety, uniqueness, file presence and matching lesson 
     const changed = clone(catalog); changed.sections[0].entries[0].file = path;
     assert.throws(() => validateCatalog(changed), /格式不正确/);
   }
+});
+
+test('optional groups preserve old packs and catalogs, including empty groups', () => {
+  const current = pack(lesson());
+  assert.equal(validatePack(current).pack, current);
+  validateCatalog(catalogFor(current));
+  assert.equal(Object.hasOwn(current.sections[0], 'groups'), false);
+  current.sections[0].groups = [];
+  validatePack(current);
+  validateCatalog(catalogFor(current));
+});
+
+test('grouped content round trips with ordered slices, ungrouped lessons and section-scoped group IDs', () => {
+  const current = groupedPack();
+  const before = clone(current);
+  const catalog = catalogFor(current);
+  validateCatalog(catalog, new Map(current.lessons.map(item => [`lessons/${item.id}.yaml`, item])));
+  const result = prepareImport(pack(), [{ name: 'grouped.flagbook.json', text: JSON.stringify(current) }]);
+  assert.equal(result.mode, 'pack');
+  assert.deepEqual(result.pack, before);
+  assert.deepEqual(current, before);
+  assert.deepEqual(result.pack.sections[0].lessonIds, ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']);
+});
+
+for (const [name, edit, message] of [
+  ['unknown member', groups => { groups[0].lessonIds = ['missing']; }, /战术 missing 不在本章节/],
+  ['member from another section', groups => { groups[0].lessonIds = ['other']; }, /战术 other 不在本章节/],
+  ['overlapping membership', groups => { groups[1].lessonIds = ['third', 'fourth']; }, /不能属于多个分组/],
+  ['duplicate group ID', groups => { groups[1].id = groups[0].id; }, /编号 formation-a 重复/],
+  ['reversed members', groups => { groups[0].lessonIds = ['third', 'second']; }, /按章节目录顺序连续排列/],
+  ['noncontiguous members', groups => { groups[0].lessonIds = ['second', 'fourth']; }, /按章节目录顺序连续排列/],
+]) {
+  test(`pack and catalog groups reject ${name}`, () => {
+    const data = groupedPack();
+    edit(data.sections[0].groups);
+    for (const validate of [() => validatePack(data, '分组.flagbook.json'),
+      () => validateCatalog(catalogFor(data), undefined, '分组目录.yaml')]) {
+      assert.throws(validate, error => {
+        assert.ok(error instanceof ContentError);
+        assert.match(error.field, /章节 book\.groups/);
+        assert.match(error.message, message);
+        return true;
+      });
+    }
+  });
+}
+
+test('both group schemas require known fields, valid IDs, titles and nonempty unique members', () => {
+  for (const [edit, pattern] of [
+    [group => { group.lessonIds = []; }, /至少需要 1 项/],
+    [group => { group.lessonIds = ['second', 'second']; }, /重复值/],
+    [group => { group.id = '1-invalid'; }, /格式不正确/],
+    [group => { group.lessonIds = ['1-invalid']; }, /格式不正确/],
+    [group => { group.title = ''; }, /请填写文字/],
+    [group => { delete group.title; }, /缺少必填字段/],
+    [group => { group.unknown = 'extra'; }, /不认识的字段/],
+  ]) {
+    const data = groupedPack();
+    edit(data.sections[0].groups[0]);
+    assert.throws(() => validatePack(data), pattern);
+    assert.throws(() => validateCatalog(catalogFor(data)), pattern);
+  }
+});
+
+test('YAML updates preserve groups and canonical positions while new lessons remain ungrouped', () => {
+  const current = groupedPack();
+  current.sections[0].title = '我的战术';
+  const before = clone(current);
+  const result = prepareImport(current, [file({ ...lesson('second'), title: { zh: '更新组内战术' } }), file(lesson('new-one'))]);
+  assert.deepEqual(result.updated, ['second']);
+  assert.deepEqual(result.added, ['new-one']);
+  assert.deepEqual(result.pack.sections[0].groups, before.sections[0].groups);
+  assert.deepEqual(result.pack.sections[0].lessonIds, [...before.sections[0].lessonIds, 'new-one']);
+  assert.equal(result.pack.lessons.find(item => item.id === 'second').title.zh, '更新组内战术');
+  assert.deepEqual(current, before);
+  assert.deepEqual(prepareImport(pack(), [{ name: 'updated.flagbook.json', text: JSON.stringify(result.pack) }]).pack, result.pack);
 });
 
 test('YAML batch preview is atomic and never mutates the current pack', () => {

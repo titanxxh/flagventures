@@ -52,7 +52,12 @@ const importSamples = async () => {
   await page.locator('#applyImport').click();
   assert.equal((await ids()).length, samplePack.lessons.length);
 };
-const select = id => page.locator(`#catalog [data-lesson="${id}"]`).click();
+const select = async id => {
+  const entry = page.locator(`#catalog [data-lesson="${id}"]`);
+  const group = page.locator('.catalog-group').filter({has: page.locator(`[data-lesson="${id}"]`)});
+  if (await group.count() && !(await group.evaluate(node => node.open))) await group.locator('summary').click();
+  await entry.click();
+};
 const caseRun = async (name, fn) => {
   const errorStart = errors.length;
   try {
@@ -127,6 +132,48 @@ try {
     } else if (checkedSources.size) {
       results.push({name: 'optional reference image loads', count: checkedSources.size, passed: true});
     }
+  });
+
+  await caseRun('formation groups expand, preserve search context and follow next lesson', async () => {
+    await open();
+    assert.equal(await page.locator('.catalog-group').count(), 10);
+    assert.equal(await page.locator('.catalog-group[open]').count(), 0);
+    const first = page.locator('[data-catalog-group="single-back-formation"]');
+    assert.equal(await first.locator('[data-lesson]').count(), 4);
+    const title = await page.locator('#lessonTitle').textContent();
+    await first.locator('summary').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await first.evaluate(node => node.open), true);
+    assert.equal(await page.locator('#lessonTitle').textContent(), title);
+    await first.locator('[data-lesson="single-back-play-2"]').click();
+    assert.match(await page.locator('#breadcrumb').textContent(), /进攻阵型与战术 \/ 单跑卫阵型 \/ 进攻战术/);
+    await page.locator('#search').fill('SINGLE BACK PLAY 2');
+    assert.equal(await page.locator('.catalog-group').count(), 1);
+    assert.deepEqual(await ids(), ['single-back-play-2']);
+    assert.equal(await first.evaluate(node => node.open), true);
+    await page.locator('#search').fill('');
+    assert.equal(await first.evaluate(node => node.open), true);
+    await select('single-back-play-3');
+    await page.locator('#search').fill('SINGLE BACK PLAY 3');
+    await page.locator('#next').click();
+    assert.equal(await page.locator('#search').inputValue(), '', 'navigation reveals lessons outside search results');
+    const spread = page.locator('[data-catalog-group="spread-formation"]');
+    assert.equal(await spread.evaluate(node => node.open), true);
+    assert.equal(await spread.locator('[aria-current="true"]').getAttribute('data-lesson'), 'spread-formation');
+    await page.locator('#previous').click();
+    assert.equal(await first.locator('[aria-current="true"]').getAttribute('data-lesson'), 'single-back-play-3');
+    await first.locator('summary').click();
+    await page.locator('#search').fill('不存在的内容');
+    assert.equal(await page.locator('.empty-search').count(), 1);
+    await page.locator('#search').fill('');
+    assert.equal(await first.evaluate(node => node.open), false, 'manual collapse survives searching');
+    for (const width of [1440, 1024, 390]) {
+      await page.setViewportSize({width, height: 1000});
+      await select('single-back-play-1');
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
+      await page.screenshot({path: join(output, `hierarchy-${width}.png`), fullPage: true});
+    }
+    await page.setViewportSize({width: 1440, height: 1000});
   });
 
   await caseRun('keyframes pause the whole scene and resume at the chosen time', async () => {

@@ -27,6 +27,77 @@ sections:
         file: "lessons/route-chair.yaml"
   - id: "offensive-formations"
     title: "进攻阵型与战术"
+    groups:
+      - id: single-back-formation
+        title: "单跑卫阵型"
+        lessonIds:
+          - single-back-formation
+          - single-back-play-1
+          - single-back-play-2
+          - single-back-play-3
+      - id: spread-formation
+        title: "分散阵型"
+        lessonIds:
+          - spread-formation
+          - spread-play-1
+          - spread-play-2
+          - spread-play-3
+      - id: bunch-formation
+        title: "密集阵型"
+        lessonIds:
+          - bunch-formation
+          - bunch-play-1
+          - bunch-play-2
+          - bunch-play-3
+      - id: trips-formation
+        title: "三接手同侧阵型"
+        lessonIds:
+          - trips-formation
+          - trips-play-1
+          - trips-play-2
+          - trips-play-3
+      - id: trips-stack-formation
+        title: "三接手同侧叠列阵型"
+        lessonIds:
+          - trips-stack-formation
+          - trips-stack-play-1
+          - trips-stack-play-2
+          - trips-stack-play-3
+      - id: twins-formation
+        title: "双接手同侧阵型"
+        lessonIds:
+          - twins-formation
+          - twins-play-1
+          - twins-play-2
+          - twins-play-3
+      - id: twins-stack-formation
+        title: "双接手同侧叠列阵型"
+        lessonIds:
+          - twins-stack-formation
+          - twins-stack-play-1
+          - twins-stack-play-2
+          - twins-stack-play-3
+      - id: i-formation-formation
+        title: "I 字阵型"
+        lessonIds:
+          - i-formation-formation
+          - i-formation-play-1
+          - i-formation-play-2
+          - i-formation-play-3
+      - id: double-back-formation
+        title: "双跑卫阵型"
+        lessonIds:
+          - double-back-formation
+          - double-back-play-1
+          - double-back-play-2
+          - double-back-play-3
+      - id: single-set-formation
+        title: "单后场阵型"
+        lessonIds:
+          - single-set-formation
+          - single-set-play-1
+          - single-set-play-2
+          - single-set-play-3
     entries:
       - id: "single-back-formation"
         file: "lessons/single-back-formation.yaml"

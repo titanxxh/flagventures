@@ -55,6 +55,31 @@
       "type": "string",
       "minLength": 1
     },
+    "group": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "lessonIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "lessonIds"
+      ],
+      "additionalProperties": false
+    },
     "section": {
       "type": "object",
       "properties": {
@@ -71,6 +96,12 @@
           },
           "minItems": 0,
           "uniqueItems": true
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/group"
+          }
         }
       },
       "required": [
