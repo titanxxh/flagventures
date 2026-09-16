@@ -12,7 +12,7 @@ const template = JSON.parse($('templateData').textContent);
 let pack = builtIn;
 let lesson;
 let order = [];
-let state = { time: 0, playing: false, speed: 1, role: null, choices: {} };
+let state = { time: 0, playing: false, speed: 2, role: null, choices: {} };
 let hovered = null;
 let focused = null;
 let pendingImport = null;
@@ -318,6 +318,7 @@ $('seek').addEventListener('input', event => seek(Number(event.target.value)));
 $('frames').addEventListener('click', event => { const button = event.target.closest('[data-frame]'); if (button) seek(lesson.keyframes[Number(button.dataset.frame)].at); });
 document.querySelectorAll('[data-speed]').forEach(button => button.addEventListener('click', () => {
   state.speed = Number(button.dataset.speed);
+  lastTick = undefined;
   document.querySelectorAll('[data-speed]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
 }));
 $('choices').addEventListener('click', event => {

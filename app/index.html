@@ -31,7 +31,18 @@
             <div class="board-bottom"><span id="fieldHint"></span><span id="focusStatus"></span></div>
           </section>
           <div id="choices" class="choices" hidden></div>
-          <div class="controls"><button id="play" class="button primary">▶ 开始演示</button><button id="reset" class="button light">回到站位</button><div class="speed"><span>速度</span><button data-speed="0.5" aria-pressed="false">慢一点</button><button data-speed="1" aria-pressed="true">正常</button></div><output id="clock"></output></div>
+          <div class="controls">
+            <button id="play" class="button primary">▶ 开始演示</button>
+            <button id="reset" class="button light">回到站位</button>
+            <output id="clock"></output>
+            <div class="speed" role="group" aria-label="播放速度">
+              <span>播放速度</span>
+              <button data-speed="0.5" aria-pressed="false">0.5×<small>慢放</small></button>
+              <button data-speed="1" aria-pressed="false">1×<small>原速</small></button>
+              <button data-speed="2" aria-pressed="true">2×<small>默认</small></button>
+              <button data-speed="3" aria-pressed="false">3×<small>更快</small></button>
+            </div>
+          </div>
           <label class="sr-only" for="seek">演示进度，调整后暂停</label><input id="seek" type="range" min="0" max="10" step="0.01" value="0">
           <div class="frame-header"><h2>停下来，一步一步看</h2><span>点关键帧，画面会一直停留</span></div>
           <div id="frames" class="frames" aria-label="关键帧"></div>
@@ -50,7 +61,7 @@
   <div id="toast" class="toast" role="status" hidden></div>
   <dialog id="sourceDialog" class="source-dialog"><div class="dialog-head"><h2 id="sourceTitle">原页对照</h2><button class="button light" data-close>关闭</button></div><img id="sourceImage" alt="本教学条目对应的手册原页"><p id="sourceCaption"></p></dialog>
   <dialog id="manageDialog"><div class="dialog-head"><h2>我的战术文件</h2><button class="button light" data-close>关闭</button></div><p>一份 YAML 描述一个教学条目。修改文字和路线后导入，网页会用统一方式呈现。</p><div class="file-actions"><button id="chooseFiles" class="button primary">导入 YAML / 战术包</button><button id="exportPack" class="button light">保存完整战术包</button><button id="exportLesson" class="button light">下载当前条目 YAML</button><button id="downloadTemplate" class="button light">下载新增模板</button></div><input id="fileInput" type="file" accept=".yaml,.yml,.json" multiple hidden><p class="callout">新增和修改只保留在本次打开的网页里。离开前点「保存完整战术包」，下次打开后再导入。</p><div id="importReport" role="status" hidden></div><div id="importActions" class="file-actions" hidden><button id="applyImport" class="button primary">确认应用</button><button id="cancelImport" class="button light">取消</button></div><hr><div class="restore-row"><div><strong>内置手册随时可用</strong><p>恢复后显示原书的 64 个条目。</p></div><button id="restore" class="button light">选择内置手册</button></div></dialog>
-  <dialog id="helpDialog"><div class="dialog-head"><h2>给孩子的 5–10 分钟小课</h2><button class="button light" data-close>关闭</button></div><ol class="help-steps"><li><strong>先看站位。</strong>从左侧选一条，找找自己的字母。</li><li><strong>认识跑法。</strong>鼠标移到球员上，名称与路线一起看；点击可保留。键盘 Tab 也能查看。</li><li><strong>一起看配合。</strong>慢放一次，点击关键帧停住，讲讲自己和队友分别去哪儿。</li><li><strong>换位再讲。</strong>回到站位，换一名队员，让孩子用手指画路线。</li></ol><p>点击关键帧或拖动进度会暂停；按「继续播放」从那里接着走。连续播放经过关键帧不会自动停。</p><p>动画秒数是教学示意。资料没有明确谁先跑、谁后跑；没有路线的球员只展示已知站位，不能理解为必须站着不动。</p><p>自己编战术：下载模板 → 用文本编辑器修改 → 导入预览 → 保存完整战术包。所有内容和图片都在本地，不需要上传。</p><p class="hint">按 Esc 关闭弹窗。恢复内置手册或重新打开网页后，需要重新载入自己保存的战术包。</p></dialog>
+  <dialog id="helpDialog"><div class="dialog-head"><h2>给孩子的 5–10 分钟小课</h2><button class="button light" data-close>关闭</button></div><ol class="help-steps"><li><strong>先看站位。</strong>从左侧选一条，找找自己的字母。</li><li><strong>认识跑法。</strong>鼠标移到球员上，名称与路线一起看；点击可保留。键盘 Tab 也能查看。</li><li><strong>一起看配合。</strong>慢放一次，点击关键帧停住，讲讲自己和队友分别去哪儿。</li><li><strong>换位再讲。</strong>回到站位，换一名队员，让孩子用手指画路线。</li></ol><p>默认以 2 倍速演示。播放按钮下方可选择 0.5×、1×、2× 或 3×，讲细节时可随时慢放。</p><p>点击关键帧或拖动进度会暂停；按「继续播放」从那里接着走。连续播放经过关键帧不会自动停。</p><p>动画秒数是教学示意。资料没有明确谁先跑、谁后跑；没有路线的球员只展示已知站位，不能理解为必须站着不动。</p><p>自己编战术：下载模板 → 用文本编辑器修改 → 导入预览 → 保存完整战术包。所有内容和图片都在本地，不需要上传。</p><p class="hint">按 Esc 关闭弹窗。恢复内置手册或重新打开网页后，需要重新载入自己保存的战术包。</p></dialog>
   <script type="application/json" id="builtInData">__BUILT_IN_DATA__</script>
   <script type="application/json" id="templateData">__TEMPLATE_DATA__</script>
   <script>/*__APP_JS__*/</script>
