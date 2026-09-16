@@ -23,6 +23,7 @@ let fieldNodes = {};
 let assetMap = new Map();
 let catalogNodes = new Map();
 let expandedGroups = new Set();
+let expandedSections = new Set();
 
 function text(node, value) { if (node.textContent !== String(value ?? '')) node.textContent = value ?? ''; }
 function node(tag, attributes = {}, value) {
@@ -58,6 +59,7 @@ function download(name, content, mime) {
 function setPack(value, status) {
   pack = value;
   expandedGroups = new Set();
+  expandedSections = new Set();
   order = pack.sections.flatMap(section => section.lessonIds);
   assetMap = new Map((pack.assets || []).map(asset => [asset.id, asset]));
   text($('libraryStatus'), status);
@@ -72,14 +74,22 @@ function buildCatalog() {
   const fragment = document.createDocumentFragment();
   catalogNodes = new Map();
   pack.sections.forEach((section, index) => {
+    const sectionMatches = section.title.toLocaleLowerCase().includes(query);
     const matches = item => {
       const haystack = [item.title.zh, item.title.en, item.source?.page, ...item.players.flatMap(p => [p.label.en, p.label.zh])].join(' ').toLocaleLowerCase();
-      return haystack.includes(query);
+      return sectionMatches || haystack.includes(query);
     };
-    const group = node('div', { class: 'catalog-section' });
-    const label = node('div', { class: 'section-label' });
-    label.append(node('span', {}, String(index + 1).padStart(2, '0')), document.createTextNode(section.title));
-    group.append(label);
+    const group = node('details', { class: 'catalog-section', 'data-catalog-section': section.id });
+    group.open = Boolean(query) || expandedSections.has(section.id);
+    const label = node('summary', { class: 'section-label' });
+    const count = node('span', { class: 'section-count', 'data-section-count': '' });
+    label.append(node('span', { class: 'section-number' }, String(index + 1).padStart(2, '0')), node('strong', { class: 'section-name' }, section.title), count);
+    const contents = node('div', { class: 'section-entries' });
+    group.append(label, contents);
+    label.addEventListener('click', () => {
+      if (query) return;
+      if (group.open) expandedSections.delete(section.id); else expandedSections.add(section.id);
+    });
     const appendEntry = (parent, item, subgroup) => {
       const button = node('button', { class: 'catalog-entry', 'data-lesson': item.id, 'aria-current': String(item.id === lesson?.id), title: item.title.zh });
       const prefix = subgroup ? `${subgroup.title} · ` : '';
@@ -93,7 +103,7 @@ function buildCatalog() {
       const subgroup = starts.get(id);
       if (!subgroup) {
         const item = lessons.get(id);
-        if (matches(item)) appendEntry(group, item);
+        if (matches(item)) appendEntry(contents, item);
         position++;
         continue;
       }
@@ -113,9 +123,12 @@ function buildCatalog() {
         if (query) return;
         if (details.open) expandedGroups.delete(key); else expandedGroups.add(key);
       });
-      group.append(details);
+      contents.append(details);
     }
-    if (group.children.length > 1) fragment.append(group);
+    if (contents.children.length) {
+      text(count, `${contents.querySelectorAll('[data-lesson]').length} 项`);
+      fragment.append(group);
+    }
   });
   if (!catalogNodes.size) fragment.append(node('p', { class: 'empty-search' }, '没有找到，试试英文跑法或页码。'));
   $('catalog').replaceChildren(fragment);
@@ -146,6 +159,9 @@ function selectLesson(id) {
     buildCatalog();
   }
   const section = pack.sections.find(item => item.lessonIds.includes(id));
+  expandedSections.add(section.id);
+  const sectionNode = catalogNodes.get(id)?.closest('.catalog-section');
+  if (sectionNode) sectionNode.open = true;
   const subgroup = section.groups?.find(item => item.lessonIds.includes(id));
   text($('breadcrumb'), [section.title, subgroup?.title, types[lesson.kind]].filter(Boolean).join(' / '));
   if (subgroup) {

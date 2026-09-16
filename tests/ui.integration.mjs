@@ -54,8 +54,14 @@ const importSamples = async () => {
 };
 const select = async id => {
   const entry = page.locator(`#catalog [data-lesson="${id}"]`);
-  const group = page.locator('.catalog-group').filter({has: page.locator(`[data-lesson="${id}"]`)});
-  if (await group.count() && !(await group.evaluate(node => node.open))) await group.locator('summary').click();
+  const member = page.locator(`[data-lesson="${id}"]`);
+  const section = page.locator('#catalog details.catalog-section').filter({has: member});
+  const group = page.locator('#catalog details.catalog-group').filter({has: member});
+  for (const ancestor of [section, group]) {
+    if (await ancestor.count() && !(await ancestor.evaluate(node => node.open))) {
+      await ancestor.locator(':scope > summary').click();
+    }
+  }
   await entry.click();
 };
 const caseRun = async (name, fn) => {
@@ -134,6 +140,75 @@ try {
     }
   });
 
+  await caseRun('all four catalog sections collapse, search and follow cross-section navigation without resetting the scene', async () => {
+    await open();
+    const sections = await page.locator('#builtInData').evaluate(node => JSON.parse(node.textContent).sections);
+    assert.deepEqual(sections.map(section => [section.id, section.lessonIds.length]), [
+      ['routes', 10], ['offensive-formations', 40], ['run-plays', 9], ['defense', 5],
+    ]);
+    const sectionNode = id => page.locator(`#catalog details.catalog-section[data-catalog-section="${id}"]`);
+    assert.equal(await page.locator('#catalog > details.catalog-section').count(), 4);
+    for (const section of sections) {
+      const details = sectionNode(section.id);
+      const header = details.locator(':scope > summary.section-label');
+      assert.equal(await header.count(), 1);
+      assert.ok((await header.textContent()).includes(section.title));
+      const count = await header.locator('[data-section-count]').textContent();
+      assert.equal(Number(count.match(/\d+/)?.[0]), section.lessonIds.length, section.id);
+      assert.equal(await details.locator('[data-lesson]').count(), section.lessonIds.length, section.id);
+      assert.equal(await details.evaluate(node => node.open), section.id === 'routes', `${section.id}: initial open state`);
+    }
+
+    await page.locator('#frames button').last().click();
+    const snapshot = {title: await page.locator('#lessonTitle').textContent(), time: await currentTime(),
+      positions: await positions(), playState: await page.locator('#playState').textContent()};
+    assert.ok(snapshot.time > 0, 'collapse is checked away from the start of the animation');
+    const routes = sectionNode('routes');
+    const routeHeader = routes.locator(':scope > summary.section-label');
+    await routeHeader.focus();
+    for (const [key, expanded] of [['Enter', false], ['Space', true], ['Enter', false]]) {
+      await page.keyboard.press(key);
+      assert.equal(await routes.evaluate(node => node.open), expanded);
+      assert.equal(await page.locator('#lessonTitle').textContent(), snapshot.title);
+      assert.equal(await currentTime(), snapshot.time);
+      assert.deepEqual(await positions(), snapshot.positions);
+      assert.equal(await page.locator('#playState').textContent(), snapshot.playState);
+    }
+
+    for (const section of sections) {
+      await page.locator('#search').fill(section.title);
+      assert.deepEqual(await ids(), section.lessonIds, `${section.title}: searching the category includes every child`);
+      assert.equal(await page.locator('#catalog > details.catalog-section').count(), 1);
+      assert.equal(await sectionNode(section.id).evaluate(node => node.open), true);
+      const groups = sectionNode(section.id).locator('details.catalog-group');
+      assert.ok((await groups.evaluateAll(nodes => nodes.map(node => node.open))).every(Boolean));
+    }
+    await page.locator('#search').fill('');
+    assert.equal(await routes.evaluate(node => node.open), false, 'manual category collapse survives searching');
+    assert.equal(await currentTime(), snapshot.time, 'search does not reset the teaching scene');
+    assert.deepEqual(await positions(), snapshot.positions);
+
+    for (let index = 0; index < sections.length - 1; index++) {
+      const previousSection = sections[index];
+      const nextSection = sections[index + 1];
+      await select(previousSection.lessonIds.at(-1));
+      const destination = sectionNode(nextSection.id);
+      if (await destination.evaluate(node => node.open)) await destination.locator(':scope > summary.section-label').click();
+      await page.locator('#next').click();
+      assert.equal(await destination.evaluate(node => node.open), true, `${nextSection.id}: next opens its category`);
+      const selected = destination.locator('[aria-current="true"]');
+      assert.equal(await selected.getAttribute('data-lesson'), nextSection.lessonIds[0]);
+      assert.equal(await selected.isVisible(), true, 'navigation opens all ancestors, including a nested formation group');
+      await sectionNode(previousSection.id).locator(':scope > summary.section-label').click();
+      assert.equal(await sectionNode(previousSection.id).evaluate(node => node.open), false);
+      await page.locator('#previous').click();
+      assert.equal(await sectionNode(previousSection.id).evaluate(node => node.open), true, `${previousSection.id}: previous reopens its category`);
+      const returned = sectionNode(previousSection.id).locator('[aria-current="true"]');
+      assert.equal(await returned.getAttribute('data-lesson'), previousSection.lessonIds.at(-1));
+      assert.equal(await returned.isVisible(), true);
+    }
+  });
+
   await caseRun('formation groups expand, preserve search context and follow next lesson', async () => {
     await open();
     assert.equal(await page.locator('.catalog-group').count(), 10);
@@ -141,7 +216,9 @@ try {
     const first = page.locator('[data-catalog-group="single-back-formation"]');
     assert.equal(await first.locator('[data-lesson]').count(), 4);
     const title = await page.locator('#lessonTitle').textContent();
-    await first.locator('summary').focus();
+    const offensiveSection = page.locator('#catalog details.catalog-section[data-catalog-section="offensive-formations"]');
+    await offensiveSection.locator(':scope > summary.section-label').click();
+    await first.locator(':scope > summary').focus();
     await page.keyboard.press('Enter');
     assert.equal(await first.evaluate(node => node.open), true);
     assert.equal(await page.locator('#lessonTitle').textContent(), title);
@@ -162,7 +239,7 @@ try {
     assert.equal(await spread.locator('[aria-current="true"]').getAttribute('data-lesson'), 'spread-formation');
     await page.locator('#previous').click();
     assert.equal(await first.locator('[aria-current="true"]').getAttribute('data-lesson'), 'single-back-play-3');
-    await first.locator('summary').click();
+    await first.locator(':scope > summary').click();
     await page.locator('#search').fill('不存在的内容');
     assert.equal(await page.locator('.empty-search').count(), 1);
     await page.locator('#search').fill('');
