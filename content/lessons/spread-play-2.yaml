@@ -1,4 +1,4 @@
-# UTF-8；教学文字与原图事实分开记录。
+# UTF-8；官网讲解、附件图形与教学设置分开记录。
 format: flag-lesson
 version: 1
 id: spread-play-2
@@ -6,11 +6,25 @@ kind: offense
 title:
   zh: 分散阵型 · 第 2 号战术
   en: SPREAD PLAY 2
-summary: 沿球员起点与图中箭头认识路线和配合。
+summary: X 向左牵动防守，Y、Z 提供较深选择；防守向左移动后，C 再向右接应。
+teaching:
+  goal: 先牵动一侧，再观察另一侧的接应机会。
+  cooperation: X 向左的 Option 与 Y、Z 的较深路线形成牵制；C 的右侧释放以防守移动为条件。
+  cue: 看队友把人带去哪，再找另一边。
+  question: 如果防守向左移动，C 准备去哪个方向？
 source:
   title: NFL FLAG 2024 中英文对照学习译本（用户附件）
   page: 12
-  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  note: 跑位坐标来自用户附件，归一化后重绘，非实际码数；路线称呼与配合讲解补充自 NFL FLAG 官网和视频。儿童口令、提问与播放节奏为教学改写。
+  references:
+    - title: NFL FLAG · Spread 战术说明
+      url: https://nflflag.com/coaches/flag-football-rules/5-on-5-flag-football-playbook
+      locator: Spread · Play 2
+      note: 官网的战术意图和相对先后建议；不作为精确秒表。
+    - title: NFL FLAG · Spread 视频
+      url: https://www.youtube.com/watch?v=QyMRYsCiXOs&t=46s
+      locator: 0:46–1:13
+      note: 时间用于定位解说；逐人讲述不表示逐人启动。
 field:
   width: 100
   height: 55
@@ -30,6 +44,9 @@ players:
     motion:
       type: unspecified
       note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+    coaching:
+      cooperation: 观察队友提供的接球区域；资料没有给出固定阅读顺序或必传对象。
+      timing: 原图未标出 Q 的后续移动和传球时刻。
   - id: C
     team: offense
     at:
@@ -37,34 +54,51 @@ players:
       - 33.510546
     color: '#fff1d5'
     label:
-      zh: 斜向右前方 → 向右横跑
+      zh: 外切路线
+      en: Out
       description: 先斜向右前方，再向右横跑。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG Spread 视频第 2 套（0:46–1:13）；路径保留附件 p12 图形，未按标准码数重画。
     motion:
-      type: path
+      type: choice
       startAt: 0
-      steps:
-        - type: line
-          to:
-            - 52.653975
-            - 32.334867
-          seconds: 0.362718
-        - type: line
-          to:
-            - 56.361642
-            - 27.5
-          seconds: 1.880578
-        - type: line
-          to:
-            - 79.884339
-            - 27.5
-          seconds: 7.266419
-        - type: line
-          to:
-            - 81.471479
-            - 27.500019
-          seconds: 0.490285
+      prompt: 家长先选择演示情形：防守被带向左侧时，C 才释放；动画不自动判断防守。
+      options:
+        - id: released
+          title: 防守已向左移动：C 向右接应
+          note: 先等待 2 秒再跑已画路线；条件来自官网，2 秒仅为教学设置。
+          steps:
+            - type: pause
+              seconds: 2
+            - type: line
+              to:
+                - 52.653975
+                - 32.334867
+              seconds: 0.290174
+            - type: line
+              to:
+                - 56.361642
+                - 27.5
+              seconds: 1.504462
+            - type: line
+              to:
+                - 79.884339
+                - 27.5
+              seconds: 5.813135
+            - type: line
+              to:
+                - 81.471479
+                - 27.500019
+              seconds: 0.392229
+        - id: not-shown
+          title: 尚未形成该情形：不演示 C 释放
+          note: 仅保留来源已知的站位；此情形下的后续移动没有说明，不表示 C 必须全程站住。
+          steps:
+            - type: pause
+              seconds: 10
+    coaching:
+      cooperation: 防守被带向左侧后，再跑右侧 Out 接应。
+      timing: 防守被带向左侧时才释放，由家长选择情形；演示中的等待 2 秒不是官方规定。
   - id: X
     team: offense
     at:
@@ -72,10 +106,11 @@ players:
       - 33.510527
     color: '#80d4ff'
     label:
-      zh: 多次转向路线
+      zh: 选择路线
+      en: Option
       description: 先向前，再斜向右前方，再向右横跑，再斜向右前方，再斜向左后方，再向左横跑。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG Spread 视频第 2 套（0:46–1:13）；路径保留附件 p12 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -130,6 +165,9 @@ players:
             - 11.271799
             - 24.295889
           seconds: 0.584013
+    coaching:
+      cooperation: 向左跑 Option，尝试牵动防守，为 C 的右侧路线创造机会。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: 'Y'
     team: offense
     at:
@@ -137,10 +175,11 @@ players:
       - 36.887665
     color: '#c7e8a2'
     label:
-      zh: 向前 → 向左横跑
+      zh: 内切路线
+      en: In
       description: 先向前，再向左横跑。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG Spread 视频第 2 套（0:46–1:13）；路径保留附件 p12 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -165,6 +204,9 @@ players:
             - 56.089587
             - 18.322897
           seconds: 0.470031
+    coaching:
+      cooperation: 跑较深 In，与 Z 提供深处选择。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: Z
     team: offense
     at:
@@ -172,11 +214,11 @@ players:
       - 33.747932
     color: '#ffc078'
     label:
+      zh: 斜内切
       en: Post
-      zh: 深斜内切
-      description: 先向前，再斜向场地中间。本图：先向前，再斜向左前方。左右按画面方向说。
-      basis: shape-match
-      note: 对照原书基础路线树的 POST 形态命名；本战术页没有给该球员单独标名，距离与时长不作比赛要求。
+      description: 先向前，再斜向左前方。左右按画面方向说。
+      basis: source
+      note: 名称依据 NFL FLAG Spread 视频第 2 套（0:46–1:13）；路径保留附件 p12 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -201,27 +243,32 @@ players:
             - 70.711236
             - 4.712206
           seconds: 0.417558
+    coaching:
+      cooperation: 跑 Post，与 Y 的 In 保留较深接球点。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
 timeline:
   duration: 10
   basis: illustration
-  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+  note: C 的启动有条件：防守被带向左侧。由家长先选择演示情形；满足条件的分支示范等待 2 秒后跑完路线，另一个分支仅保留已知站位。2 秒、总时长 10 秒及其他球员同时起跑均为教学设置，不是比赛规则或完整时序。
 keyframes:
   - id: start
     at: 0
-    label: 起始站位
-    cue: 先找 X 和 Z 的起点。今天先扮演其中一位，再换队友的位置试试。
-  - id: early
-    at: 2.5
-    label: 观察前段
-    cue: 观察 X 和 Z 的前段；X 的跑法是「多次转向路线」。
+    label: 站好 · 选情形
+    cue: 先选定 C 是否满足释放条件，再指出 X、Y、Z 的起点。
+  - id: spread
+    at: 2
+    label: 按情形展开
+    cue: 观察 X 向左的路线；C 是否展开取决于家长选定的情形。
   - id: middle
     at: 5.5
-    label: 观察中段
-    cue: 停在这里：你关注的人去了哪里？Z 又在哪里？用手指同时指出两条路线。
+    label: 暂停 · 看配合
+    cue: 比较 X 的左侧与 C 的右侧，找出一侧牵动、另一侧接应的关系。
   - id: end
     at: 10
-    label: 路线终点
-    cue: 回想 X 和 Z 从哪里出发、怎样转向。换一名球员讲一遍，再回到全队。
+    label: 回想 · 说一说
+    cue: 如果防守向左移动，C 准备去哪个方向？
 notes:
-  - 球员身份按字母与起点核对，颜色仅作辅助。
-  - 路线从 PDF 轮廓取中心线，标记遮挡的短起点作近似连接。没有加入传球目标或球权变化。
+  - 画面只演示进攻路线，没有自动模拟防守；空当和接球机会是战术意图，不保证比赛结果。
+  - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
+  - 路线坐标保留附件 p12 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
+  - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。

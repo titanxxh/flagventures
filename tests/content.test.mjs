@@ -50,8 +50,73 @@ test('all scenes stay finite at keyframes and reverse seeks without changing sou
       for (const player of scene.players) assert.ok(player.position.every(Number.isFinite), `${data.id}/${player.id}`);
     }
     assert.equal(JSON.stringify(data), before);
-    if (data.kind === 'offense') assert.equal(data.players.filter(p => p.motion.type === 'path').length, 4);
+    if (data.kind === 'offense') assert.equal(data.players.filter(p => ['path', 'choice'].includes(p.motion.type)).length, 4);
     if (data.kind === 'formation') assert.equal(data.timeline.duration, 0);
+  }
+});
+
+test('all 30 offensive plays carry specific teaching, individual coaching and online source references', () => {
+  const offense = pack.lessons.filter(data => data.kind === 'offense');
+  assert.equal(new Set(offense.map(data => data.summary)).size, 30, 'each play has its own summary');
+  for (const data of offense) {
+    for (const field of ['goal', 'cooperation', 'cue', 'question']) assert.ok(data.teaching?.[field]?.trim(), `${data.id}: teaching.${field}`);
+    for (const player of data.players) {
+      assert.ok(player.coaching?.cooperation?.trim(), `${data.id}/${player.id}: cooperation`);
+      assert.ok(player.coaching?.timing?.trim(), `${data.id}/${player.id}: timing`);
+    }
+    assert.ok(data.source.references.some(reference => new URL(reference.url).hostname === 'nflflag.com'), `${data.id}: official article`);
+    assert.ok(data.source.references.some(reference => new URL(reference.url).hostname === 'www.youtube.com'), `${data.id}: official video`);
+    assert.equal(data.timeline.basis, 'illustration', `${data.id}: exact seconds remain teaching timing`);
+  }
+  for (const id of ['X', 'Z']) {
+    const player = lesson('single-back-play-1').players.find(item => item.id === id);
+    assert.equal(player.label.en, 'Post');
+    assert.equal(player.label.basis, 'source');
+  }
+});
+
+test('source-supported relative starts wait for the correct teammates without changing scene geometry', () => {
+  const starts = id => Object.fromEntries(lesson(id).players.filter(player => player.motion.type === 'path').map(player => [player.id, player.motion.startAt]));
+  const bunch1 = starts('bunch-play-1');
+  assert.ok(Math.min(bunch1.X, bunch1.Z) > Math.max(bunch1.C, bunch1.Y));
+  const bunch2 = starts('bunch-play-2');
+  assert.ok(Math.min(bunch2.C, bunch2.Y) > Math.max(bunch2.X, bunch2.Z));
+  const trips3 = starts('trips-play-3');
+  assert.ok(trips3.C > Math.max(trips3.X, trips3.Y, trips3.Z));
+  const i2 = starts('i-formation-play-2');
+  assert.ok(i2.Z > Math.max(i2.X, i2.Y, i2.C));
+
+  for (const [id, delayedPlayer] of [['trips-play-3', 'C'], ['i-formation-play-2', 'Z']]) {
+    const data = lesson(id);
+    const player = data.players.find(item => item.id === delayedPlayer);
+    const atWait = getScene(data, player.motion.startAt / 2);
+    assert.deepEqual(atWait.players.find(item => item.id === delayedPlayer).position, player.at);
+    assert.ok(atWait.players.some(item => ['X', 'Y'].includes(item.id) && JSON.stringify(item.position) !== JSON.stringify(item.at)));
+    assert.notDeepEqual(getScene(data, data.timeline.duration).players.find(item => item.id === delayedPlayer).position, player.at);
+  }
+});
+
+test('conditional center releases require an explicit scenario and retain unknown untriggered actions', () => {
+  for (const id of ['single-back-play-1', 'spread-play-2', 'trips-stack-play-2']) {
+    const data = lesson(id);
+    const center = data.players.find(player => player.id === 'C');
+    assert.equal(center.motion.type, 'choice', id);
+    assert.equal(center.motion.options.length, 2);
+    const notTriggered = center.motion.options.find(option => option.steps.every(step => step.type === 'pause'));
+    const released = center.motion.options.find(option => option.steps.some(step => step.type !== 'pause'));
+    assert.ok(notTriggered?.note?.trim(), `${id}: explain undisclosed action`);
+    assert.ok(released?.note?.trim(), `${id}: explain conditional release`);
+    const before = JSON.stringify(data);
+    const blocked = getScene(data, data.timeline.duration);
+    assert.equal(blocked.ready, false);
+    assert.equal(blocked.time, 0);
+    assert.deepEqual(blocked.players.map(player => player.position), data.players.map(player => player.at));
+    const noRelease = getScene(data, data.timeline.duration, { C: notTriggered.id });
+    assert.equal(noRelease.ready, true);
+    assert.deepEqual(noRelease.players.find(player => player.id === 'C').position, center.at);
+    assert.notDeepEqual(getScene(data, data.timeline.duration, { C: released.id }).players.find(player => player.id === 'C').position, center.at);
+    assert.deepEqual(getScene(data, 0, { C: released.id }).players.map(player => player.position), data.players.map(player => player.at));
+    assert.equal(JSON.stringify(data), before);
   }
 });
 

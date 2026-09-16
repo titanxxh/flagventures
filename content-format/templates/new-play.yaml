@@ -6,6 +6,12 @@ kind: "offense"
 title:
   zh: "待命名的自编战术"
 summary: "格式模板：先保留 X 的 Slant 示例，逐项填写其余球员要怎么跑。"
+# 可选对象；填写时四项都必填。这里是自编教学例子，完善全队路线后再改写。
+teaching:
+  goal: "先认清 X 的内切方向，再补齐全队配合。"
+  cooperation: "请结合实际训练填写：X 内切时，哪位队友帮他腾出接球空间？其余队员动作目前未知。"
+  cue: "先向前，再向中间。"
+  question: "X 转向后朝哪里跑？哪位队友的任务还需要我们补上？"
 field:
   width: 100
   height: 55
@@ -43,6 +49,10 @@ players:
       en: "Slant"
       description: "先向前一小段，再斜着向中间跑；这条路径仅示范怎样填写数据。"
       basis: "author"
+    # 可选对象；填写时 cooperation 与 timing 都必填。
+    coaching:
+      cooperation: "内切只是这份格式示例的已知路线；请补充队友怎样配合，不能仅凭这一条线推断全队战术。"
+      timing: "X 在 0 秒启动仅为教学示意；其他人的动作还未填写，不能据此推断比赛启动先后。"
     motion:
       type: "path"
       startAt: 0

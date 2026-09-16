@@ -1,4 +1,4 @@
-# UTF-8；教学文字与原图事实分开记录。
+# UTF-8；官网讲解、附件图形与教学设置分开记录。
 format: flag-lesson
 version: 1
 id: bunch-play-2
@@ -6,11 +6,25 @@ kind: offense
 title:
   zh: 密集阵型 · 第 2 号战术
   en: BUNCH PLAY 2
-summary: 沿球员起点与图中箭头认识路线和配合。
+summary: X、Z 先跑深 Corner，中锋与 Y 稍后交叉跑短 Out。
+teaching:
+  goal: 两侧跑深，给中间的短路线留空间。
+  cooperation: X、Z 向深处和外侧展开；C、Y 延后交叉跑 Out，提供较近的接应。
+  cue: 两边先跑远，中间再分开。
+  question: 如果防守跟 X、Z 跑深，哪两人准备短接应？
 source:
   title: NFL FLAG 2024 中英文对照学习译本（用户附件）
   page: 16
-  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  note: 跑位坐标来自用户附件，归一化后重绘，非实际码数；路线称呼与配合讲解补充自 NFL FLAG 官网和视频。儿童口令、提问与播放节奏为教学改写。
+  references:
+    - title: NFL FLAG · Bunch 战术说明
+      url: https://nflflag.com/coaches/flag-football-rules/5-on-5-flag-football-playbook
+      locator: Bunch · Play 2
+      note: 官网的战术意图和相对先后建议；不作为精确秒表。
+    - title: NFL FLAG · Bunch 视频
+      url: https://www.youtube.com/watch?v=b1zMoed_ckI&t=51s
+      locator: 0:51–1:10
+      note: 时间用于定位解说；逐人讲述不表示逐人启动。
 field:
   width: 100
   height: 55
@@ -30,6 +44,9 @@ players:
     motion:
       type: unspecified
       note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+    coaching:
+      cooperation: 观察队友提供的接球区域；资料没有给出固定阅读顺序或必传对象。
+      timing: 原图未标出 Q 的后续移动和传球时刻。
   - id: C
     team: offense
     at:
@@ -37,44 +54,48 @@ players:
       - 33.216415
     color: '#fff1d5'
     label:
-      zh: 向右横跑 → 斜向右前方
+      zh: 外切路线
+      en: Out
       description: 先向右横跑，再斜向右前方。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG Bunch 视频第 2 套（0:51–1:10）；路径保留附件 p16 图形，未按标准码数重画。
     motion:
       type: path
-      startAt: 0
+      startAt: 2
       steps:
         - type: line
           to:
             - 51.599841
             - 31.720475
-          seconds: 0.42981
+          seconds: 0.343848
         - type: line
           to:
             - 51.380961
             - 29.9403
-          seconds: 0.514817
+          seconds: 0.411854
         - type: line
           to:
             - 51.515608
             - 29.756565
-          seconds: 0.065412
+          seconds: 0.05233
         - type: line
           to:
             - 67.691161
             - 27.108505
-          seconds: 4.710703
+          seconds: 3.768562
         - type: line
           to:
             - 80.417401
             - 23.232516
-          seconds: 3.823072
+          seconds: 3.058458
         - type: line
           to:
             - 81.935152
             - 22.767385
-          seconds: 0.456186
+          seconds: 0.364948
+    coaching:
+      cooperation: 在 X、Z 展开后向右跑短 Out，与 Y 交叉接应。
+      timing: X、Z 先展开，我稍后出发。演示设为第 2 秒，具体秒数是教学设置。
   - id: X
     team: offense
     at:
@@ -82,11 +103,11 @@ players:
       - 33.216321
     color: '#80d4ff'
     label:
-      en: Corner
       zh: 深斜外切
-      description: 先向前，再斜向外侧。本图：先向前，再斜向左前方。左右按画面方向说。
-      basis: shape-match
-      note: 对照原书基础路线树的 CORNER 形态命名；本战术页没有给该球员单独标名，距离与时长不作比赛要求。
+      en: Corner
+      description: 先向前，再斜向左前方。左右按画面方向说。
+      basis: source
+      note: 名称依据 NFL FLAG Bunch 视频第 2 套（0:51–1:10）；路径保留附件 p16 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -111,6 +132,9 @@ players:
             - 36.465794
             - 7.785084
           seconds: 0.543576
+    coaching:
+      cooperation: 先向较深处跑 Corner，帮助 C、Y 的短路线。
+      timing: 我先展开，C、Y 稍后加入；演示从 0 秒开始，具体秒数是教学设置。
   - id: 'Y'
     team: offense
     at:
@@ -118,44 +142,48 @@ players:
       - 33.216321
     color: '#c7e8a2'
     label:
-      zh: 向前 → 斜向左前方 → 向左横跑
+      zh: 外切路线
+      en: Out
       description: 先向前，再斜向左前方，再向左横跑。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG Bunch 视频第 2 套（0:51–1:10）；路径保留附件 p16 图形，未按标准码数重画。
     motion:
       type: path
-      startAt: 0
+      startAt: 2
       steps:
         - type: line
           to:
             - 56.06115
             - 31.855817
-          seconds: 0.407731
+          seconds: 0.326185
         - type: line
           to:
             - 56.054548
             - 28.115765
-          seconds: 1.119709
+          seconds: 0.895767
         - type: line
           to:
             - 55.981982
             - 28.002497
-          seconds: 0.040289
+          seconds: 0.032231
         - type: line
           to:
             - 44.321833
             - 22.810833
-          seconds: 3.825464
+          seconds: 3.060371
         - type: line
           to:
             - 30.546213
             - 22.458547
-          seconds: 4.130997
+          seconds: 3.304798
         - type: line
           to:
             - 28.95941
             - 22.422813
-          seconds: 0.47581
+          seconds: 0.380648
+    coaching:
+      cooperation: 在 X、Z 展开后向左跑短 Out，与 C 分开。
+      timing: X、Z 先展开，我稍后出发。演示设为第 2 秒，具体秒数是教学设置。
   - id: Z
     team: offense
     at:
@@ -163,11 +191,11 @@ players:
       - 33.216321
     color: '#ffc078'
     label:
-      en: Corner
       zh: 深斜外切
-      description: 先向前，再斜向外侧。本图：先向前，再斜向右前方。左右按画面方向说。
-      basis: shape-match
-      note: 对照原书基础路线树的 CORNER 形态命名；本战术页没有给该球员单独标名，距离与时长不作比赛要求。
+      en: Corner
+      description: 先向前，再斜向右前方。左右按画面方向说。
+      basis: source
+      note: 名称依据 NFL FLAG Bunch 视频第 2 套（0:51–1:10）；路径保留附件 p16 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -192,27 +220,32 @@ players:
             - 70.898665
             - 6.992976
           seconds: 0.525944
+    coaching:
+      cooperation: 先向较深处跑 Corner，与 X 一起拉开两侧。
+      timing: 我先展开，C、Y 稍后加入；演示从 0 秒开始，具体秒数是教学设置。
 timeline:
   duration: 10
   basis: illustration
-  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+  note: 官网建议 X、Z 先跑较深路线，C、Y 再短接应。本示范设 X、Z 在 0 秒开始、C、Y 在 2 秒开始，均于 10 秒走完。先后依据来源，具体秒数与跑速为教学设置；未指定传球时刻。
 keyframes:
   - id: start
     at: 0
-    label: 起始站位
-    cue: 先找 X 和 Z 的起点。今天先扮演其中一位，再换队友的位置试试。
-  - id: early
-    at: 2.5
-    label: 观察前段
-    cue: 观察 X 和 Z 的前段；X 的跑法是「Corner」。
+    label: 站好 · 找搭档
+    cue: 找到 Q、C、X、Y、Z 的起点。X、Z 向深处和外侧展开；C、Y 延后交叉跑 Out，提供较近的接应。
+  - id: release
+    at: 2
+    label: 稍后加入
+    cue: C、Y 从这里加入；2 秒是本演示的教学设置。X、Z 先向两侧深处展开，C、Y 稍后通过交叉区域。
   - id: middle
     at: 5.5
-    label: 观察中段
-    cue: 停在这里：你关注的人去了哪里？Z 又在哪里？用手指同时指出两条路线。
+    label: 暂停 · 看配合
+    cue: 找到 C 与 Y 的两个短接球区域，比较 X、Z 的深度。
   - id: end
     at: 10
-    label: 路线终点
-    cue: 回想 X 和 Z 从哪里出发、怎样转向。换一名球员讲一遍，再回到全队。
+    label: 回想 · 说一说
+    cue: 如果防守跟 X、Z 跑深，哪两人准备短接应？
 notes:
-  - 球员身份按字母与起点核对，颜色仅作辅助。
-  - 路线从 PDF 轮廓取中心线，标记遮挡的短起点作近似连接。没有加入传球目标或球权变化。
+  - 画面只演示进攻路线，没有自动模拟防守；空当和接球机会是战术意图，不保证比赛结果。
+  - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
+  - 路线坐标保留附件 p16 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
+  - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。

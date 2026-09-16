@@ -1,4 +1,4 @@
-# UTF-8；教学文字与原图事实分开记录。
+# UTF-8；官网讲解、附件图形与教学设置分开记录。
 format: flag-lesson
 version: 1
 id: twins-stack-play-2
@@ -6,11 +6,25 @@ kind: offense
 title:
   zh: 双接手同侧叠列阵型 · 第 2 号战术
   en: TWINS STACK PLAY 2
-summary: 沿球员起点与图中箭头认识路线和配合。
+summary: X 与中锋交叉后分向接应，右侧 Y、Z 向较深处展开。
+teaching:
+  goal: 先记清交叉关系，再区分深浅接应。
+  cooperation: X 的浅 Post 与 C 的 Out 交叉；Y 沿图示斜向左前方，Z 斜出后跑 Fly，展开右侧较深区域。
+  cue: 交叉后分开，跑向自己记住的地方。
+  question: 谁和中锋交叉？右侧两人分别向哪里展开？
 source:
   title: NFL FLAG 2024 中英文对照学习译本（用户附件）
   page: 32
-  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  note: 跑位坐标来自用户附件，归一化后重绘，非实际码数；路线称呼与配合讲解补充自 NFL FLAG 官网和视频。儿童口令、提问与播放节奏为教学改写。
+  references:
+    - title: NFL FLAG · Twins Stack 战术说明
+      url: https://nflflag.com/coaches/flag-football-rules/5-on-5-flag-football-playbook
+      locator: Twins Stack · Play 2
+      note: 官网的战术意图和相对先后建议；不作为精确秒表。
+    - title: NFL FLAG · Twins Stack 视频
+      url: https://www.youtube.com/watch?v=yAtJbgg1YYY&t=45s
+      locator: 0:45–1:01
+      note: 时间用于定位解说；逐人讲述不表示逐人启动。
 field:
   width: 100
   height: 55
@@ -30,6 +44,9 @@ players:
     motion:
       type: unspecified
       note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+    coaching:
+      cooperation: 观察队友提供的接球区域；资料没有给出固定阅读顺序或必传对象。
+      timing: 原图未标出 Q 的后续移动和传球时刻。
   - id: C
     team: offense
     at:
@@ -37,10 +54,11 @@ players:
       - 33.501823
     color: '#fff1d5'
     label:
-      zh: 向前 → 向左横跑
+      zh: 外切路线
+      en: Out
       description: 先向前，再向左横跑。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG Twins Stack 视频第 2 套（0:45–1:01）；路径保留附件 p32 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -65,6 +83,9 @@ players:
             - 28.73
             - 18.938865
           seconds: 0.467014
+    coaching:
+      cooperation: 跑 Out，与 X 的浅内切交叉后分开接应。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: X
     team: offense
     at:
@@ -72,11 +93,11 @@ players:
       - 33.501823
     color: '#80d4ff'
     label:
-      en: Slant
-      zh: 短斜内切
-      description: 前段较短，随后斜向场地中间。本图：先向前，再斜向右前方。左右按画面方向说。
-      basis: shape-match
-      note: 对照原书基础路线树的 SLANT 形态命名；本战术页没有给该球员单独标名，距离与时长不作比赛要求。
+      zh: 浅斜内切
+      en: Post
+      description: 先向前，再斜向右前方。左右按画面方向说。
+      basis: source
+      note: 名称依据 NFL FLAG Twins Stack 视频第 2 套（0:45–1:01）；路径保留附件 p32 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -106,6 +127,9 @@ players:
             - 55.499782
             - 21.157901
           seconds: 0.688292
+    coaching:
+      cooperation: 跑浅 Post，与 C 形成交叉接应。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: 'Y'
     team: offense
     at:
@@ -113,11 +137,10 @@ players:
       - 33.801975
     color: '#c7e8a2'
     label:
-      en: Post
-      zh: 深斜内切
-      description: 先向前，再斜向场地中间。本图：先向前，再斜向左前方。左右按画面方向说。
-      basis: shape-match
-      note: 对照原书基础路线树的 POST 形态命名；本战术页没有给该球员单独标名，距离与时长不作比赛要求。
+      zh: 向前后斜向左前方
+      description: 先向前，再斜向左前方。左右按画面方向说。
+      basis: description
+      note: 官网与视频对 Y/Z 的名称对应有出入，Y 的转向亦有内外切疑点；本条按附件 p32 与视频画面方向描述，不指定标准术语，不改几何。
     motion:
       type: path
       startAt: 0
@@ -142,6 +165,9 @@ players:
             - 63.296684
             - 14.267139
           seconds: 0.511126
+    coaching:
+      cooperation: 沿附件向左前方的路线展开，与 Z 错开接球位置。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: Z
     team: offense
     at:
@@ -149,10 +175,11 @@ players:
       - 37.529181
     color: '#ffc078'
     label:
-      zh: 斜向右前方 → 向前
-      description: 先斜向右前方，再向前。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      zh: 斜出后直上
+      en: Fly
+      description: 先斜向右前方，再向前直上。左右按画面方向说。
+      basis: source
+      note: NFL FLAG 官网第 2 套明确 Z 为 Fly，附件 p32 与视频 1:02 图形同为斜出后直上；视频解说的 Y/Z 对应有出入，以图与官网对应，不改几何。
     motion:
       type: path
       startAt: 0
@@ -177,27 +204,33 @@ players:
             - 82.653844
             - 14.265226
           seconds: 0.652253
+    coaching:
+      cooperation: 沿附件向右前方展开后直上，与 Y 分向接应。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
 timeline:
   duration: 10
   basis: illustration
-  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+  note: 有路线的球员从 0 秒展开，各用 10 秒走完已画路径；这是读图教学节奏，不是来源规定的统一跑速、启动先后或传球时刻。视频逐人讲解的顺序不作为启动顺序。
 keyframes:
   - id: start
     at: 0
-    label: 起始站位
-    cue: 先找 X 和 Z 的起点。今天先扮演其中一位，再换队友的位置试试。
-  - id: early
+    label: 站好 · 找搭档
+    cue: 找到 Q、C、X、Y、Z 的起点。X 的浅 Post 与 C 的 Out 交叉；Y、Z 共同扩展右侧较深区域，具体名称存在来源差异。
+  - id: spread
     at: 2.5
-    label: 观察前段
-    cue: 观察 X 和 Z 的前段；X 的跑法是「Slant」。
+    label: 展开 · 看方向
+    cue: 先跟踪 X 与 C 的交叉，再看右侧 Y、Z 的去向。
   - id: middle
     at: 5.5
-    label: 观察中段
-    cue: 停在这里：你关注的人去了哪里？Z 又在哪里？用手指同时指出两条路线。
+    label: 暂停 · 看配合
+    cue: 按图指出 Y 的左前方转向与 Z 的直上，比较两条路线的方向。
   - id: end
     at: 10
-    label: 路线终点
-    cue: 回想 X 和 Z 从哪里出发、怎样转向。换一名球员讲一遍，再回到全队。
+    label: 回想 · 说一说
+    cue: 谁和中锋交叉？右侧两人分别向哪里展开？
 notes:
-  - 球员身份按字母与起点核对，颜色仅作辅助。
-  - 路线从 PDF 轮廓取中心线，标记遮挡的短起点作近似连接。没有加入传球目标或球权变化。
+  - 画面只演示进攻路线，没有自动模拟防守；空当和接球机会是战术意图，不保证比赛结果。
+  - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
+  - 路线坐标保留附件 p32 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
+  - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。
+  - 官网与视频解说对 Y/Z 名称对应有出入；Z 依据官网及图形记为 Fly，Y 保留方向描述，未改动附件的球员身份或几何。

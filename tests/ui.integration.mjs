@@ -253,9 +253,58 @@ try {
     await page.setViewportSize({width: 1440, height: 1000});
   });
 
+  await caseRun('official teaching explains roles, preserves conditional releases and links to sources', async () => {
+    await open();
+    await select('single-back-play-1');
+    assert.equal(await page.locator('#teamPlan').isVisible(), true);
+    assert.ok((await page.locator('#teamCooperation').textContent()).trim().length > 10);
+    assert.equal(await page.locator('#play').isDisabled(), true, 'conditional release requires an explicit scenario');
+    assert.equal(await page.locator('#frames [data-frame="1"]').isDisabled(), true);
+    await page.locator('#roles [data-player="X"]').hover();
+    assert.equal(await page.locator('#routeEnglish').textContent(), 'Post');
+    assert.equal(await page.locator('#playerCoaching').isVisible(), true);
+    assert.ok((await page.locator('#routeCooperation').textContent()).trim().length > 5);
+    const start = Object.fromEntries(await positions());
+    await page.locator('[data-choice-player="C"][data-option="released"]').click();
+    await page.locator('#frames [data-frame="1"]').click();
+    const early = Object.fromEntries(await positions());
+    assert.equal(early.C, start.C, 'C waits during the initial teaching interval');
+    assert.notEqual(early.X, start.X, 'other receivers have already started');
+    await page.locator('#frames button').last().click();
+    assert.notEqual(Object.fromEntries(await positions()).C, start.C);
+    await page.locator('[data-choice-player="C"][data-option="not-shown"]').click();
+    assert.equal(await currentTime(), 0, 'changing the situation resets the whole scene');
+    await page.locator('#frames button').last().click();
+    assert.equal(Object.fromEntries(await positions()).C, start.C, 'the alternative does not invent a C route');
+    assert.equal(await page.locator('#field [data-player-route="C"]').filter({visible: true}).count(), 0, 'no route line is shown for the unknown continuation');
+    await page.locator('#roles [data-player="C"]').hover();
+    assert.match(await page.locator('#routeSituation').textContent(), /站位/);
+    assert.match(await page.locator('[data-choice-note="C"]').textContent(), /站位/);
+    await page.locator('.source-notes > summary').click();
+    assert.ok(await page.locator('#sourceReferences a[href^="https://www.youtube.com/"]').count() > 0);
+    assert.ok(await page.locator('#sourceReferences a[href^="https://nflflag.com/"]').count() > 0);
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({width, height: 1000});
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
+      await page.screenshot({path: join(output, `official-teaching-${width}.png`), fullPage: true});
+    }
+    await page.setViewportSize({width: 1440, height: 1000});
+    await select('i-formation-play-2');
+    const iStart = Object.fromEntries(await positions());
+    await page.locator('#frames [data-frame="1"]').click();
+    const iEarly = Object.fromEntries(await positions());
+    assert.equal(iEarly.Z, iStart.Z);
+    assert.notEqual(iEarly.X, iStart.X);
+    await select('route-post');
+    assert.equal(await page.locator('#teamPlan').isVisible(), false, 'legacy lessons need no new fields');
+    assert.equal(await page.locator('#playerCoaching').isVisible(), false);
+    assert.equal(await page.locator('#sourceReferences').isVisible(), false);
+  });
+
   await caseRun('keyframes pause the whole scene and resume at the chosen time', async () => {
     await importSamples();
     await select('single-back-play-1');
+    await page.locator('[data-choice-player="C"][data-option="released"]').click();
     await page.locator('#play').click();
     await page.waitForFunction(() => Number(document.querySelector('#seek').value) > 0.2);
     await page.locator('#frames [data-frame="2"]').click();
@@ -271,21 +320,22 @@ try {
     await page.waitForFunction(time => Number(document.querySelector('#seek').value) > time + .1, pausedTime);
     assert.ok((await currentTime()) < 6.5, 'continuation starts near the selected frame');
     await page.locator('#frames [data-frame="1"]').click();
-    assert.equal(await currentTime(), 2.5);
+    assert.equal(await currentTime(), 2);
     assert.match(await page.locator('#play').textContent(), /继续/);
   });
 
   await caseRun('hover, keyboard focus and pinned roles do not move a paused scene', async () => {
     await select('single-back-play-1');
+    await page.locator('[data-choice-player="C"][data-option="released"]').click();
     await page.locator('#frames [data-frame="1"]').click();
     const before = await positions();
     const x = page.locator('#field [data-player="X"]');
     await x.hover();
-    assert.match(await page.locator('#routeEnglish').textContent(), /Slant/);
-    assert.equal(await currentTime(), 2.5);
+    assert.match(await page.locator('#routeEnglish').textContent(), /Post/);
+    assert.equal(await currentTime(), 2);
     await page.locator('#roles [data-player="C"]').focus();
     assert.equal(await page.locator('#routePerson').textContent(), 'C');
-    assert.match(await page.locator('#routeChinese').textContent(), /样式/);
+    assert.match(await page.locator('#routeEnglish').textContent(), /Corner/);
     await page.locator('#roles [data-player="X"]').click();
     await page.locator('#summary').click();
     assert.equal(await page.locator('#routePerson').textContent(), 'X');
@@ -294,10 +344,10 @@ try {
     await page.locator('#summary').hover();
     assert.equal(await page.locator('#routePerson').textContent(), 'X');
     assert.deepEqual(await positions(), before);
-    assert.equal(await currentTime(), 2.5);
+    assert.equal(await currentTime(), 2);
     await page.screenshot({path: join(output, 'desktop-keyframe-hover.png'), fullPage: true});
     await page.locator('#play').click();
-    await page.waitForFunction(() => Number(document.querySelector('#seek').value) > 2.6);
+    await page.waitForFunction(() => Number(document.querySelector('#seek').value) > 2.1);
     const advancingTime = await currentTime();
     await page.locator('#roles [data-player="Y"]').hover();
     assert.match(await page.locator('#playState').textContent(), /演示中/);
@@ -312,6 +362,8 @@ try {
     assert.equal(await page.locator('#field .route').count(), 2);
     await page.locator('[data-option="left-pause"]').click();
     assert.equal(await page.locator('#play').isDisabled(), false);
+    await page.locator('#roles [data-player="X"]').hover();
+    assert.match(await page.locator('#routeSituation').textContent(), /本次演示/);
     await page.locator('#frames [data-frame="1"]').click();
     const pauseStart = await positions();
     await page.locator('#play').click();

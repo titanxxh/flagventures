@@ -46,7 +46,7 @@ function playerColor(player) { return player.color || colors[lesson.players.inde
 function inspectId() { return hovered || focused || state.role; }
 function pause() { state.playing = false; lastTick = undefined; render(); }
 function seek(time) {
-  if (time > 0 && !getScene(lesson, 0, state.choices).ready) { notify('先选好每名球员要演示的路线。'); return; }
+  if (time > 0 && !getScene(lesson, 0, state.choices).ready) { notify('先选好要演示的选项，再一起看跑位。'); return; }
   state.time = Math.max(0, Math.min(lesson.timeline.duration, time)); pause();
 }
 function showDialog(id) { pause(); $(id).showModal(); }
@@ -143,9 +143,11 @@ function selectLesson(id) {
     for (const id of ['breadcrumb', 'lessonEnglish', 'direction', 'fieldHint', 'timingNote', 'sourceNote',
       'focusStatus', 'routeEnglish', 'routeChinese', 'routeDescription', 'routeBasis', 'routeDuties',
       'frameNumber', 'frameTitle', 'frameCue']) text($(id), '');
-    for (const id of ['field', 'roles', 'choices', 'frames', 'notes']) $(id).replaceChildren();
+    for (const id of ['field', 'roles', 'choices', 'frames', 'notes', 'sourceReferences']) $(id).replaceChildren();
     for (const id of ['play', 'reset', 'seek', 'previous', 'next', 'exportLesson']) $(id).disabled = true;
     $('source').hidden = $('choices').hidden = $('routeDuties').hidden = true;
+    $('teamPlan').hidden = $('playerCoaching').hidden = $('routeSituation').hidden = $('sourceReferences').hidden = true;
+    text($('teachingCue'), '先选择一条教学内容。'); text($('teachingQuestion'), '');
     $('sourceImage').removeAttribute('src');
     $('seek').value = 0; $('seek').max = 0;
     text($('routePerson'), '?'); text($('routeMode'), '请先选择教学条目');
@@ -172,11 +174,24 @@ function selectLesson(id) {
   text($('lessonTitle'), lesson.title.zh);
   text($('lessonEnglish'), `${lesson.title.en || ''}${lesson.source?.page ? ` · 来源第 ${lesson.source.page} 页` : ''}`);
   text($('summary'), lesson.summary);
+  $('teamPlan').hidden = !lesson.teaching;
+  text($('teachingGoal'), lesson.teaching?.goal);
+  text($('teamCooperation'), lesson.teaching?.cooperation);
+  text($('teachingCue'), lesson.teaching?.cue || '「你站在哪里？」');
+  text($('teachingQuestion'), lesson.teaching?.question || '「你跑的时候，队友去哪儿？」');
   text($('direction'), `${lesson.field.attackDirection === 'up' ? '↑' : '↓'} 进攻方向${lesson.kind === 'defense' ? ' · 防守视角' : ''}`);
   text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? '单路线放大 · 保留原图方向' : '悬停球员看跑法 · 点击保留');
   text($('timingNote'), lesson.timeline.note);
   text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? `，第 ${lesson.source.page} 页` : ''}。${lesson.source.note || ''}` : '这是一条独立编写的教学内容，没有附带原书来源。');
   $('notes').replaceChildren(...(lesson.notes || []).map(note => node('li', {}, note)));
+  const references = lesson.source?.references || [];
+  $('sourceReferences').hidden = !references.length;
+  $('sourceReferences').replaceChildren(...references.map(reference => {
+    const item = node('li');
+    item.append(node('a', { href: reference.url, target: '_blank', rel: 'noopener noreferrer' }, `${reference.title}${reference.locator ? ` · ${reference.locator}` : ''} ↗`));
+    if (reference.note) item.append(node('span', {}, reference.note));
+    return item;
+  }));
   const asset = assetMap.get(lesson.source?.referenceAsset);
   $('source').hidden = !asset;
   $('sourceImage').removeAttribute('src');
@@ -198,9 +213,9 @@ function buildChoices() {
   const content = [];
   for (const player of players) {
     content.push(node('p', {}, `${player.id} · ${player.motion.prompt}`));
-    const options = node('div', { class: 'choice-options' });
+    const options = node('div', { class: 'choice-options', role: 'group', 'aria-label': `${player.id} 的演示选项` });
     for (const option of player.motion.options) options.append(node('button', { 'data-choice-player': player.id, 'data-option': option.id, 'aria-pressed': 'false' }, option.title));
-    content.push(options);
+    content.push(options, node('p', { class: 'choice-note', 'data-choice-note': player.id, role: 'status' }));
   }
   $('choices').replaceChildren(...content);
 }
@@ -322,6 +337,16 @@ function render() {
   text($('routeEnglish'), player ? player.label.en || player.label.zh : '移到球员上试试');
   text($('routeChinese'), player?.label.en ? player.label.zh : '');
   text($('routeDescription'), player?.label.description || '名称、路线和动作一起看。点击一个字母，边播放边观察他和队友怎样配合。');
+  $('playerCoaching').hidden = !player?.coaching;
+  text($('routeCooperation'), player?.coaching?.cooperation);
+  text($('routeTiming'), player?.coaching?.timing);
+  const selectedSituation = player?.motion.type === 'choice'
+    ? player.motion.options.find(option => option.id === state.choices[player.id]) : undefined;
+  const situation = player?.motion.type === 'choice'
+    ? selectedSituation ? selectedSituation.note || `本次演示：${selectedSituation.title}` : player.motion.prompt
+    : '';
+  $('routeSituation').hidden = !situation;
+  text($('routeSituation'), situation);
   const duties = player ? scene.assignments.filter(a => a.player === player.id).map(a => {
     if (a.type === 'coverage') return `负责区域：${lesson.zones.find(z => z.id === a.zone).label}`;
     if (a.type === 'matchup') return `对位球员：${lesson.players.find(p => p.id === a.target).name || a.target}`;
@@ -345,8 +370,8 @@ function render() {
     text(fieldNodes.tooltipSecond, (player.label.en ? player.label.zh : bases[player.label.basis]).slice(0, 16));
   }
   const staticScene = lesson.timeline.duration === 0;
-  text($('playState'), staticScene ? '静态站位' : state.playing ? '演示中' : '已暂停 · 可讲解');
-  text($('play'), staticScene ? '静态站位' : state.playing ? 'Ⅱ 暂停讲解' : state.time >= lesson.timeline.duration ? '↻ 再看一遍' : state.time > 0 ? '▶ 继续播放' : '▶ 开始演示');
+  text($('playState'), staticScene ? '静态站位' : !scene.ready ? '先选演示选项' : state.playing ? '演示中' : '已暂停 · 可讲解');
+  text($('play'), staticScene ? '静态站位' : !scene.ready ? '先选演示选项' : state.playing ? 'Ⅱ 暂停讲解' : state.time >= lesson.timeline.duration ? '↻ 再看一遍' : state.time > 0 ? '▶ 继续播放' : '▶ 开始演示');
   $('play').disabled = staticScene || !scene.ready;
   $('seek').disabled = staticScene || !scene.ready;
   $('seek').value = state.time;
@@ -359,6 +384,11 @@ function render() {
     button.disabled = !scene.ready && lesson.keyframes[index].at > 0;
   });
   $('choices').querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(state.choices[button.dataset.choicePlayer] === button.dataset.option)));
+  $('choices').querySelectorAll('[data-choice-note]').forEach(element => {
+    const player = lesson.players.find(player => player.id === element.dataset.choiceNote);
+    const selected = player.motion.options.find(option => option.id === state.choices[player.id]);
+    text(element, selected ? selected.note || `本次演示：${selected.title}` : '请先选择一种情形。切换选项后会回到站位并暂停。');
+  });
 }
 
 $('search').addEventListener('input', buildCatalog);

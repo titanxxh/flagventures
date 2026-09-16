@@ -1,4 +1,4 @@
-# UTF-8；教学文字与原图事实分开记录。
+# UTF-8；官网讲解、附件图形与教学设置分开记录。
 format: flag-lesson
 version: 1
 id: single-back-play-1
@@ -6,11 +6,25 @@ kind: offense
 title:
   zh: 单跑卫阵型 · 第 1 号战术
   en: SINGLE BACK PLAY 1
-summary: 认识五名进攻球员的起点，沿各自路径看转向，并对照队友去向。
+summary: X、Z 向内切，Y 向侧面展开；其他接球手没有空位时，中锋再提供接应。
+teaching:
+  goal: 横向拉开，保留中锋的条件接应。
+  cooperation: X、Z 与 Y 分向展开；C 是否加入取决于其他接球点是否被盯住。
+  cue: 我跑好自己的方向，也给队友留地方。
+  question: 如果三名接球手都被跟住，谁还可以出来接应？
 source:
   title: NFL FLAG 2024 中英文对照学习译本（用户附件）
   page: 7
-  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  note: 跑位坐标来自用户附件，归一化后重绘，非实际码数；路线称呼与配合讲解补充自 NFL FLAG 官网和视频。儿童口令、提问与播放节奏为教学改写。
+  references:
+    - title: NFL FLAG · Single Back 战术说明
+      url: https://nflflag.com/coaches/flag-football-rules/5-on-5-flag-football-playbook
+      locator: Single Back · Play 1
+      note: 官网的战术意图和相对先后建议；不作为精确秒表。
+    - title: NFL FLAG · Single Back 视频
+      url: https://www.youtube.com/watch?v=Qa3p35cThJ4&t=34s
+      locator: 0:34–0:55
+      note: 时间用于定位解说；逐人讲述不表示逐人启动。
 field:
   width: 100
   height: 55
@@ -32,6 +46,9 @@ players:
     motion:
       type: unspecified
       note: 原图没有 Q 的后续移动路线；显示起点不等于要求全程站住。
+    coaching:
+      cooperation: 观察队友提供的接球区域；资料没有给出固定阅读顺序或必传对象。
+      timing: 原图未标出 Q 的后续移动和传球时刻。
   - id: C
     team: offense
     at:
@@ -39,30 +56,46 @@ players:
       - 33.304
     color: '#fff1d5'
     label:
-      zh: 深斜外切样式
+      zh: 向前后斜向右侧
       en: Corner
       description: 先向前跑，再斜着往右侧边线方向跑。
-      basis: shape-match
-      note: 形态对照：与第 3 页 Corner 相似；第 7 页未标路线名。
+      basis: source
+      note: 名称依据 NFL FLAG Single Back 视频第 1 套（0:34–0:55）；路径保留附件 p7 图形，未按标准码数重画。
     motion:
-      type: path
+      type: choice
       startAt: 0
-      steps:
-        - type: line
-          to:
-            - 49.318
-            - 32.2684
-          seconds: 0.269229
-        - type: line
-          to:
-            - 49.3145
-            - 16.9637
-          seconds: 3.835736
-        - type: line
-          to:
-            - 70.7113
-            - 7.1948
-          seconds: 5.895035
+      prompt: 家长先选择演示情形：其他三名接球手都没有空位时，C 才释放；动画不自动判断防守。
+      options:
+        - id: released
+          title: 三名接球手被盯住：C 加入接应
+          note: 先等待 2 秒再跑已画路线；条件来自官网，2 秒仅为教学设置。
+          steps:
+            - type: pause
+              seconds: 2
+            - type: line
+              to:
+                - 49.318
+                - 32.2684
+              seconds: 0.215383
+            - type: line
+              to:
+                - 49.3145
+                - 16.9637
+              seconds: 3.068589
+            - type: line
+              to:
+                - 70.7113
+                - 7.1948
+              seconds: 4.716028
+        - id: not-shown
+          title: 不演示 C 的后续释放
+          note: 仅保留来源已知的站位；此情形下的后续移动没有说明，不表示 C 必须全程站住。
+          steps:
+            - type: pause
+              seconds: 10
+    coaching:
+      cooperation: 其他接球手被盯住时，沿 Corner 路线加入接应。
+      timing: 其他三名接球手都没有空位时才释放，由家长选择情形；演示中的等待 2 秒不是官方规定。
   - id: X
     team: offense
     at:
@@ -70,11 +103,11 @@ players:
       - 33.3041
     color: '#80d4ff'
     label:
-      zh: 短斜内切
-      en: Slant
+      zh: 斜内切
+      en: Post
       description: 先向前跑一小段，再斜着往球场中间跑。
-      basis: shape-match
-      note: 形态对照：参考第 3 页 Slant；第 7 页未标路线名。
+      basis: source
+      note: 名称依据 NFL FLAG Single Back 视频第 1 套（0:34–0:55）；路径保留附件 p7 图形，未按标准码数重画。官网称 Post，取代此前仅按图形推定的 Slant；几何坐标不变。
     motion:
       type: path
       startAt: 0
@@ -94,6 +127,9 @@ players:
             - 39.8232
             - 19.2698
           seconds: 7.677838
+    coaching:
+      cooperation: 向中间跑 Post，与另一侧 Z 呼应，让接球点分布在两侧。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: 'Y'
     team: offense
     at:
@@ -101,11 +137,11 @@ players:
       - 41.9406
     color: '#c7e8a2'
     label:
-      zh: 后场向左路线
-      en: Backfield route to the left
+      zh: 后场斜出后向左切
+      en: Corner
       description: 从 Q 后面斜着向左前方跑，再转向画面左侧。
-      basis: description
-      note: 图示描述 · 第 7 页；不是原书命名的标准路线术语。
+      basis: source
+      note: 名称依据 NFL FLAG Single Back 视频第 1 套（0:34–0:55）；路径保留附件 p7 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -125,6 +161,9 @@ players:
             - 13.2653
             - 24.0359
           seconds: 6.020938
+    coaching:
+      cooperation: 从后场展开，与 X、Z 的内切形成不同方向的接球点。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: Z
     team: offense
     at:
@@ -132,11 +171,11 @@ players:
       - 33.3041
     color: '#ffc078'
     label:
-      zh: 短斜内切
-      en: Slant
+      zh: 斜内切
+      en: Post
       description: 先向前跑一小段，再斜着往球场中间跑。
-      basis: shape-match
-      note: 形态对照：参考第 3 页 Slant；第 7 页未标路线名。
+      basis: source
+      note: 名称依据 NFL FLAG Single Back 视频第 1 套（0:34–0:55）；路径保留附件 p7 图形，未按标准码数重画。官网称 Post，取代此前仅按图形推定的 Slant；几何坐标不变。
     motion:
       type: path
       startAt: 0
@@ -156,28 +195,32 @@ players:
             - 65.6145
             - 19.2698
           seconds: 7.058439
+    coaching:
+      cooperation: 向中间跑 Post，与 X 配合拉开接球选择。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
 timeline:
   duration: 10
   basis: illustration
-  note: 四名有路线的球员同时从 0 秒启动，各用 10 秒走完；每人各段时长按自身线段长度分配，形成各自路径内匀速。这不是全员相同跑速，也不是原书规定的起跑或传球时序。
+  note: C 的启动有条件：其他三名接球手都没有空位。由家长先选择演示情形；满足条件的分支示范等待 2 秒后跑完路线，另一个分支仅保留已知站位。2 秒、总时长 10 秒及其他球员同时起跑均为教学设置，不是比赛规则或完整时序。
 keyframes:
   - id: start
     at: 0
-    label: 起始站位
-    cue: 找到 Q、C、X、Y、Z，指出每个人的起点。
+    label: 站好 · 选情形
+    cue: 先选定 C 是否满足释放条件，再指出 X、Y、Z 的起点。
   - id: spread
-    at: 2.5
-    label: 向前展开
-    cue: 沿字母和路线看，你关注的球员与队友分别去了哪里？
+    at: 2
+    label: 按情形展开
+    cue: 比较 X、Z 的内切与 Y 的侧向展开；C 取决于所选情形。
   - id: middle
     at: 5.5
-    label: 路线中段
-    cue: 停住，用手指沿路线指向下一段，再看看队友的位置。
+    label: 暂停 · 看配合
+    cue: 找到两侧接球点，再看是否需要 C 加入。
   - id: end
     at: 10
-    label: 跑至箭头
-    cue: 连起各人的起点和图中已画出的路线。Q 的后续动作未注明。
+    label: 回想 · 说一说
+    cue: 如果三名接球手都被跟住，谁还可以出来接应？
 notes:
-  - p7 未逐人标路线名；C、X、Z 的标签是与 p3 路线树的形态对照，Y 是图示描述。
-  - 路线保留原型中的短小起点连接；这些连接近似补全被球员标记遮住的部分。
-  - 没有传球目标、球权变化或真假交球数据；路线相交不表示交球。
+  - 画面只演示进攻路线，没有自动模拟防守；空当和接球机会是战术意图，不保证比赛结果。
+  - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
+  - 路线坐标保留附件 p7 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
+  - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。

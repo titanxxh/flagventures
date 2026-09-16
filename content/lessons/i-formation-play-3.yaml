@@ -1,4 +1,4 @@
-# UTF-8；教学文字与原图事实分开记录。
+# UTF-8；官网讲解、附件图形与教学设置分开记录。
 format: flag-lesson
 version: 1
 id: i-formation-play-3
@@ -6,11 +6,25 @@ kind: offense
 title:
   zh: I 字阵型 · 第 3 号战术
   en: I FORMATION PLAY 3
-summary: 沿球员起点与图中箭头认识路线和配合。
+summary: X 跑 Chair、Y 跑右侧 Out，Z 向内斜切，中锋直上拉开深度。
+teaching:
+  goal: 记住右侧交叉与中路深跑。
+  cooperation: X、Y 在右侧配合变向，Z 斜切进入中间，C 的 Fly 提供深处接应。
+  cue: 转弯前看队友，跑向自己的下一段。
+  question: X 和 Y 哪些地方会靠近？练习前要约定什么？
 source:
   title: NFL FLAG 2024 中英文对照学习译本（用户附件）
   page: 37
-  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  note: 跑位坐标来自用户附件，归一化后重绘，非实际码数；路线称呼与配合讲解补充自 NFL FLAG 官网和视频。儿童口令、提问与播放节奏为教学改写。
+  references:
+    - title: NFL FLAG · I Formation 战术说明
+      url: https://nflflag.com/coaches/flag-football-rules/5-on-5-flag-football-playbook
+      locator: I Formation · Play 3
+      note: 官网的战术意图和相对先后建议；不作为精确秒表。
+    - title: NFL FLAG · I Formation 视频
+      url: https://www.youtube.com/watch?v=g3kzV_LaE7I&t=87s
+      locator: 1:27–1:47
+      note: 时间用于定位解说；逐人讲述不表示逐人启动。
 field:
   width: 100
   height: 55
@@ -30,6 +44,9 @@ players:
     motion:
       type: unspecified
       note: 图中没有给出该球员后续跑动；显示起点不表示要求原地不动。
+    coaching:
+      cooperation: 观察队友提供的接球区域；资料没有给出固定阅读顺序或必传对象。
+      timing: 原图未标出 Q 的后续移动和传球时刻。
   - id: C
     team: offense
     at:
@@ -37,11 +54,11 @@ players:
       - 33.527241
     color: '#fff1d5'
     label:
+      zh: 直上路线
       en: Fly
-      zh: 直线深跑
-      description: 沿直线向前深跑。本图：先向前。左右按画面方向说。
-      basis: shape-match
-      note: 对照原书基础路线树的 FLY 形态命名；本战术页没有给该球员单独标名，距离与时长不作比赛要求。
+      description: 先向前。左右按画面方向说。
+      basis: source
+      note: 名称依据 NFL FLAG I Formation 视频第 3 套（1:27–1:47）；路径保留附件 p37 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -61,6 +78,9 @@ players:
             - 48.31657
             - 5.849336
           seconds: 0.5742
+    coaching:
+      cooperation: 沿中路跑深 Fly，提供与短路线不同的深度。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: X
     team: offense
     at:
@@ -68,10 +88,11 @@ players:
       - 40.957886
     color: '#80d4ff'
     label:
-      zh: 多次转向路线
+      zh: 椅形路线
+      en: Chair
       description: 先斜向右前方，再向前，再向右横跑，再向前。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG I Formation 视频第 3 套（1:27–1:47）；路径保留附件 p37 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -116,6 +137,9 @@ players:
             - 69.582936
             - 4.914177
           seconds: 0.309762
+    coaching:
+      cooperation: 向右展开后跑 Chair，与 Y 的 Out 配合通过相交区域。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: 'Y'
     team: offense
     at:
@@ -123,10 +147,11 @@ players:
       - 44.673199
     color: '#c7e8a2'
     label:
-      zh: 斜向右前方 → 向前 → 向右横跑
+      zh: 外切路线
+      en: Out
       description: 先斜向右前方，再向前，再向右横跑。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG I Formation 视频第 3 套（1:27–1:47）；路径保留附件 p37 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -166,6 +191,9 @@ players:
             - 83.2926
             - 23.860827
           seconds: 0.29877
+    coaching:
+      cooperation: 跑右侧 Out，与 X 的 Chair 错开通过交叉点。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
   - id: Z
     team: offense
     at:
@@ -173,10 +201,11 @@ players:
       - 48.388587
     color: '#ffc078'
     label:
-      zh: 斜向左前方 → 斜向右前方
+      zh: 短斜内切
+      en: Slant
       description: 先斜向左前方，再斜向右前方。左右按画面方向说。
-      basis: description
-      note: 描述完整原图路径；这条组合形状没有可靠的单一英文名称，保留图示说法。
+      basis: source
+      note: 名称依据 NFL FLAG I Formation 视频第 3 套（1:27–1:47）；路径保留附件 p37 图形，未按标准码数重画。
     motion:
       type: path
       startAt: 0
@@ -206,27 +235,32 @@ players:
             - 43.158637
             - 22.98757
           seconds: 0.432178
+    coaching:
+      cooperation: 先向左展开再跑 Slant，进入中间接应。
+      timing: 来源未明确规定与队友的启动先后；本示范从 0 秒开始。
 timeline:
   duration: 10
   basis: illustration
-  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+  note: 有路线的球员从 0 秒展开，各用 10 秒走完已画路径；这是读图教学节奏，不是来源规定的统一跑速、启动先后或传球时刻。视频逐人讲解的顺序不作为启动顺序。
 keyframes:
   - id: start
     at: 0
-    label: 起始站位
-    cue: 先找 X 和 Z 的起点。今天先扮演其中一位，再换队友的位置试试。
-  - id: early
+    label: 站好 · 找搭档
+    cue: 找到 Q、C、X、Y、Z 的起点。X、Y 在右侧配合变向，Z 斜切进入中间，C 的 Fly 提供深处接应。
+  - id: spread
     at: 2.5
-    label: 观察前段
-    cue: 观察 X 和 Z 的前段；X 的跑法是「多次转向路线」。
+    label: 展开 · 看方向
+    cue: 找到 X 与 Y 的右侧路线，指出它们靠近或相交的位置。
   - id: middle
     at: 5.5
-    label: 观察中段
-    cue: 停在这里：你关注的人去了哪里？Z 又在哪里？用手指同时指出两条路线。
+    label: 暂停 · 看配合
+    cue: 跟着 X 的第二次转向，再比较 C 的直上与 Z 的斜切。
   - id: end
     at: 10
-    label: 路线终点
-    cue: 回想 X 和 Z 从哪里出发、怎样转向。换一名球员讲一遍，再回到全队。
+    label: 回想 · 说一说
+    cue: X 和 Y 哪些地方会靠近？练习前要约定什么？
 notes:
-  - 球员身份按字母与起点核对，颜色仅作辅助。
-  - 路线从 PDF 轮廓取中心线，标记遮挡的短起点作近似连接。没有加入传球目标或球权变化。
+  - 画面只演示进攻路线，没有自动模拟防守；空当和接球机会是战术意图，不保证比赛结果。
+  - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
+  - 路线坐标保留附件 p37 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
+  - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。

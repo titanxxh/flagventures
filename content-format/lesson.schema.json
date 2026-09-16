@@ -29,6 +29,9 @@
     "summary": {
       "$ref": "#/$defs/text"
     },
+    "teaching": {
+      "$ref": "#/$defs/teaching"
+    },
     "source": {
       "$ref": "#/$defs/source"
     },
@@ -209,6 +212,43 @@
       "type": "string",
       "minLength": 1
     },
+    "shortText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "\\S"
+    },
+    "teaching": {
+      "type": "object",
+      "properties": {
+        "goal": { "$ref": "#/$defs/shortText" },
+        "cooperation": { "$ref": "#/$defs/shortText" },
+        "cue": { "$ref": "#/$defs/shortText" },
+        "question": { "$ref": "#/$defs/shortText" }
+      },
+      "required": ["goal", "cooperation", "cue", "question"],
+      "additionalProperties": false
+    },
+    "coaching": {
+      "type": "object",
+      "properties": {
+        "cooperation": { "$ref": "#/$defs/shortText" },
+        "timing": { "$ref": "#/$defs/shortText" }
+      },
+      "required": ["cooperation", "timing"],
+      "additionalProperties": false
+    },
+    "reference": {
+      "type": "object",
+      "properties": {
+        "title": { "$ref": "#/$defs/shortText" },
+        "url": { "type": "string", "minLength": 1, "maxLength": 2048 },
+        "locator": { "$ref": "#/$defs/shortText" },
+        "note": { "$ref": "#/$defs/shortText" }
+      },
+      "required": ["title", "url"],
+      "additionalProperties": false
+    },
     "nonnegative": {
       "type": "number",
       "minimum": 0
@@ -242,6 +282,11 @@
         },
         "referenceAsset": {
           "$ref": "#/$defs/identifier"
+        },
+        "references": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reference" },
+          "minItems": 0
         }
       },
       "required": [
@@ -454,6 +499,9 @@
         "title": {
           "$ref": "#/$defs/text"
         },
+        "note": {
+          "$ref": "#/$defs/shortText"
+        },
         "steps": {
           "$ref": "#/$defs/steps"
         }
@@ -566,6 +614,9 @@
         },
         "label": {
           "$ref": "#/$defs/label"
+        },
+        "coaching": {
+          "$ref": "#/$defs/coaching"
         },
         "motion": {
           "$ref": "#/$defs/motion"

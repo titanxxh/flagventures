@@ -103,6 +103,84 @@ test('labels preserve provenance and source-backed claims require identifiable s
   assert.throws(() => validateLesson(data), /可识别/);
 });
 
+function teachingLesson() {
+  const data = lesson('conditional');
+  data.teaching = { goal: '给队友腾出空间。', cooperation: '深跑带走防守，短跑接应。', cue: '看见队友。', question: '谁帮助了接球队员？' };
+  data.source = { title: '官方战术介绍', references: [
+    { title: '网页', url: 'https://example.org/playbook#play-1', locator: 'Play 1', note: '说明接应条件。' },
+    { title: '解说视频', url: 'http://example.org/watch?v=play&t=34s' },
+  ] };
+  data.players[0].coaching = { cooperation: '其他人没有空位时，我提供接应。', timing: '先观察；等待时长仅为教学安排。' };
+  data.players[0].motion = { type: 'choice', startAt: 0, prompt: '选择这次演示的情形', options: [
+    { id: 'release', title: '需要我接应', note: '仅演示条件满足的情形。', steps: [
+      { type: 'pause', seconds: 1 }, { type: 'line', to: [20, 10], seconds: 3 },
+    ] },
+    { id: 'not-triggered', title: '不演示接应', note: '后续动作未知，留在起点不表示比赛中必须站住。', steps: [{ type: 'pause', seconds: 4 }] },
+  ] };
+  return data;
+}
+
+test('optional teaching, coaching, references and conditional notes survive YAML and full-pack round trips', () => {
+  const data = teachingLesson();
+  const original = clone(data);
+  assert.deepEqual(parseLesson(dump(data)), original);
+  const imported = prepareImport(pack(lesson('old')), [file(data)]);
+  assert.deepEqual(imported.pack.lessons.find(item => item.id === data.id), original);
+  const restored = prepareImport(pack(), [{ name: 'teaching.flagbook.json', text: JSON.stringify(imported.pack) }]);
+  assert.deepEqual(restored.pack, imported.pack);
+  assert.deepEqual(data, original);
+
+  // These additions remain optional for old authored lessons and whole replacements.
+  const oldFormat = lesson(data.id);
+  const replaced = prepareImport(imported.pack, [file(oldFormat)]).pack.lessons.find(item => item.id === data.id);
+  assert.deepEqual(replaced, oldFormat);
+  assert.equal(Object.hasOwn(replaced, 'teaching'), false);
+  const emptyReferences = lesson();
+  emptyReferences.source = { title: '作者', references: [] };
+  assert.equal(validateLesson(emptyReferences).lesson, emptyReferences);
+});
+
+test('new optional objects require complete, bounded, nonblank text when present', () => {
+  for (const [edit, field] of [
+    [data => { delete data.teaching.goal; }, /teaching.goal/],
+    [data => { delete data.players[0].coaching.timing; }, /coaching.timing/],
+    [data => { data.teaching.question = ' \n\t'; }, /teaching.question/],
+    [data => { data.players[0].coaching.cooperation = ''; }, /coaching.cooperation/],
+    [data => { data.teaching.cue = '长'.repeat(501); }, /teaching.cue/],
+    [data => { data.players[0].motion.options[0].note = ' '; }, /options.*note/],
+    [data => { data.source.references[0].title = '\t'; }, /references.*title/],
+    [data => { delete data.source.references[0].url; }, /references.*url/],
+    [data => { data.source.references[0].locator = ''; }, /references.*locator/],
+    [data => { data.source.references[0].note = false; }, /references.*note/],
+    [data => { data.teaching.script = 'ignored?'; }, /teaching.script/],
+    [data => { data.players[0].coaching.afterPlayer = 'Y'; }, /coaching.afterPlayer/],
+  ]) {
+    const data = teachingLesson();
+    edit(data);
+    assert.throws(() => validateLesson(data), field);
+  }
+});
+
+test('reference links only accept ordinary absolute HTTP(S) URLs without credentials', () => {
+  const invalid = [
+    'javascript:alert(1)', 'data:text/html,<script>alert(1)</script>', 'file:///tmp/play.html',
+    '//example.org/play', '/play', 'https:example.org/play', 'https://', 'not a URL',
+    'https://user:secret@example.org/play', 'https://user@example.org/play',
+    'https://example.org\\@other.org/play', ' https://example.org/play', 'https://example.org/a b',
+    'https://exam\nple.org/play', 'https://example.org/\u0000', 'https://example.org/\u007f',
+  ];
+  for (const url of invalid) {
+    const data = teachingLesson();
+    data.source.references[0].url = url;
+    assert.throws(() => validateLesson(data, '链接.yaml'), /链接.yaml.*source.references\[1\].url.*http/);
+    assert.throws(() => prepareImport(pack(), [{ name: '链接.flagbook.json', text: JSON.stringify(pack(data)) }]), /source.references\[1\].url.*http/);
+  }
+  for (const url of ['https://example.org/play?time=2#part', 'http://localhost:8765/play', 'HTTPS://example.org/%E8%85%B0%E6%97%97', 'https://[::1]/play']) {
+    const data = teachingLesson(); data.source.references[0].url = url;
+    assert.equal(validateLesson(data).lesson.source.references[0].url, url);
+  }
+});
+
 test('all point and control-point coordinates and entire ellipse bounds stay on canvas', () => {
   rejectsEdit(data => { data.players[0].at = [101, 35]; }, /球员 X.at.*画布/);
   rejectsEdit(data => { data.field.lineOfScrimmageY = 56; }, /开球线/);

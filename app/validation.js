@@ -168,6 +168,15 @@ function requireRef(ids, id, filename, field, noun) {
   if (!ids.has(id)) fail(filename, field, `${noun} ${id} 不存在`);
 }
 
+function validateReferenceUrl(value, filename, field) {
+  let url;
+  try { url = new URL(value); } catch { /* The shared failure below names the field. */ }
+  if (!/^https?:\/\//i.test(value) || /[\s\u0000-\u001f\u007f\\]/u.test(value) ||
+      !url || !['https:', 'http:'].includes(url.protocol) || !url.hostname || url.username || url.password) {
+    fail(filename, field, '请填写不含账号密码的完整 http:// 或 https:// 网页链接');
+  }
+}
+
 function validateGroups(section, lessonIds, filename) {
   const field = `章节 ${section.id}.groups`;
   const groups = section.groups || [];
@@ -206,6 +215,9 @@ function lessonSemantics(lesson, filename) {
   const assignments = unique(lesson.assignments || [], filename, 'assignments');
   unique(lesson.keyframes, filename, 'keyframes');
   if (lesson.source && !lesson.source.title.trim()) fail(filename, 'source.title', '请填写可识别的来源');
+  for (const [index, reference] of (lesson.source?.references || []).entries()) {
+    validateReferenceUrl(reference.url, filename, `source.references[${index + 1}].url`);
+  }
 
   for (const player of lesson.players) {
     const field = `球员 ${player.id}`;
