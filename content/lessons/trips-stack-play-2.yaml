@@ -1,4 +1,4 @@
-# UTF-8；官网讲解、附件图形与教学设置分开记录。
+# UTF-8; display translations share the same routes and timing.
 format: flag-lesson
 version: 1
 id: trips-stack-play-2
@@ -249,7 +249,9 @@ players:
 timeline:
   duration: 10
   basis: illustration
-  note: C 的启动有条件：其他三名接球手都没有空位。由家长先选择演示情形；满足条件的分支示范等待 2 秒后跑完路线，另一个分支仅保留已知站位。2 秒、总时长 10 秒及其他球员同时起跑均为教学设置，不是比赛规则或完整时序。
+  note: >-
+    C 的启动有条件：其他三名接球手都没有空位。由家长先选择演示情形；满足条件的分支示范等待 2 秒后跑完路线，另一个分支仅保留已知站位。2 秒、总时长 10
+    秒及其他球员同时起跑均为教学设置，不是比赛规则或完整时序。
 keyframes:
   - id: start
     at: 0
@@ -272,3 +274,105 @@ notes:
   - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
   - 路线坐标保留附件 p24 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
   - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。
+translations:
+  en:
+    title.zh: TRIPS STACK PLAY 2
+    summary: >-
+      X's short Post, Y's shallow Out and Z's Hitch go first. C releases on a Fly only if all three are
+      covered.
+    teaching.goal: Understand the center's conditional deep outlet.
+    teaching.cooperation: >-
+      X's short Post, Y's shallow Out and Z's Hitch go first. C releases on a Fly only if all three are
+      covered.
+    teaching.cue: Look at teammates first; join when needed.
+    teaching.question: When does C join on a deep Fly?
+    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.note: >-
+      Route geometry follows the supplied PDF, not measured yards. Route names and teamwork explanations also
+      use NFL FLAG’s official article and videos. Child-friendly cues, questions and animation timing are
+      teaching adaptations.
+    source.references.0.title: NFL FLAG · Trips Stack play explanations
+    source.references.0.locator: Trips Stack · Play 2
+    source.references.0.note: Supports the play’s intent and relative timing, not an exact stopwatch.
+    source.references.1.title: NFL FLAG · Trips Stack video
+    source.references.1.locator: 0:49–1:04
+    source.references.1.note: Timestamps locate the narration; its order does not define player start order.
+    timeline.note: >-
+      C releases conditionally: the other three receivers are covered. Choose a situation first. The release
+      branch waits two teaching seconds; the other branch only shows the known position. Ten seconds total,
+      wait lengths and other players starting together are illustrative, not game rules or a complete timing
+      sequence.
+    notes.0: >-
+      This shows offensive routes without simulating defenders. Creating space is the play’s intent, not a
+      guaranteed outcome.
+    notes.1: The cues and questions are teaching adaptations. Agree on crossing order before practicing on the field.
+    notes.2: >-
+      Relative positions follow source page 24. Short connections approximate parts hidden beneath markers;
+      they are not extra actions or measured yards.
+    notes.3: >-
+      No complete QB read order, mandatory target or pass timing is specified. Crossing routes do not imply a
+      handoff.
+    players.Q.label.zh: Movement not specified
+    players.Q.label.description: Only Q’s starting position is shown. Later movement is not specified.
+    players.Q.coaching.cooperation: Observe the receiving areas offered by teammates. No fixed read order or mandatory target is specified.
+    players.Q.coaching.timing: The diagram does not specify Q’s later movement or when to pass.
+    players.Q.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    players.C.label.zh: Fly
+    players.C.label.description: Move forward. Left and right refer to the diagram.
+    players.C.label.note: >-
+      Name follows the official NFL FLAG explanation (0:49–1:04); direction and geometry retain the supplied
+      diagram on page 24.
+    players.C.coaching.cooperation: Release on a Fly if all three receivers are covered.
+    players.C.coaching.timing: >-
+      Release if all three other receivers are covered. Choose the situation before playing. The two-second
+      wait is a teaching setting.
+    players.C.motion.prompt: >-
+      Choose a teaching situation first: C releases if all three other receivers are covered. This animation
+      does not judge the defense.
+    players.C.motion.options.released.title: 'All three receivers covered: C runs Fly'
+    players.C.motion.options.released.note: >-
+      Wait two demonstration seconds, then follow the route. The condition comes from the official article;
+      two seconds is a teaching setting.
+    players.C.motion.options.not-shown.title: Do not show C’s later release
+    players.C.motion.options.not-shown.note: >-
+      Only the known starting position is shown. Subsequent movement is unspecified; C is not required to
+      stand still throughout the play.
+    players.X.label.zh: Post
+    players.X.label.description: Move forward, then diagonally forward-left. Left and right refer to the diagram.
+    players.X.label.note: >-
+      Name follows the official NFL FLAG explanation (0:49–1:04); direction and geometry retain the supplied
+      diagram on page 24.
+    players.X.coaching.cooperation: Run a short Post as one of the initial three options.
+    players.X.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.Y.label.zh: Out
+    players.Y.label.description: >-
+      Move diagonally forward-right, then forward, then across to the right. Left and right refer to the
+      diagram.
+    players.Y.label.note: >-
+      Name follows the official NFL FLAG explanation (0:49–1:04); direction and geometry retain the supplied
+      diagram on page 24.
+    players.Y.coaching.cooperation: Run a shallow Out as one of the initial three options.
+    players.Y.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.Z.label.zh: Hitch
+    players.Z.label.description: >-
+      Move diagonally forward-left, then forward, then diagonally back-left. Left and right refer to the
+      diagram.
+    players.Z.label.note: >-
+      Name follows the official NFL FLAG explanation (0:49–1:04); direction and geometry retain the supplied
+      diagram on page 24.
+    players.Z.coaching.cooperation: Run a deeper Hitch at a different depth from X and Y.
+    players.Z.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    keyframes.start.label: Line up · Choose a situation
+    keyframes.start.cue: >-
+      Choose the situation first. Find Q, C, X, Y and Z. X's short Post, Y's shallow Out and Z's Hitch go
+      first. C releases on a Fly only if all three are covered.
+    keyframes.spread.label: Follow the selected situation
+    keyframes.spread.cue: >-
+      C’s movement depends on the selected situation. X's short Post, Y's shallow Out and Z's Hitch go first.
+      C releases on a Fly only if all three are covered.
+    keyframes.middle.label: Pause · See the teamwork
+    keyframes.middle.cue: Pause and compare teammates’ routes. When does C join on a deep Fly?
+    keyframes.end.label: Recall · Explain it
+    keyframes.end.cue: When does C join on a deep Fly?

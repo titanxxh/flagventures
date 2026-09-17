@@ -18,7 +18,7 @@ for (const section of catalog.sections) {
     byFile[entry.file] = lesson;
     lessons.push(lesson); lessonIds.push(lesson.id);
   }
-  sections.push({ id: section.id, title: section.title, lessonIds, ...(section.groups ? { groups: section.groups } : {}) });
+  sections.push({ id: section.id, title: section.title, ...(section.titleEn ? {titleEn: section.titleEn} : {}), lessonIds, ...(section.groups ? { groups: section.groups } : {}) });
 }
 validateCatalog(catalog, byFile);
 let files = [];

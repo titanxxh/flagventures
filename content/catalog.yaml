@@ -1,215 +1,229 @@
-format: "flag-catalog"
+format: flag-catalog
 version: 1
-title: "腰旗小教练 · 完整手册"
+title: Flagventures · 完整手册
 sections:
-  - id: "routes"
-    title: "基础路线"
+  - id: routes
+    title: 基础路线
     entries:
-      - id: "route-hitch"
-        file: "lessons/route-hitch.yaml"
-      - id: "route-slant"
-        file: "lessons/route-slant.yaml"
-      - id: "route-out"
-        file: "lessons/route-out.yaml"
-      - id: "route-post"
-        file: "lessons/route-post.yaml"
-      - id: "route-corner"
-        file: "lessons/route-corner.yaml"
-      - id: "route-fly"
-        file: "lessons/route-fly.yaml"
-      - id: "route-option"
-        file: "lessons/route-option.yaml"
-      - id: "route-stop-and-go"
-        file: "lessons/route-stop-and-go.yaml"
-      - id: "route-post-corner"
-        file: "lessons/route-post-corner.yaml"
-      - id: "route-chair"
-        file: "lessons/route-chair.yaml"
-  - id: "offensive-formations"
-    title: "进攻阵型与战术"
+      - id: route-hitch
+        file: lessons/route-hitch.yaml
+      - id: route-slant
+        file: lessons/route-slant.yaml
+      - id: route-out
+        file: lessons/route-out.yaml
+      - id: route-post
+        file: lessons/route-post.yaml
+      - id: route-corner
+        file: lessons/route-corner.yaml
+      - id: route-fly
+        file: lessons/route-fly.yaml
+      - id: route-option
+        file: lessons/route-option.yaml
+      - id: route-stop-and-go
+        file: lessons/route-stop-and-go.yaml
+      - id: route-post-corner
+        file: lessons/route-post-corner.yaml
+      - id: route-chair
+        file: lessons/route-chair.yaml
+    titleEn: Basic routes
+  - id: offensive-formations
+    title: 进攻阵型与战术
     groups:
       - id: single-back-formation
-        title: "单跑卫阵型"
+        title: 单跑卫阵型
         lessonIds:
           - single-back-formation
           - single-back-play-1
           - single-back-play-2
           - single-back-play-3
+        titleEn: SINGLE BACK
       - id: spread-formation
-        title: "分散阵型"
+        title: 分散阵型
         lessonIds:
           - spread-formation
           - spread-play-1
           - spread-play-2
           - spread-play-3
+        titleEn: SPREAD
       - id: bunch-formation
-        title: "密集阵型"
+        title: 密集阵型
         lessonIds:
           - bunch-formation
           - bunch-play-1
           - bunch-play-2
           - bunch-play-3
+        titleEn: BUNCH
       - id: trips-formation
-        title: "三接手同侧阵型"
+        title: 三接手同侧阵型
         lessonIds:
           - trips-formation
           - trips-play-1
           - trips-play-2
           - trips-play-3
+        titleEn: TRIPS
       - id: trips-stack-formation
-        title: "三接手同侧叠列阵型"
+        title: 三接手同侧叠列阵型
         lessonIds:
           - trips-stack-formation
           - trips-stack-play-1
           - trips-stack-play-2
           - trips-stack-play-3
+        titleEn: TRIPS STACK
       - id: twins-formation
-        title: "双接手同侧阵型"
+        title: 双接手同侧阵型
         lessonIds:
           - twins-formation
           - twins-play-1
           - twins-play-2
           - twins-play-3
+        titleEn: TWINS
       - id: twins-stack-formation
-        title: "双接手同侧叠列阵型"
+        title: 双接手同侧叠列阵型
         lessonIds:
           - twins-stack-formation
           - twins-stack-play-1
           - twins-stack-play-2
           - twins-stack-play-3
+        titleEn: TWINS STACK
       - id: i-formation-formation
-        title: "I 字阵型"
+        title: I 字阵型
         lessonIds:
           - i-formation-formation
           - i-formation-play-1
           - i-formation-play-2
           - i-formation-play-3
+        titleEn: I FORMATION
       - id: double-back-formation
-        title: "双跑卫阵型"
+        title: 双跑卫阵型
         lessonIds:
           - double-back-formation
           - double-back-play-1
           - double-back-play-2
           - double-back-play-3
+        titleEn: DOUBLE BACK SET
       - id: single-set-formation
-        title: "单后场阵型"
+        title: 单后场阵型
         lessonIds:
           - single-set-formation
           - single-set-play-1
           - single-set-play-2
           - single-set-play-3
+        titleEn: SINGLE SET
     entries:
-      - id: "single-back-formation"
-        file: "lessons/single-back-formation.yaml"
-      - id: "single-back-play-1"
-        file: "lessons/single-back-play-1.yaml"
-      - id: "single-back-play-2"
-        file: "lessons/single-back-play-2.yaml"
-      - id: "single-back-play-3"
-        file: "lessons/single-back-play-3.yaml"
-      - id: "spread-formation"
-        file: "lessons/spread-formation.yaml"
-      - id: "spread-play-1"
-        file: "lessons/spread-play-1.yaml"
-      - id: "spread-play-2"
-        file: "lessons/spread-play-2.yaml"
-      - id: "spread-play-3"
-        file: "lessons/spread-play-3.yaml"
-      - id: "bunch-formation"
-        file: "lessons/bunch-formation.yaml"
-      - id: "bunch-play-1"
-        file: "lessons/bunch-play-1.yaml"
-      - id: "bunch-play-2"
-        file: "lessons/bunch-play-2.yaml"
-      - id: "bunch-play-3"
-        file: "lessons/bunch-play-3.yaml"
-      - id: "trips-formation"
-        file: "lessons/trips-formation.yaml"
-      - id: "trips-play-1"
-        file: "lessons/trips-play-1.yaml"
-      - id: "trips-play-2"
-        file: "lessons/trips-play-2.yaml"
-      - id: "trips-play-3"
-        file: "lessons/trips-play-3.yaml"
-      - id: "trips-stack-formation"
-        file: "lessons/trips-stack-formation.yaml"
-      - id: "trips-stack-play-1"
-        file: "lessons/trips-stack-play-1.yaml"
-      - id: "trips-stack-play-2"
-        file: "lessons/trips-stack-play-2.yaml"
-      - id: "trips-stack-play-3"
-        file: "lessons/trips-stack-play-3.yaml"
-      - id: "twins-formation"
-        file: "lessons/twins-formation.yaml"
-      - id: "twins-play-1"
-        file: "lessons/twins-play-1.yaml"
-      - id: "twins-play-2"
-        file: "lessons/twins-play-2.yaml"
-      - id: "twins-play-3"
-        file: "lessons/twins-play-3.yaml"
-      - id: "twins-stack-formation"
-        file: "lessons/twins-stack-formation.yaml"
-      - id: "twins-stack-play-1"
-        file: "lessons/twins-stack-play-1.yaml"
-      - id: "twins-stack-play-2"
-        file: "lessons/twins-stack-play-2.yaml"
-      - id: "twins-stack-play-3"
-        file: "lessons/twins-stack-play-3.yaml"
-      - id: "i-formation-formation"
-        file: "lessons/i-formation-formation.yaml"
-      - id: "i-formation-play-1"
-        file: "lessons/i-formation-play-1.yaml"
-      - id: "i-formation-play-2"
-        file: "lessons/i-formation-play-2.yaml"
-      - id: "i-formation-play-3"
-        file: "lessons/i-formation-play-3.yaml"
-      - id: "double-back-formation"
-        file: "lessons/double-back-formation.yaml"
-      - id: "double-back-play-1"
-        file: "lessons/double-back-play-1.yaml"
-      - id: "double-back-play-2"
-        file: "lessons/double-back-play-2.yaml"
-      - id: "double-back-play-3"
-        file: "lessons/double-back-play-3.yaml"
-      - id: "single-set-formation"
-        file: "lessons/single-set-formation.yaml"
-      - id: "single-set-play-1"
-        file: "lessons/single-set-play-1.yaml"
-      - id: "single-set-play-2"
-        file: "lessons/single-set-play-2.yaml"
-      - id: "single-set-play-3"
-        file: "lessons/single-set-play-3.yaml"
-  - id: "run-plays"
-    title: "跑球战术"
+      - id: single-back-formation
+        file: lessons/single-back-formation.yaml
+      - id: single-back-play-1
+        file: lessons/single-back-play-1.yaml
+      - id: single-back-play-2
+        file: lessons/single-back-play-2.yaml
+      - id: single-back-play-3
+        file: lessons/single-back-play-3.yaml
+      - id: spread-formation
+        file: lessons/spread-formation.yaml
+      - id: spread-play-1
+        file: lessons/spread-play-1.yaml
+      - id: spread-play-2
+        file: lessons/spread-play-2.yaml
+      - id: spread-play-3
+        file: lessons/spread-play-3.yaml
+      - id: bunch-formation
+        file: lessons/bunch-formation.yaml
+      - id: bunch-play-1
+        file: lessons/bunch-play-1.yaml
+      - id: bunch-play-2
+        file: lessons/bunch-play-2.yaml
+      - id: bunch-play-3
+        file: lessons/bunch-play-3.yaml
+      - id: trips-formation
+        file: lessons/trips-formation.yaml
+      - id: trips-play-1
+        file: lessons/trips-play-1.yaml
+      - id: trips-play-2
+        file: lessons/trips-play-2.yaml
+      - id: trips-play-3
+        file: lessons/trips-play-3.yaml
+      - id: trips-stack-formation
+        file: lessons/trips-stack-formation.yaml
+      - id: trips-stack-play-1
+        file: lessons/trips-stack-play-1.yaml
+      - id: trips-stack-play-2
+        file: lessons/trips-stack-play-2.yaml
+      - id: trips-stack-play-3
+        file: lessons/trips-stack-play-3.yaml
+      - id: twins-formation
+        file: lessons/twins-formation.yaml
+      - id: twins-play-1
+        file: lessons/twins-play-1.yaml
+      - id: twins-play-2
+        file: lessons/twins-play-2.yaml
+      - id: twins-play-3
+        file: lessons/twins-play-3.yaml
+      - id: twins-stack-formation
+        file: lessons/twins-stack-formation.yaml
+      - id: twins-stack-play-1
+        file: lessons/twins-stack-play-1.yaml
+      - id: twins-stack-play-2
+        file: lessons/twins-stack-play-2.yaml
+      - id: twins-stack-play-3
+        file: lessons/twins-stack-play-3.yaml
+      - id: i-formation-formation
+        file: lessons/i-formation-formation.yaml
+      - id: i-formation-play-1
+        file: lessons/i-formation-play-1.yaml
+      - id: i-formation-play-2
+        file: lessons/i-formation-play-2.yaml
+      - id: i-formation-play-3
+        file: lessons/i-formation-play-3.yaml
+      - id: double-back-formation
+        file: lessons/double-back-formation.yaml
+      - id: double-back-play-1
+        file: lessons/double-back-play-1.yaml
+      - id: double-back-play-2
+        file: lessons/double-back-play-2.yaml
+      - id: double-back-play-3
+        file: lessons/double-back-play-3.yaml
+      - id: single-set-formation
+        file: lessons/single-set-formation.yaml
+      - id: single-set-play-1
+        file: lessons/single-set-play-1.yaml
+      - id: single-set-play-2
+        file: lessons/single-set-play-2.yaml
+      - id: single-set-play-3
+        file: lessons/single-set-play-3.yaml
+    titleEn: Offensive formations & plays
+  - id: run-plays
+    title: 跑球战术
     entries:
-      - id: "hb-dive"
-        file: "lessons/hb-dive.yaml"
-      - id: "crossbuck"
-        file: "lessons/crossbuck.yaml"
-      - id: "end-around"
-        file: "lessons/end-around.yaml"
-      - id: "reverse"
-        file: "lessons/reverse.yaml"
-      - id: "double-reverse"
-        file: "lessons/double-reverse.yaml"
-      - id: "fake-double-reverse"
-        file: "lessons/fake-double-reverse.yaml"
-      - id: "fake-triple-reverse"
-        file: "lessons/fake-triple-reverse.yaml"
-      - id: "hb-option"
-        file: "lessons/hb-option.yaml"
-      - id: "qb-option"
-        file: "lessons/qb-option.yaml"
-  - id: "defense"
-    title: "防守分工"
+      - id: hb-dive
+        file: lessons/hb-dive.yaml
+      - id: crossbuck
+        file: lessons/crossbuck.yaml
+      - id: end-around
+        file: lessons/end-around.yaml
+      - id: reverse
+        file: lessons/reverse.yaml
+      - id: double-reverse
+        file: lessons/double-reverse.yaml
+      - id: fake-double-reverse
+        file: lessons/fake-double-reverse.yaml
+      - id: fake-triple-reverse
+        file: lessons/fake-triple-reverse.yaml
+      - id: hb-option
+        file: lessons/hb-option.yaml
+      - id: qb-option
+        file: lessons/qb-option.yaml
+    titleEn: Running plays
+  - id: defense
+    title: 防守分工
     entries:
-      - id: "man"
-        file: "lessons/man.yaml"
-      - id: "cover-1"
-        file: "lessons/cover-1.yaml"
-      - id: "cover-2"
-        file: "lessons/cover-2.yaml"
-      - id: "cover-3"
-        file: "lessons/cover-3.yaml"
-      - id: "cover-4"
-        file: "lessons/cover-4.yaml"
+      - id: man
+        file: lessons/man.yaml
+      - id: cover-1
+        file: lessons/cover-1.yaml
+      - id: cover-2
+        file: lessons/cover-2.yaml
+      - id: cover-3
+        file: lessons/cover-3.yaml
+      - id: cover-4
+        file: lessons/cover-4.yaml
+    titleEn: Defense

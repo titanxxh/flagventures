@@ -75,6 +75,21 @@
         "$ref": "#/$defs/text"
       },
       "minItems": 0
+    },
+    "translations": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000,
+            "pattern": "\\S"
+          }
+        }
+      },
+      "additionalProperties": false
     }
   },
   "required": [
@@ -221,32 +236,65 @@
     "teaching": {
       "type": "object",
       "properties": {
-        "goal": { "$ref": "#/$defs/shortText" },
-        "cooperation": { "$ref": "#/$defs/shortText" },
-        "cue": { "$ref": "#/$defs/shortText" },
-        "question": { "$ref": "#/$defs/shortText" }
+        "goal": {
+          "$ref": "#/$defs/shortText"
+        },
+        "cooperation": {
+          "$ref": "#/$defs/shortText"
+        },
+        "cue": {
+          "$ref": "#/$defs/shortText"
+        },
+        "question": {
+          "$ref": "#/$defs/shortText"
+        }
       },
-      "required": ["goal", "cooperation", "cue", "question"],
+      "required": [
+        "goal",
+        "cooperation",
+        "cue",
+        "question"
+      ],
       "additionalProperties": false
     },
     "coaching": {
       "type": "object",
       "properties": {
-        "cooperation": { "$ref": "#/$defs/shortText" },
-        "timing": { "$ref": "#/$defs/shortText" }
+        "cooperation": {
+          "$ref": "#/$defs/shortText"
+        },
+        "timing": {
+          "$ref": "#/$defs/shortText"
+        }
       },
-      "required": ["cooperation", "timing"],
+      "required": [
+        "cooperation",
+        "timing"
+      ],
       "additionalProperties": false
     },
     "reference": {
       "type": "object",
       "properties": {
-        "title": { "$ref": "#/$defs/shortText" },
-        "url": { "type": "string", "minLength": 1, "maxLength": 2048 },
-        "locator": { "$ref": "#/$defs/shortText" },
-        "note": { "$ref": "#/$defs/shortText" }
+        "title": {
+          "$ref": "#/$defs/shortText"
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "locator": {
+          "$ref": "#/$defs/shortText"
+        },
+        "note": {
+          "$ref": "#/$defs/shortText"
+        }
       },
-      "required": ["title", "url"],
+      "required": [
+        "title",
+        "url"
+      ],
       "additionalProperties": false
     },
     "nonnegative": {
@@ -285,7 +333,9 @@
         },
         "references": {
           "type": "array",
-          "items": { "$ref": "#/$defs/reference" },
+          "items": {
+            "$ref": "#/$defs/reference"
+          },
           "minItems": 0
         }
       },

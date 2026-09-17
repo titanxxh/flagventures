@@ -8,3 +8,10 @@
 @media(max-width:650px){#catalog{display:block;max-height:260px;padding:2px 2px 6px}.catalog-section{min-width:0;margin:0 0 8px}.section-label{padding:10px}.section-name{font-size:12px}.section-entries{padding-left:14px}}
 .team-plan{background:#e8eddd;border:1px solid #d5dfc8;border-radius:12px;padding:14px;margin-bottom:18px;overflow-wrap:anywhere}.team-plan h2{font-size:12px;margin-bottom:9px}.team-plan p{font-size:12px;line-height:1.75;margin:0}.team-plan #teachingGoal{font-weight:650;margin-bottom:8px}.team-plan #teamCooperation{color:#65745c}.player-coaching{border-top:1px solid #e6e8dd;padding-top:13px}.player-coaching h4{font-size:11px;margin:0 0 5px;color:#426546}.player-coaching p{margin-bottom:12px}.route-card .route-situation{background:#f0f1e5;padding:10px;border-radius:7px;font-size:11px}.choice-note{font-size:11px;color:#596c50;line-height:1.75;border-top:1px solid #d8dec6;padding-top:10px;overflow-wrap:anywhere}.choice-note:last-child{margin-bottom:0}.source-references li{margin-top:10px}.source-references a{text-underline-offset:3px;overflow-wrap:anywhere}.source-references span{display:block;color:var(--muted);font-size:11px}.choice-options button{white-space:normal;text-align:left;line-height:1.6;min-height:44px}
 @media(max-width:900px){.team-plan{grid-column:1/-1;margin:0}.teaching .mini-lesson{display:block;grid-column:1/-1;margin-top:8px}.teaching .focus-section{align-self:start}}
+
+.language-switch select { font: inherit; color: var(--ink, #183c32); border: 1px solid #c7d4c2; border-radius: 999px; padding: .55rem .8rem; background: #fffefa; cursor: pointer; }
+html[lang="en"] .section-name, html[lang="en"] .catalog-group-title strong { overflow-wrap: anywhere; }
+.app-header { flex-wrap: wrap; }
+.header-actions { flex-wrap: wrap; }
+select:focus-visible { outline: 3px solid #c9943a; outline-offset: 3px; }
+@media(max-width:650px) { .header-actions { width:100%; justify-content:flex-end; gap:8px; } }

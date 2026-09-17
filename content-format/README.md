@@ -287,3 +287,23 @@ sections:
 `teaching`、`player.coaching`、`source.references`、`choice.options[].note` 是格式版本 1 的可选补充；不含这些字段的已有 YAML、目录和内容包继续有效，不需要迁移。导入更新仍为整条替换；导出保留所有这些字段与完整分支，不保留本次选择、播放位置等临时状态。
 
 扩展格式时应明确更新版本约定并提供迁移说明，不能悄悄改变已有字段含义。保持同一内容、同一时间和同一分支选择始终得到相同画面。
+
+## 中英文文字（可选）
+
+中文仍填写在原字段中；英文放在 `translations.en`。路径中的球员、关键帧、选项使用其 `id`，不使用数组位置，因此调整球员顺序不会让译文错位。
+
+```yaml
+translations:
+  en:
+    title.zh: My first play
+    summary: X cuts inside while teammates create space.
+    teaching.goal: Make room for an inside pass.
+    players.X.label.zh: Slant
+    players.X.label.description: Run forward, then cut toward the middle.
+    keyframes.start.label: Starting positions
+    keyframes.start.cue: Find your starting position.
+```
+
+只填写实际存在的文字字段；未提供译文时显示原文（英文标题也可沿用 `title.en`）。支持名称、摘要、全队教学提示、球员名称及跑法说明、配合与时机、条件选项文字、关键帧、区域名称、备注和来源说明。`notes.0` 与 `source.references.0.title` 使用从 0 开始的序号。内置 YAML 提供完整示例。
+
+章节及分组可填写 `titleEn`。路线坐标、球员 ID、时间、分支 ID 和来源网址由两种语言共用，不能写进翻译表。无效字段会在导入时指出。导出 YAML 和完整战术包均保留两种语言，切换界面语言不会改写原数据。

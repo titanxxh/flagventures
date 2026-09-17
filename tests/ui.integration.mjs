@@ -6,7 +6,7 @@ import {chromium} from 'playwright';
 import {dump, load} from 'js-yaml';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const target = resolve(root, process.argv[2] || 'dist/腰旗小教练.html');
+const target = resolve(root, process.argv[2] || 'dist/Flagventures.html');
 const output = resolve(root, 'tmp/ui-integration');
 const pauseCheckMs = Number(process.env.PAUSE_CHECK_MS || 30000);
 await access(target);

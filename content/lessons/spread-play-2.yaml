@@ -1,4 +1,4 @@
-# UTF-8；官网讲解、附件图形与教学设置分开记录。
+# UTF-8; display translations share the same routes and timing.
 format: flag-lesson
 version: 1
 id: spread-play-2
@@ -272,3 +272,99 @@ notes:
   - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
   - 路线坐标保留附件 p12 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
   - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。
+translations:
+  en:
+    title.zh: SPREAD PLAY 2
+    summary: X works left while Y and Z offer deeper routes. C releases right when the defense shifts left.
+    teaching.goal: Move coverage one way, then use the other side.
+    teaching.cooperation: X works left while Y and Z offer deeper routes. C releases right when the defense shifts left.
+    teaching.cue: Watch where coverage goes; find the other side.
+    teaching.question: Where can C go if the defense moves left?
+    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.note: >-
+      Route geometry follows the supplied PDF, not measured yards. Route names and teamwork explanations also
+      use NFL FLAG’s official article and videos. Child-friendly cues, questions and animation timing are
+      teaching adaptations.
+    source.references.0.title: NFL FLAG · Spread play explanations
+    source.references.0.locator: Spread · Play 2
+    source.references.0.note: Supports the play’s intent and relative timing, not an exact stopwatch.
+    source.references.1.title: NFL FLAG · Spread video
+    source.references.1.locator: 0:46–1:13
+    source.references.1.note: Timestamps locate the narration; its order does not define player start order.
+    timeline.note: >-
+      C releases conditionally: the defense has shifted left. Choose a situation first. The release branch
+      waits two teaching seconds; the other branch only shows the known position. Ten seconds total, wait
+      lengths and other players starting together are illustrative, not game rules or a complete timing
+      sequence.
+    notes.0: >-
+      This shows offensive routes without simulating defenders. Creating space is the play’s intent, not a
+      guaranteed outcome.
+    notes.1: The cues and questions are teaching adaptations. Agree on crossing order before practicing on the field.
+    notes.2: >-
+      Relative positions follow source page 12. Short connections approximate parts hidden beneath markers;
+      they are not extra actions or measured yards.
+    notes.3: >-
+      No complete QB read order, mandatory target or pass timing is specified. Crossing routes do not imply a
+      handoff.
+    players.Q.label.zh: Movement not specified
+    players.Q.label.description: Only Q’s starting position is shown. Later movement is not specified.
+    players.Q.coaching.cooperation: Observe the receiving areas offered by teammates. No fixed read order or mandatory target is specified.
+    players.Q.coaching.timing: The diagram does not specify Q’s later movement or when to pass.
+    players.Q.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    players.C.label.zh: Out
+    players.C.label.description: Move diagonally forward-right, then across to the right. Left and right refer to the diagram.
+    players.C.label.note: >-
+      Name follows the official NFL FLAG explanation (0:46–1:13); direction and geometry retain the supplied
+      diagram on page 12.
+    players.C.coaching.cooperation: Release on an Out to the right after coverage shifts left.
+    players.C.coaching.timing: >-
+      Release when the defense shifts left. Choose the situation before playing. The two-second wait is a
+      teaching setting.
+    players.C.motion.prompt: >-
+      Choose a teaching situation first: C releases after the defense shifts left. This animation does not
+      judge the defense.
+    players.C.motion.options.released.title: 'Defense has shifted left: C releases right'
+    players.C.motion.options.released.note: >-
+      Wait two demonstration seconds, then follow the route. The condition comes from the official article;
+      two seconds is a teaching setting.
+    players.C.motion.options.not-shown.title: 'Condition not met: do not show C’s release'
+    players.C.motion.options.not-shown.note: >-
+      Only the known starting position is shown. Subsequent movement is unspecified; C is not required to
+      stand still throughout the play.
+    players.X.label.zh: Option
+    players.X.label.description: >-
+      Move forward, then diagonally forward-right, then across to the right, then diagonally forward-right,
+      then diagonally back-left, then across to the left. Left and right refer to the diagram.
+    players.X.label.note: >-
+      Name follows the official NFL FLAG explanation (0:46–1:13); direction and geometry retain the supplied
+      diagram on page 12.
+    players.X.coaching.cooperation: Run an Option left to help create space for C on the right.
+    players.X.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.Y.label.zh: In
+    players.Y.label.description: Move forward, then across to the left. Left and right refer to the diagram.
+    players.Y.label.note: >-
+      Name follows the official NFL FLAG explanation (0:46–1:13); direction and geometry retain the supplied
+      diagram on page 12.
+    players.Y.coaching.cooperation: Run a deeper In alongside Z's deeper option.
+    players.Y.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.Z.label.zh: Post
+    players.Z.label.description: Move forward, then diagonally forward-left. Left and right refer to the diagram.
+    players.Z.label.note: >-
+      Name follows the official NFL FLAG explanation (0:46–1:13); direction and geometry retain the supplied
+      diagram on page 12.
+    players.Z.coaching.cooperation: Run a Post to offer a deeper option alongside Y.
+    players.Z.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    keyframes.start.label: Line up · Choose a situation
+    keyframes.start.cue: >-
+      Choose the situation first. Find Q, C, X, Y and Z. X works left while Y and Z offer deeper routes. C
+      releases right when the defense shifts left.
+    keyframes.spread.label: Follow the selected situation
+    keyframes.spread.cue: >-
+      C’s movement depends on the selected situation. X works left while Y and Z offer deeper routes. C
+      releases right when the defense shifts left.
+    keyframes.middle.label: Pause · See the teamwork
+    keyframes.middle.cue: Pause and compare teammates’ routes. Where can C go if the defense moves left?
+    keyframes.end.label: Recall · Explain it
+    keyframes.end.cue: Where can C go if the defense moves left?

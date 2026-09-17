@@ -1,4 +1,4 @@
-# UTF-8；官网讲解、附件图形与教学设置分开记录。
+# UTF-8; display translations share the same routes and timing.
 format: flag-lesson
 version: 1
 id: single-set-play-2
@@ -234,3 +234,84 @@ notes:
   - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
   - 路线坐标保留附件 p44 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
   - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。
+translations:
+  en:
+    title.zh: SINGLE SET PLAY 2
+    summary: >-
+      Z goes deepest on a Fly, C runs a mid-length Corner, and Y a short Out. X goes from Slant to Out across
+      the middle.
+    teaching.goal: Offer routes at different depths.
+    teaching.cooperation: >-
+      Z goes deepest on a Fly, C runs a mid-length Corner, and Y a short Out. X goes from Slant to Out across
+      the middle.
+    teaching.cue: 'Far, middle, near: remember my layer.'
+    teaching.question: Who goes deepest, and who offers a middle-distance option?
+    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.note: >-
+      Route geometry follows the supplied PDF, not measured yards. Route names and teamwork explanations also
+      use NFL FLAG’s official article and videos. Child-friendly cues, questions and animation timing are
+      teaching adaptations.
+    source.references.0.title: NFL FLAG · Single Set play explanations
+    source.references.0.locator: Single Set · Play 2
+    source.references.0.note: Supports the play’s intent and relative timing, not an exact stopwatch.
+    source.references.1.title: NFL FLAG · Single Set video
+    source.references.1.locator: 0:45–1:07
+    source.references.1.note: Timestamps locate the narration; its order does not define player start order.
+    timeline.note: >-
+      Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
+      route and is illustrative, not official start order, equal player speeds or handoff timing.
+    notes.0: >-
+      This shows offensive routes without simulating defenders. Creating space is the play’s intent, not a
+      guaranteed outcome.
+    notes.1: The cues and questions are teaching adaptations. Agree on crossing order before practicing on the field.
+    notes.2: >-
+      Relative positions follow source page 44. Short connections approximate parts hidden beneath markers;
+      they are not extra actions or measured yards.
+    notes.3: >-
+      No complete QB read order, mandatory target or pass timing is specified. Crossing routes do not imply a
+      handoff.
+    players.Q.label.zh: Movement not specified
+    players.Q.label.description: Only Q’s starting position is shown. Later movement is not specified.
+    players.Q.coaching.cooperation: Observe the receiving areas offered by teammates. No fixed read order or mandatory target is specified.
+    players.Q.coaching.timing: The diagram does not specify Q’s later movement or when to pass.
+    players.Q.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    players.C.label.zh: Corner
+    players.C.label.description: Move forward, then diagonally forward-right. Left and right refer to the diagram.
+    players.C.label.note: >-
+      Name follows the official NFL FLAG explanation (0:45–1:07); direction and geometry retain the supplied
+      diagram on page 44.
+    players.C.coaching.cooperation: Run a mid-length Corner between shallow and deep options.
+    players.C.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.X.label.zh: Slant → Out
+    players.X.label.description: Move diagonally forward-right, then across to the left. Left and right refer to the diagram.
+    players.X.label.note: >-
+      Name follows the official NFL FLAG explanation (0:45–1:07); direction and geometry retain the supplied
+      diagram on page 44.
+    players.X.coaching.cooperation: Start with a Slant, then Out across the middle, separate from Y.
+    players.X.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.Y.label.zh: Out
+    players.Y.label.description: Move forward, then across to the right. Left and right refer to the diagram.
+    players.Y.label.note: >-
+      Name follows the official NFL FLAG explanation (0:45–1:07); direction and geometry retain the supplied
+      diagram on page 44.
+    players.Y.coaching.cooperation: Run a short Out underneath the deeper routes.
+    players.Y.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.Z.label.zh: Fly
+    players.Z.label.description: Move diagonally forward-right, then forward. Left and right refer to the diagram.
+    players.Z.label.note: >-
+      Name follows the official NFL FLAG explanation (0:45–1:07); direction and geometry retain the supplied
+      diagram on page 44.
+    players.Z.coaching.cooperation: Run the deepest Fly to stretch the field.
+    players.Z.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    keyframes.start.label: Line up · Find teammates
+    keyframes.start.cue: >-
+      Find Q, C, X, Y and Z. Z goes deepest on a Fly, C runs a mid-length Corner, and Y a short Out. X goes
+      from Slant to Out across the middle.
+    keyframes.spread.label: Watch the routes
+    keyframes.spread.cue: Pause and compare teammates’ routes. Who goes deepest, and who offers a middle-distance option?
+    keyframes.middle.label: Pause · See the teamwork
+    keyframes.middle.cue: Pause and compare teammates’ routes. Who goes deepest, and who offers a middle-distance option?
+    keyframes.end.label: Recall · Explain it
+    keyframes.end.cue: Who goes deepest, and who offers a middle-distance option?

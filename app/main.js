@@ -1,3 +1,5 @@
+import { t, getLanguage, setLanguage, captureStaticTranslations } from './i18n.js';
+import { localizePack } from './localization.js';
 import { dump } from 'js-yaml';
 import { getScene, getRoutes, pathToSvg } from './scene.js';
 import { prepareImport, validatePack } from './validation.js';
@@ -9,7 +11,11 @@ const bases = { source: '来源明确命名', 'shape-match': '路线形态对照
 const colors = ['#80d4ff', '#ffc078', '#c7e8a2', '#fff1d5', '#ff9690', '#d7c9ff'];
 const builtIn = JSON.parse($('builtInData').textContent);
 const template = JSON.parse($('templateData').textContent);
-let pack = builtIn;
+try { setLanguage(localStorage.getItem('flagventures.language')); } catch {}
+const updateStaticLanguage = captureStaticTranslations(document.documentElement);
+let canonicalPack = builtIn;
+let libraryStatus = '内置手册';
+let pack = localizePack(builtIn, getLanguage(), t);
 let lesson;
 let order = [];
 let state = { time: 0, playing: false, speed: 2, role: null, choices: {} };
@@ -25,17 +31,17 @@ let catalogNodes = new Map();
 let expandedGroups = new Set();
 let expandedSections = new Set();
 
-function text(node, value) { if (node.textContent !== String(value ?? '')) node.textContent = value ?? ''; }
+function text(node, value) { value = t(value); if (node.textContent !== String(value ?? '')) node.textContent = value ?? ''; }
 function node(tag, attributes = {}, value) {
   const result = document.createElement(tag);
-  for (const [key, val] of Object.entries(attributes)) result.setAttribute(key, val);
-  if (value !== undefined) result.textContent = value;
+  for (const [key, val] of Object.entries(attributes)) result.setAttribute(key, ['aria-label', 'title'].includes(key) ? t(val) : val);
+  if (value !== undefined) result.textContent = t(value);
   return result;
 }
 function svg(tag, attributes = {}, value) {
   const result = document.createElementNS(NS, tag);
-  for (const [key, val] of Object.entries(attributes)) result.setAttribute(key, val);
-  if (value !== undefined) result.textContent = value;
+  for (const [key, val] of Object.entries(attributes)) result.setAttribute(key, ['aria-label', 'title'].includes(key) ? t(val) : val);
+  if (value !== undefined) result.textContent = t(value);
   return result;
 }
 function notify(message) {
@@ -57,13 +63,14 @@ function download(name, content, mime) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 function setPack(value, status) {
-  pack = value;
+  canonicalPack = value; libraryStatus = status;
+  pack = localizePack(value, getLanguage(), t);
   expandedGroups = new Set();
   expandedSections = new Set();
   order = pack.sections.flatMap(section => section.lessonIds);
   assetMap = new Map((pack.assets || []).map(asset => [asset.id, asset]));
   text($('libraryStatus'), status);
-  text($('libraryCount'), `${pack.lessons.length} 个教学条目 · 本地可用`);
+  text($('libraryCount'), t`${pack.lessons.length} 个教学条目 · 本地可用`);
   $('search').value = '';
   buildCatalog();
   selectLesson(order[0]);
@@ -76,7 +83,7 @@ function buildCatalog() {
   pack.sections.forEach((section, index) => {
     const sectionMatches = section.title.toLocaleLowerCase().includes(query);
     const matches = item => {
-      const haystack = [item.title.zh, item.title.en, item.source?.page, ...item.players.flatMap(p => [p.label.en, p.label.zh])].join(' ').toLocaleLowerCase();
+      const haystack = [canonicalPack.lessons.find(original => original.id === item.id)?.title.zh, item.title.zh, item.title.en, item.source?.page, ...item.players.flatMap(p => [p.label.en, p.label.zh])].join(' ').toLocaleLowerCase();
       return sectionMatches || haystack.includes(query);
     };
     const group = node('details', { class: 'catalog-section', 'data-catalog-section': section.id });
@@ -94,7 +101,7 @@ function buildCatalog() {
       const button = node('button', { class: 'catalog-entry', 'data-lesson': item.id, 'aria-current': String(item.id === lesson?.id), title: item.title.zh });
       const prefix = subgroup ? `${subgroup.title} · ` : '';
       const title = subgroup && item.kind === 'formation' && item.title.zh === subgroup.title ? '阵型站位' : prefix && item.title.zh.startsWith(prefix) ? item.title.zh.slice(prefix.length) : item.title.zh;
-      button.append(node('strong', {}, title), node('small', {}, `${item.title.en || types[item.kind]}${item.source?.page ? ` · p${item.source.page}` : ''}`));
+      button.append(node('strong', {}, title), node('small', {}, `${item.title.en || t(types[item.kind])}${item.source?.page ? ` · p${item.source.page}` : ''}`));
       parent.append(button); catalogNodes.set(item.id, button);
     };
     const starts = new Map((section.groups || []).map(subgroup => [subgroup.lessonIds[0], subgroup]));
@@ -115,7 +122,7 @@ function buildCatalog() {
       const details = node('details', { class: 'catalog-group', 'data-catalog-group': subgroup.id });
       details.open = Boolean(query) || expandedGroups.has(key);
       const summary = node('summary', { class: 'catalog-group-title' });
-      summary.append(node('strong', {}, subgroup.title), node('span', { class: 'catalog-group-count' }, `${entries.length} 项`));
+      summary.append(node('strong', {}, subgroup.title), node('span', { class: 'catalog-group-count' }, t`${entries.length} 项`));
       const children = node('div', { class: 'catalog-group-entries' });
       entries.forEach(item => appendEntry(children, item, subgroup));
       details.append(summary, children);
@@ -126,16 +133,16 @@ function buildCatalog() {
       contents.append(details);
     }
     if (contents.children.length) {
-      text(count, `${contents.querySelectorAll('[data-lesson]').length} 项`);
+      text(count, t`${contents.querySelectorAll('[data-lesson]').length} 项`);
       fragment.append(group);
     }
   });
   if (!catalogNodes.size) fragment.append(node('p', { class: 'empty-search' }, '没有找到，试试英文跑法或页码。'));
   $('catalog').replaceChildren(fragment);
 }
-function selectLesson(id) {
+function selectLesson(id, preserve = false) {
   lesson = pack.lessons.find(item => item.id === id);
-  state = { time: 0, playing: false, speed: state.speed, role: null, choices: {} };
+  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: null, choices: {} };
   hovered = focused = null; lastTick = undefined;
   if (!lesson) {
     text($('lessonTitle'), '内容包暂无教学条目');
@@ -165,24 +172,24 @@ function selectLesson(id) {
   const sectionNode = catalogNodes.get(id)?.closest('.catalog-section');
   if (sectionNode) sectionNode.open = true;
   const subgroup = section.groups?.find(item => item.lessonIds.includes(id));
-  text($('breadcrumb'), [section.title, subgroup?.title, types[lesson.kind]].filter(Boolean).join(' / '));
+  text($('breadcrumb'), [section.title, subgroup?.title, t(types[lesson.kind])].filter(Boolean).join(' / '));
   if (subgroup) {
     expandedGroups.add(JSON.stringify([section.id, subgroup.id]));
     const details = catalogNodes.get(id)?.closest('.catalog-group');
     if (details) details.open = true;
   }
   text($('lessonTitle'), lesson.title.zh);
-  text($('lessonEnglish'), `${lesson.title.en || ''}${lesson.source?.page ? ` · 来源第 ${lesson.source.page} 页` : ''}`);
+  text($('lessonEnglish'), `${lesson.title.en || ''}${lesson.source?.page ? t` · 来源第 ${lesson.source.page} 页` : ''}`);
   text($('summary'), lesson.summary);
   $('teamPlan').hidden = !lesson.teaching;
   text($('teachingGoal'), lesson.teaching?.goal);
   text($('teamCooperation'), lesson.teaching?.cooperation);
   text($('teachingCue'), lesson.teaching?.cue || '「你站在哪里？」');
   text($('teachingQuestion'), lesson.teaching?.question || '「你跑的时候，队友去哪儿？」');
-  text($('direction'), `${lesson.field.attackDirection === 'up' ? '↑' : '↓'} 进攻方向${lesson.kind === 'defense' ? ' · 防守视角' : ''}`);
+  text($('direction'), `${lesson.field.attackDirection === 'up' ? '↑' : '↓'} ${t('进攻方向')}${lesson.kind === 'defense' ? t(' · 防守视角') : ''}`);
   text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? '单路线放大 · 保留原图方向' : '悬停球员看跑法 · 点击保留');
   text($('timingNote'), lesson.timeline.note);
-  text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? `，第 ${lesson.source.page} 页` : ''}。${lesson.source.note || ''}` : '这是一条独立编写的教学内容，没有附带原书来源。');
+  text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? t`，第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}` : '这是一条独立编写的教学内容，没有附带原书来源。');
   $('notes').replaceChildren(...(lesson.notes || []).map(note => node('li', {}, note)));
   const references = lesson.source?.references || [];
   $('sourceReferences').hidden = !references.length;
@@ -204,7 +211,7 @@ function selectLesson(id) {
 }
 function buildRoles() {
   const buttons = [node('button', { class: 'role', 'data-show-all': '', 'aria-pressed': 'true' }, '看全队')];
-  for (const player of lesson.players) buttons.push(node('button', { class: 'role', 'data-player': player.id, 'aria-pressed': 'false', 'aria-label': `${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` }, player.id));
+  for (const player of lesson.players) buttons.push(node('button', { class: 'role', 'data-player': player.id, 'aria-pressed': 'false', 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` }, player.id));
   $('roles').replaceChildren(...buttons);
 }
 function buildChoices() {
@@ -213,7 +220,7 @@ function buildChoices() {
   const content = [];
   for (const player of players) {
     content.push(node('p', {}, `${player.id} · ${player.motion.prompt}`));
-    const options = node('div', { class: 'choice-options', role: 'group', 'aria-label': `${player.id} 的演示选项` });
+    const options = node('div', { class: 'choice-options', role: 'group', 'aria-label': t`${player.id} 的演示选项` });
     for (const option of player.motion.options) options.append(node('button', { 'data-choice-player': player.id, 'data-option': option.id, 'aria-pressed': 'false' }, option.title));
     content.push(options, node('p', { class: 'choice-note', 'data-choice-note': player.id, role: 'status' }));
   }
@@ -281,7 +288,7 @@ function buildField() {
     field.append(path); fieldNodes.routes.push({ node: path, ...route });
   }
   for (const player of lesson.players) {
-    const group = svg('g', { class: 'player', 'data-player': player.id, tabindex: 0, role: 'button', 'aria-label': `${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` });
+    const group = svg('g', { class: 'player', 'data-player': player.id, tabindex: 0, role: 'button', 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` });
     group.append(svg('circle', { class: 'focus-ring', r: 2.85 * unit, fill: 'none', stroke: '#fff8d6', 'stroke-width': .25 * unit, opacity: 0 }));
     const common = { fill: playerColor(player), stroke: '#153b2f', 'stroke-width': .22 * unit };
     if (player.team === 'defense') group.append(svg('path', { ...common, d: `M0 ${-2.2 * unit}L${2.2 * unit} ${1.85 * unit}L${-2.2 * unit} ${1.85 * unit}Z` }));
@@ -331,11 +338,11 @@ function render() {
   }
   $('roles').querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.hasAttribute('data-show-all') ? state.role === null : button.dataset.player === state.role)));
   const player = lesson.players.find(player => player.id === inspected);
-  text($('focusStatus'), state.role === null ? '正在看全队' : `关注 ${state.role} · 队友仍可见`);
+  text($('focusStatus'), state.role === null ? '正在看全队' : t`关注 ${state.role} · 队友仍可见`);
   text($('routePerson'), player?.id || '?'); $('routePerson').style.background = player ? playerColor(player) : '#e6eadf';
-  text($('routeMode'), player ? `${player.id} 的${lesson.kind === 'defense' ? '分工' : '跑法'} · ${hovered ? '悬停查看' : focused ? '键盘查看' : '已保留'}` : '认识跑法');
+  text($('routeMode'), player ? t`${player.id} 的${t(lesson.kind === 'defense' ? '分工' : '跑法')} · ${t(hovered ? '悬停查看' : focused ? '键盘查看' : '已保留')}` : '认识跑法');
   text($('routeEnglish'), player ? player.label.en || player.label.zh : '移到球员上试试');
-  text($('routeChinese'), player?.label.en ? player.label.zh : '');
+  text($('routeChinese'), player?.label.en && player.label.en !== player.label.zh ? player.label.zh : '');
   text($('routeDescription'), player?.label.description || '名称、路线和动作一起看。点击一个字母，边播放边观察他和队友怎样配合。');
   $('playerCoaching').hidden = !player?.coaching;
   text($('routeCooperation'), player?.coaching?.cooperation);
@@ -343,18 +350,18 @@ function render() {
   const selectedSituation = player?.motion.type === 'choice'
     ? player.motion.options.find(option => option.id === state.choices[player.id]) : undefined;
   const situation = player?.motion.type === 'choice'
-    ? selectedSituation ? selectedSituation.note || `本次演示：${selectedSituation.title}` : player.motion.prompt
+    ? selectedSituation ? selectedSituation.note || t`本次演示：${selectedSituation.title}` : player.motion.prompt
     : '';
   $('routeSituation').hidden = !situation;
   text($('routeSituation'), situation);
   const duties = player ? scene.assignments.filter(a => a.player === player.id).map(a => {
-    if (a.type === 'coverage') return `负责区域：${lesson.zones.find(z => z.id === a.zone).label}`;
-    if (a.type === 'matchup') return `对位球员：${lesson.players.find(p => p.id === a.target).name || a.target}`;
+    if (a.type === 'coverage') return t`负责区域：${lesson.zones.find(z => z.id === a.zone).label}`;
+    if (a.type === 'matchup') return t`对位球员：${lesson.players.find(p => p.id === a.target).name || a.target}`;
     return '职责：按图示方向冲传';
   }) : [];
   $('routeDuties').hidden = !duties.length;
-  text($('routeDuties'), duties.join('；'));
-  text($('routeBasis'), player ? `${bases[player.label.basis]}${player.label.note ? ` · ${player.label.note}` : ''}` : '');
+  text($('routeDuties'), duties.join(getLanguage() === 'en' ? '; ' : '；'));
+  text($('routeBasis'), player ? `${t(bases[player.label.basis])}${player.label.note ? ` · ${player.label.note}` : ''}` : '');
   fieldNodes.tooltip.style.display = player ? '' : 'none';
   if (player) {
     const position = scene.players.find(p => p.id === player.id).position;
@@ -367,7 +374,7 @@ function render() {
     fieldNodes.tooltip.setAttribute('transform', `translate(${x} ${y})`);
     const title = `${player.id} · ${player.label.en || player.label.zh}`;
     text(fieldNodes.tooltipFirst, title.length > 23 ? `${title.slice(0, 22)}…` : title);
-    text(fieldNodes.tooltipSecond, (player.label.en ? player.label.zh : bases[player.label.basis]).slice(0, 16));
+    text(fieldNodes.tooltipSecond, (player.label.en ? player.label.zh : t(bases[player.label.basis])).slice(0, 16));
   }
   const staticScene = lesson.timeline.duration === 0;
   text($('playState'), staticScene ? '静态站位' : !scene.ready ? '先选演示选项' : state.playing ? '演示中' : '已暂停 · 可讲解');
@@ -387,10 +394,22 @@ function render() {
   $('choices').querySelectorAll('[data-choice-note]').forEach(element => {
     const player = lesson.players.find(player => player.id === element.dataset.choiceNote);
     const selected = player.motion.options.find(option => option.id === state.choices[player.id]);
-    text(element, selected ? selected.note || `本次演示：${selected.title}` : '请先选择一种情形。切换选项后会回到站位并暂停。');
+    text(element, selected ? selected.note || t`本次演示：${selected.title}` : '请先选择一种情形。切换选项后会回到站位并暂停。');
   });
 }
 
+$('language').value = getLanguage();
+updateStaticLanguage();
+$('language').addEventListener('change', () => {
+  const id = lesson?.id;
+  setLanguage($('language').value);
+  try { localStorage.setItem('flagventures.language', getLanguage()); } catch {}
+  updateStaticLanguage();
+  pack = localizePack(canonicalPack, getLanguage(), t);
+  text($('libraryStatus'), libraryStatus);
+  text($('libraryCount'), t`${pack.lessons.length} 个教学条目 · 本地可用`);
+  buildCatalog(); selectLesson(id, true);
+});
 $('search').addEventListener('input', buildCatalog);
 $('catalog').addEventListener('click', event => { const button = event.target.closest('[data-lesson]'); if (button) selectLesson(button.dataset.lesson); });
 $('previous').addEventListener('click', () => selectLesson(order[order.indexOf(lesson.id) - 1]));
@@ -439,9 +458,9 @@ $('field').addEventListener('keydown', event => {
 });
 $('source').addEventListener('click', () => {
   const asset = assetMap.get(lesson.source?.referenceAsset); if (!asset) return;
-  text($('sourceTitle'), `${lesson.title.zh} · 原页对照`);
+  text($('sourceTitle'), t`${lesson.title.zh} · 原页对照`);
   $('sourceImage').src = `data:${asset.mime};base64,${asset.base64}`;
-  text($('sourceCaption'), `${lesson.source.title}${lesson.source.page ? ` · 第 ${lesson.source.page} 页` : ''}。${lesson.source.note || ''}`);
+  text($('sourceCaption'), `${lesson.source.title}${lesson.source.page ? t` · 第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}`);
   showDialog('sourceDialog');
 });
 $('manage').addEventListener('click', () => showDialog('manageDialog'));
@@ -455,24 +474,24 @@ $('fileInput').addEventListener('change', async event => {
   $('importReport').hidden = false; $('importReport').className = '';
   text($('importReport'), '正在检查文件…');
   try {
-    if (files.length > 200) throw new Error('一次最多导入 200 个文件。');
+    if (files.length > 200) throw new Error(t('一次最多导入 200 个文件。'));
     for (const file of files) {
       const limit = /\.json$/i.test(file.name) ? 50 * 1024 * 1024 : 1024 * 1024;
-      if (file.size > limit) throw new Error(`${file.name}：文件过大，YAML 上限 1 MB，战术包上限 50 MB。`);
+      if (file.size > limit) throw new Error(t`${file.name}：文件过大，YAML 上限 1 MB，战术包上限 50 MB。`);
     }
     const data = await Promise.all(files.map(async file => ({ name: file.name, text: await file.text() })));
     if (request !== importRequest) return;
-    const result = prepareImport(pack, data);
+    const result = prepareImport(canonicalPack, data);
     pendingImport = result;
     const lines = result.mode === 'pack'
-      ? [`将替换当前的 ${pack.lessons.length} 个条目，载入战术包中的 ${result.pack.lessons.length} 个条目和 ${result.pack.sections.length} 个章节。`, '当前内容需要保留时，请先保存完整战术包。']
-      : [`检查通过：新增 ${result.added.length} 条，整条更新 ${result.updated.length} 条。`, ...result.added.map(id => `新增 · ${result.pack.lessons.find(l => l.id === id).title.zh} (${id})`), ...result.updated.map(id => `更新 · ${result.pack.lessons.find(l => l.id === id).title.zh} (${id})`), ...(result.updated.length ? ['更新会替换整条内容，省略的旧字段不会保留；目录位置不变。'] : [])];
+      ? [t`将替换当前的 ${pack.lessons.length} 个条目，载入战术包中的 ${result.pack.lessons.length} 个条目和 ${result.pack.sections.length} 个章节。`, '当前内容需要保留时，请先保存完整战术包。']
+      : [t`检查通过：新增 ${result.added.length} 条，整条更新 ${result.updated.length} 条。`, ...result.added.map(id => t`新增 · ${localizePack(result.pack, getLanguage(), t).lessons.find(l => l.id === id).title.zh} (${id})`), ...result.updated.map(id => t`更新 · ${localizePack(result.pack, getLanguage(), t).lessons.find(l => l.id === id).title.zh} (${id})`), ...(result.updated.length ? ['更新会替换整条内容，省略的旧字段不会保留；目录位置不变。'] : [])];
     if (result.warnings.length) lines.push('', '提示：', ...result.warnings);
-    text($('importReport'), lines.join('\n')); $('importActions').hidden = false;
+    text($('importReport'), lines.map(line => t(line)).join('\n')); $('importActions').hidden = false;
   } catch (error) {
     if (request !== importRequest) return;
     $('importReport').className = 'error';
-    text($('importReport'), `没有改动当前手册。\n${error.message}`);
+    text($('importReport'), t`没有改动当前手册。\n${error.message}`);
   } finally { if (request === importRequest) $('fileInput').value = ''; }
 });
 function clearImport() { importRequest++; pendingImport = null; $('importActions').hidden = true; $('importReport').hidden = true; }
@@ -488,8 +507,8 @@ $('applyImport').addEventListener('click', () => {
 $('restore').addEventListener('click', () => {
   clearImport(); setPack(builtIn, '内置手册'); $('manageDialog').close(); notify('已回到内置手册。');
 });
-$('exportPack').addEventListener('click', () => { download('我的腰旗战术.flagbook.json', JSON.stringify(pack, null, 2), 'application/json;charset=utf-8'); notify('已开始保存完整战术包。'); });
-$('exportLesson').addEventListener('click', () => { download(`${lesson.id}.yaml`, dump(lesson, { lineWidth: 100, noRefs: true }), 'application/yaml;charset=utf-8'); notify('已开始下载当前条目。'); });
+$('exportPack').addEventListener('click', () => { download('Flagventures.flagbook.json', JSON.stringify(canonicalPack, null, 2), 'application/json;charset=utf-8'); notify('已开始保存完整战术包。'); });
+$('exportLesson').addEventListener('click', () => { download(`${lesson.id}.yaml`, dump(canonicalPack.lessons.find(item => item.id === lesson.id), { lineWidth: 100, noRefs: true }), 'application/yaml;charset=utf-8'); notify('已开始下载当前条目。'); });
 $('downloadTemplate').addEventListener('click', () => { download('new-play.yaml', template, 'application/yaml;charset=utf-8'); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 function tick(now) {

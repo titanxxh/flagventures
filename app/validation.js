@@ -1,4 +1,6 @@
+import { t } from './i18n.js';
 import { load, JSON_SCHEMA } from 'js-yaml';
+import { translationFields } from './localization.js';
 import Ajv2020 from 'ajv/dist/2020.js';
 import lessonSchema from '../content-format/lesson.schema.json' with { type: 'json' };
 import packSchema from '../content-format/pack.schema.json' with { type: 'json' };
@@ -9,7 +11,7 @@ const encoder = new TextEncoder();
 
 export class ContentError extends Error {
   constructor(filename, field, message) {
-    super(`${filename} · ${field || '内容'}：${message}`);
+    super(`${filename} · ${t(field || '内容')}: ${t(message)}`);
     this.name = 'ContentError';
     this.filename = filename;
     this.field = field || '内容';
@@ -70,7 +72,7 @@ function safeData(data, filename) {
 
 function checkedText(text, filename, limit) {
   if (typeof text !== 'string') fail(filename, '文件', '必须是 UTF-8 文本');
-  if (encoder.encode(text).length > limit) fail(filename, '文件大小', `超过 ${limit / 1024 / 1024} MB，未导入任何内容`);
+  if (encoder.encode(text).length > limit) fail(filename, '文件大小', t`超过 ${limit / 1024 / 1024} MB，未导入任何内容`);
 }
 
 // js-yaml's node listener sees the start of every real YAML node, so strings and
@@ -97,14 +99,14 @@ function readYaml(text, filename) {
           break;
         }
         if ('!&*'.includes(state.input[i] || '\0')) {
-          fail(filename, `YAML 第 ${state.input.slice(0, i).split('\n').length} 行`, '不支持标签、锚点或别名');
+          fail(filename, t`YAML 第 ${state.input.slice(0, i).split('\n').length} 行`, '不支持标签、锚点或别名');
         }
       },
     });
   } catch (error) {
     if (error instanceof ContentError) throw error;
-    const line = error.mark ? `第 ${error.mark.line + 1} 行，第 ${error.mark.column + 1} 列` : 'YAML';
-    fail(filename, line, `无法读取 YAML：${error.reason || error.message}`);
+    const line = error.mark ? t`第 ${error.mark.line + 1} 行，第 ${error.mark.column + 1} 列` : 'YAML';
+    fail(filename, line, t`无法读取 YAML：${error.reason || error.message}`);
   }
 }
 
@@ -138,15 +140,15 @@ function structure(kind, data, filename) {
   switch (error.keyword) {
     case 'required': path += `${path ? '.' : ''}${error.params.missingProperty}`; message = '缺少必填字段'; break;
     case 'additionalProperties': path += `${path ? '.' : ''}${error.params.additionalProperty}`; message = '不认识的字段'; break;
-    case 'exclusiveMinimum': message = `必须大于 ${error.params.limit}`; break;
-    case 'minimum': message = `不得小于 ${error.params.limit}`; break;
-    case 'minItems': message = `至少需要 ${error.params.limit} 项`; break;
-    case 'maxItems': message = `最多允许 ${error.params.limit} 项`; break;
+    case 'exclusiveMinimum': message = t`必须大于 ${error.params.limit}`; break;
+    case 'minimum': message = t`不得小于 ${error.params.limit}`; break;
+    case 'minItems': message = t`至少需要 ${error.params.limit} 项`; break;
+    case 'maxItems': message = t`最多允许 ${error.params.limit} 项`; break;
     case 'minLength': message = '请填写文字'; break;
-    case 'maxLength': message = `长度不能超过 ${error.params.limit}`; break;
-    case 'type': message = `类型不正确，应为 ${error.params.type}`; break;
-    case 'const': message = `必须是 ${JSON.stringify(error.params.allowedValue)}`; break;
-    case 'enum': message = `只能选 ${error.params.allowedValues.join('、')}`; break;
+    case 'maxLength': message = t`长度不能超过 ${error.params.limit}`; break;
+    case 'type': message = t`类型不正确，应为 ${error.params.type}`; break;
+    case 'const': message = t`必须是 ${JSON.stringify(error.params.allowedValue)}`; break;
+    case 'enum': message = t`只能选 ${error.params.allowedValues.join('、')}`; break;
     case 'uniqueItems': message = '不能包含重复值'; break;
     case 'discriminator': message = '动作或图形 type 不受支持'; break;
     case 'pattern': message = '格式不正确，请核对编号、颜色、路径或编码'; break;
@@ -158,14 +160,14 @@ function structure(kind, data, filename) {
 function unique(items, filename, field) {
   const ids = new Set();
   for (const item of items) {
-    if (ids.has(item.id)) fail(filename, field, `编号 ${item.id} 重复`);
+    if (ids.has(item.id)) fail(filename, field, t`编号 ${item.id} 重复`);
     ids.add(item.id);
   }
   return ids;
 }
 
 function requireRef(ids, id, filename, field, noun) {
-  if (!ids.has(id)) fail(filename, field, `${noun} ${id} 不存在`);
+  if (!ids.has(id)) fail(filename, field, t`${noun} ${id} 不存在`);
 }
 
 function validateReferenceUrl(value, filename, field) {
@@ -178,7 +180,7 @@ function validateReferenceUrl(value, filename, field) {
 }
 
 function validateGroups(section, lessonIds, filename) {
-  const field = `章节 ${section.id}.groups`;
+  const field = t`章节 ${section.id}.groups`;
   const groups = section.groups || [];
   unique(groups, filename, field);
   const positions = new Map(lessonIds.map((id, index) => [id, index]));
@@ -187,8 +189,8 @@ function validateGroups(section, lessonIds, filename) {
     const membersField = `${field}.${group.id}.lessonIds`;
     let previous;
     for (const id of group.lessonIds) {
-      if (!positions.has(id)) fail(filename, membersField, `战术 ${id} 不在本章节中`);
-      if (grouped.has(id)) fail(filename, membersField, `战术 ${id} 不能属于多个分组`);
+      if (!positions.has(id)) fail(filename, membersField, t`战术 ${id} 不在本章节中`);
+      if (grouped.has(id)) fail(filename, membersField, t`战术 ${id} 不能属于多个分组`);
       const index = positions.get(id);
       if (previous !== undefined && index !== previous + 1) {
         fail(filename, membersField, '分组成员必须按章节目录顺序连续排列');
@@ -200,10 +202,14 @@ function validateGroups(section, lessonIds, filename) {
 }
 
 function lessonSemantics(lesson, filename) {
+  const translatable = translationFields(lesson);
+  for (const path of Object.keys(lesson.translations?.en || {})) {
+    if (!translatable.has(path)) fail(filename, `translations.en.${path}`, '翻译只能引用已有的展示文字字段');
+  }
   const { width, height, lineOfScrimmageY } = lesson.field;
   const point = (value, field) => {
     if (value[0] < 0 || value[0] > width || value[1] < 0 || value[1] > height) {
-      fail(filename, field, `坐标必须位于画布内（x: 0–${width}，y: 0–${height}）`);
+      fail(filename, field, t`坐标必须位于画布内（x: 0–${width}，y: 0–${height}）`);
     }
   };
   const geometry = (segment, field) => {
@@ -220,7 +226,7 @@ function lessonSemantics(lesson, filename) {
   }
 
   for (const player of lesson.players) {
-    const field = `球员 ${player.id}`;
+    const field = t`球员 ${player.id}`;
     point(player.at, `${field}.at`);
     if (player.label.basis === 'shape-match' && !player.label.note.trim()) fail(filename, `${field}.label.note`, '请说明形状对照依据');
     const motion = player.motion;
@@ -229,24 +235,24 @@ function lessonSemantics(lesson, filename) {
     for (const option of paths) {
       let end = motion.startAt;
       option.steps.forEach((step, index) => {
-        geometry(step, `${field}.${option.id}.第 ${index + 1} 段`);
+        geometry(step, t`${field}.${option.id}.第 ${index + 1} 段`);
         end += step.seconds;
       });
       const tolerance = Number.EPSILON * Math.max(Math.abs(end), Math.abs(lesson.timeline.duration)) * Math.max(4, option.steps.length);
-      if (!Number.isFinite(end) || end - lesson.timeline.duration > tolerance) fail(filename, `${field}.${option.id}`, `路线到 ${Number(end.toPrecision(12))} 秒，超过 timeline.duration ${lesson.timeline.duration} 秒`);
+      if (!Number.isFinite(end) || end - lesson.timeline.duration > tolerance) fail(filename, `${field}.${option.id}`, t`路线到 ${Number(end.toPrecision(12))} 秒，超过 timeline.duration ${lesson.timeline.duration} 秒`);
     }
   }
   for (const zone of lesson.zones || []) {
-    const field = `区域 ${zone.id}`;
+    const field = t`区域 ${zone.id}`;
     if (zone.type === 'polygon') zone.points.forEach((value, index) => point(value, `${field}.points[${index + 1}]`));
     else {
       point(zone.center, `${field}.center`);
-      point([zone.center[0] - zone.radiusX, zone.center[1] - zone.radiusY], `${field}.边界`);
-      point([zone.center[0] + zone.radiusX, zone.center[1] + zone.radiusY], `${field}.边界`);
+      point([zone.center[0] - zone.radiusX, zone.center[1] - zone.radiusY], t`${field}.边界`);
+      point([zone.center[0] + zone.radiusX, zone.center[1] + zone.radiusY], t`${field}.边界`);
     }
   }
   for (const assignment of lesson.assignments || []) {
-    const field = `职责 ${assignment.id}`;
+    const field = t`职责 ${assignment.id}`;
     requireRef(players, assignment.player, filename, `${field}.player`, '球员');
     if (assignment.type === 'coverage') requireRef(zones, assignment.zone, filename, `${field}.zone`, '区域');
     if (assignment.type === 'matchup') requireRef(players, assignment.target, filename, `${field}.target`, '目标球员');
@@ -257,7 +263,7 @@ function lessonSemantics(lesson, filename) {
   }
   let previous = -1;
   for (const [index, frame] of lesson.keyframes.entries()) {
-    const field = `关键帧 ${frame.id}`;
+    const field = t`关键帧 ${frame.id}`;
     if (index === 0 && frame.at !== 0) fail(filename, `${field}.at`, '第一帧必须在 0 秒');
     if (frame.at <= previous) fail(filename, `${field}.at`, '关键帧时间必须严格递增');
     if (frame.at > lesson.timeline.duration) fail(filename, `${field}.at`, '超过 timeline.duration');
@@ -282,10 +288,10 @@ export function parseLesson(text, filename = '教学条目.yaml') {
 
 function validateAsset(asset, filename) {
   let bytes;
-  try { bytes = atob(asset.base64); } catch { fail(filename, `图片 ${asset.id}.base64`, '不是有效的 Base64'); }
-  if (btoa(bytes) !== asset.base64) fail(filename, `图片 ${asset.id}.base64`, '不是标准 Base64 编码');
+  try { bytes = atob(asset.base64); } catch { fail(filename, t`图片 ${asset.id}.base64`, '不是有效的 Base64'); }
+  if (btoa(bytes) !== asset.base64) fail(filename, t`图片 ${asset.id}.base64`, '不是标准 Base64 编码');
   const signature = asset.mime === 'image/png' ? [137, 80, 78, 71, 13, 10, 26, 10] : [255, 216, 255];
-  if (!signature.every((byte, i) => bytes.charCodeAt(i) === byte)) fail(filename, `图片 ${asset.id}.mime`, '图片内容与 PNG/JPEG 格式不一致');
+  if (!signature.every((byte, i) => bytes.charCodeAt(i) === byte)) fail(filename, t`图片 ${asset.id}.mime`, '图片内容与 PNG/JPEG 格式不一致');
 }
 
 export function validatePack(pack, filename = '战术包') {
@@ -297,18 +303,18 @@ export function validatePack(pack, filename = '战术包') {
   const listed = new Set();
   for (const section of pack.sections) {
     for (const id of section.lessonIds) {
-      requireRef(lessons, id, filename, `章节 ${section.id}.lessonIds`, '战术');
-      if (listed.has(id)) fail(filename, 'sections', `战术 ${id} 在目录出现多次`);
+      requireRef(lessons, id, filename, t`章节 ${section.id}.lessonIds`, '战术');
+      if (listed.has(id)) fail(filename, 'sections', t`战术 ${id} 在目录出现多次`);
       listed.add(id);
     }
     validateGroups(section, section.lessonIds, filename);
   }
   const warnings = [];
   for (const lesson of pack.lessons) {
-    if (!listed.has(lesson.id)) fail(filename, 'sections', `战术 ${lesson.id} 未出现在目录中`);
+    if (!listed.has(lesson.id)) fail(filename, 'sections', t`战术 ${lesson.id} 未出现在目录中`);
     lessonSemantics(lesson, `${filename} / ${lesson.title.zh}（${lesson.id}）`);
     const reference = lesson.source?.referenceAsset;
-    if (reference && !assets.has(reference)) warnings.push(`${lesson.title.zh}：原页图片 ${reference} 不在包内，对照不可用；站位和路线仍可使用。`);
+    if (reference && !assets.has(reference)) warnings.push(t`${lesson.title.zh}：原页图片 ${reference} 不在包内，对照不可用；站位和路线仍可使用。`);
   }
   return { pack, warnings };
 }
@@ -321,14 +327,14 @@ export function validateCatalog(catalog, lessonsByFile, filename = '目录') {
   for (const section of catalog.sections) validateGroups(section, section.entries.map(entry => entry.id), filename);
   const paths = new Set();
   for (const entry of entries) {
-    if (paths.has(entry.file)) fail(filename, 'entries.file', `文件 ${entry.file} 被重复引用`);
+    if (paths.has(entry.file)) fail(filename, 'entries.file', t`文件 ${entry.file} 被重复引用`);
     paths.add(entry.file);
     if (lessonsByFile !== undefined) {
       const lesson = lessonsByFile instanceof Map ? lessonsByFile.get(entry.file) :
         Object.hasOwn(lessonsByFile, entry.file) ? lessonsByFile[entry.file] : undefined;
       if (!lesson) fail(filename, entry.file, '找不到目录引用的内容文件');
       validateLesson(lesson, entry.file);
-      if (lesson.id !== entry.id) fail(filename, entry.file, `条目 ID 应为 ${entry.id}，实际为 ${lesson.id}`);
+      if (lesson.id !== entry.id) fail(filename, entry.file, t`条目 ID 应为 ${entry.id}，实际为 ${lesson.id}`);
     }
   }
   return { catalog, warnings: [] };
@@ -366,7 +372,7 @@ export function prepareImport(currentPack, files) {
   const incoming = files.map(file => parseLesson(file.text, file.name));
   const names = new Map();
   incoming.forEach((lesson, i) => {
-    if (names.has(lesson.id)) fail(files[i].name, 'id', `与 ${names.get(lesson.id)} 的编号 ${lesson.id} 重复`);
+    if (names.has(lesson.id)) fail(files[i].name, 'id', t`与 ${names.get(lesson.id)} 的编号 ${lesson.id} 重复`);
     names.set(lesson.id, files[i].name);
   });
   validatePack(currentPack, '当前内容');

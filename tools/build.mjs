@@ -25,7 +25,7 @@ const output = html.replace('/*__APP_CSS__*/', () => css)
   .replace('__TEMPLATE_DATA__', () => scriptSafe(template))
   .replace('/*__APP_JS__*/', () => `/*!\n${licenseText.replaceAll('*/', '* /')}\n*/\n` + bundle.outputFiles[0].text.replaceAll('</script', '<\\/script'));
 await mkdir(destination, { recursive: true });
-await writeFile(`${destination}/腰旗小教练.html`, output);
+await writeFile(`${destination}/Flagventures.html`, output);
 await writeFile(`${destination}/index.html`, output);
 await writeFile(`${destination}/NFL-FLAG完整战术.flagbook.json`, JSON.stringify(pack, null, 2));
 await writeFile(`${destination}/第三方开源许可.txt`, licenseText);

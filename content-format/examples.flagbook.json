@@ -329,7 +329,69 @@
         "口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。",
         "路线坐标保留附件 p7 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。",
         "资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。"
-      ]
+      ],
+      "translations": {
+        "en": {
+          "title.zh": "SINGLE BACK PLAY 1",
+          "summary": "X and Z cut inside while Y breaks wide. C joins only if the other three receivers are covered.",
+          "teaching.goal": "Spread out and keep a conditional outlet.",
+          "teaching.cooperation": "X and Z cut inside while Y breaks wide. C joins only if the other three receivers are covered.",
+          "teaching.cue": "Run your route and leave room for teammates.",
+          "teaching.question": "Who can offer another option if all three receivers are covered?",
+          "source.title": "NFL FLAG 2024 bilingual study edition (user-provided PDF)",
+          "source.note": "Route geometry follows the supplied PDF, not measured yards. Route names and teamwork explanations also use NFL FLAG’s official article and videos. Child-friendly cues, questions and animation timing are teaching adaptations.",
+          "source.references.0.title": "NFL FLAG · Single Back play explanations",
+          "source.references.0.locator": "Single Back · Play 1",
+          "source.references.0.note": "Supports the play’s intent and relative timing, not an exact stopwatch.",
+          "source.references.1.title": "NFL FLAG · Single Back video",
+          "source.references.1.locator": "0:34–0:55",
+          "source.references.1.note": "Timestamps locate the narration; its order does not define player start order.",
+          "timeline.note": "C releases conditionally: the other three receivers are covered. Choose a situation first. The release branch waits two teaching seconds; the other branch only shows the known position. Ten seconds total, wait lengths and other players starting together are illustrative, not game rules or a complete timing sequence.",
+          "notes.0": "This shows offensive routes without simulating defenders. Creating space is the play’s intent, not a guaranteed outcome.",
+          "notes.1": "The cues and questions are teaching adaptations. Agree on crossing order before practicing on the field.",
+          "notes.2": "Relative positions follow source page 7. Short connections approximate parts hidden beneath markers; they are not extra actions or measured yards.",
+          "notes.3": "No complete QB read order, mandatory target or pass timing is specified. Crossing routes do not imply a handoff.",
+          "players.Q.label.zh": "No route shown",
+          "players.Q.label.description": "Only Q’s starting position is shown. Later movement is not specified.",
+          "players.Q.label.note": "Based on the diagram on page 7; later movement is not implied.",
+          "players.Q.coaching.cooperation": "Observe the receiving areas offered by teammates. No fixed read order or mandatory target is specified.",
+          "players.Q.coaching.timing": "The diagram does not specify Q’s later movement or when to pass.",
+          "players.Q.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.C.label.zh": "Corner",
+          "players.C.label.description": "Run forward, then break diagonally toward the right sideline.",
+          "players.C.label.note": "Name follows the official NFL FLAG explanation (0:34–0:55); direction and geometry retain the supplied diagram on page 7.",
+          "players.C.coaching.cooperation": "Join on a Corner if the other receivers are covered.",
+          "players.C.coaching.timing": "Release if all three other receivers are covered. Choose the situation before playing. The two-second wait is a teaching setting.",
+          "players.C.motion.prompt": "Choose a teaching situation first: C releases if all three other receivers are covered. This animation does not judge the defense.",
+          "players.C.motion.options.released.title": "All three receivers covered: C joins",
+          "players.C.motion.options.released.note": "Wait two demonstration seconds, then follow the route. The condition comes from the official article; two seconds is a teaching setting.",
+          "players.C.motion.options.not-shown.title": "Do not show C’s later release",
+          "players.C.motion.options.not-shown.note": "Only the known starting position is shown. Subsequent movement is unspecified; C is not required to stand still throughout the play.",
+          "players.X.label.zh": "Post",
+          "players.X.label.description": "Run forward a short distance, then cut diagonally toward the middle.",
+          "players.X.label.note": "Name follows the official NFL FLAG explanation (0:34–0:55); direction and geometry retain the supplied diagram on page 7.",
+          "players.X.coaching.cooperation": "Run a Post toward the middle, working with Z on the other side.",
+          "players.X.coaching.timing": "No exact start order is specified for this player. Starting at zero is a teaching setting.",
+          "players.Y.label.zh": "Corner",
+          "players.Y.label.description": "Start behind Q, run diagonally forward-left, then break toward the left side.",
+          "players.Y.label.note": "Name follows the official NFL FLAG explanation (0:34–0:55); direction and geometry retain the supplied diagram on page 7.",
+          "players.Y.coaching.cooperation": "Break out from the backfield to offer a different direction from X and Z.",
+          "players.Y.coaching.timing": "No exact start order is specified for this player. Starting at zero is a teaching setting.",
+          "players.Z.label.zh": "Post",
+          "players.Z.label.description": "Run forward a short distance, then cut diagonally toward the middle.",
+          "players.Z.label.note": "Name follows the official NFL FLAG explanation (0:34–0:55); direction and geometry retain the supplied diagram on page 7.",
+          "players.Z.coaching.cooperation": "Run a Post toward the middle, giving Q another option alongside X.",
+          "players.Z.coaching.timing": "No exact start order is specified for this player. Starting at zero is a teaching setting.",
+          "keyframes.start.label": "Line up · Choose a situation",
+          "keyframes.start.cue": "Choose the situation first. Find Q, C, X, Y and Z. X and Z cut inside while Y breaks wide. C joins only if the other three receivers are covered.",
+          "keyframes.spread.label": "Follow the selected situation",
+          "keyframes.spread.cue": "C’s movement depends on the selected situation. X and Z cut inside while Y breaks wide. C joins only if the other three receivers are covered.",
+          "keyframes.middle.label": "Pause · See the teamwork",
+          "keyframes.middle.cue": "Pause and compare teammates’ routes. Who can offer another option if all three receivers are covered?",
+          "keyframes.end.label": "Recall · Explain it",
+          "keyframes.end.cue": "Who can offer another option if all three receivers are covered?"
+        }
+      }
     },
     {
       "format": "flag-lesson",
@@ -344,7 +406,7 @@
       "source": {
         "title": "NFL FLAG 2024 中英文对照学习译本（用户附件）",
         "page": 59,
-        "note": "仅核对所附 PDF；中文为非官方学习译文。以下坐标由已核对的原型坐标除以 10，不是实际码数。"
+        "note": "以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。"
       },
       "field": {
         "width": 100,
@@ -767,7 +829,67 @@
         "所有坐标与半径是原型数据除以 10；原型已分别归一化原 PDF 场地区，因此这些数值不是实际码数。",
         "区域指示线和 R 冲传方向线都是静态 guide；从原始线段起点出发，不强改为球员中心，也不触发人物跑动。",
         "R 的箭头实际终点在 C 左上方，未追加冲到 Q 的路线或盯人对象。"
-      ]
+      ],
+      "translations": {
+        "en": {
+          "title.zh": "NFL FLAG COVER 2",
+          "summary": "Use four keyframes to explore the four coverage zones and R’s rush direction. Players remain at their known positions.",
+          "source.title": "NFL FLAG 2024 bilingual study edition (user-provided PDF)",
+          "source.note": "Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates are not actual yards.",
+          "timeline.note": "The timeline reveals teaching layers only; it does not represent defender start order or simulate pursuit.",
+          "notes.0": "Page 59 keeps its original orientation: the offense attacks downward and the back coverage zones are also below.",
+          "notes.1": "Coordinates and radii are scaled from the normalized PDF field area. They are drawing units, not actual yards.",
+          "notes.2": "Zone and rush guides are static. They keep their original starting points and do not trigger player movement.",
+          "notes.3": "R’s arrow ends above and left of C. No extra route to Q or matchup has been added.",
+          "players.Q.label.zh": "Movement not specified",
+          "players.Q.label.description": "Only Q’s starting position is shown. Later movement is not specified.",
+          "players.Q.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.C.label.zh": "Movement not specified",
+          "players.C.label.description": "Only C’s starting position is shown. Later movement is not specified.",
+          "players.C.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.X.label.zh": "Movement not specified",
+          "players.X.label.description": "Only X’s starting position is shown. Later movement is not specified.",
+          "players.X.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.Y.label.zh": "Movement not specified",
+          "players.Y.label.description": "Only Y’s starting position is shown. Later movement is not specified.",
+          "players.Y.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.Z.label.zh": "Movement not specified",
+          "players.Z.label.description": "Only Z’s starting position is shown. Later movement is not specified.",
+          "players.Z.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.D1.label.zh": "Front-left zone",
+          "players.D1.label.description": "The dashed guide points to the front-left zone. This is a coverage assignment, not a running path.",
+          "players.D1.label.note": "D1 is a teaching ID. Position and assignment follow source page 59.",
+          "players.D1.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.D2.label.zh": "Back-left zone",
+          "players.D2.label.description": "The dashed guide points to the back-left zone. This is a coverage assignment, not a running path.",
+          "players.D2.label.note": "D2 is a teaching ID. Position and assignment follow source page 59.",
+          "players.D2.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.D3.label.zh": "Back-right zone",
+          "players.D3.label.description": "The dashed guide points to the back-right zone. This is a coverage assignment, not a running path.",
+          "players.D3.label.note": "D3 is a teaching ID. Position and assignment follow source page 59.",
+          "players.D3.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.D4.label.zh": "Front-right zone",
+          "players.D4.label.description": "The dashed guide points to the front-right zone. This is a coverage assignment, not a running path.",
+          "players.D4.label.note": "D4 is a teaching ID. Position and assignment follow source page 59.",
+          "players.D4.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "players.R.label.zh": "Rusher",
+          "players.R.label.description": "The original R marker has a rush arrow pointing upward on screen.",
+          "players.R.label.note": "R and its rush guide come from source page 59; no extra route to Q is inferred.",
+          "players.R.motion.note": "Only the known starting position is shown. Later movement is unspecified; this does not require standing still.",
+          "keyframes.start.label": "Starting positions",
+          "keyframes.start.cue": "Find the five defenders. D1–D4 are teaching IDs; R is the original marker.",
+          "keyframes.front.label": "Two front zones",
+          "keyframes.front.cue": "Look at the two front zones and their defenders. Each zone represents an assignment.",
+          "keyframes.deep.label": "Two back zones",
+          "keyframes.deep.cue": "Look at the two back zones. Players do not run around the ellipse boundaries.",
+          "keyframes.all.label": "All assignments",
+          "keyframes.all.cue": "Look at all four coverage zones and R’s arrow. Explain each defender’s job.",
+          "zones.front-left.label": "Front-left zone",
+          "zones.deep-left.label": "Back-left zone",
+          "zones.deep-right.label": "Back-right zone",
+          "zones.front-right.label": "Front-right zone"
+        }
+      }
     },
     {
       "format": "flag-lesson",
@@ -1063,7 +1185,13 @@
         "本模板没有 source，也能完整表达自编内容；所有站位和 X 路线都是作者填写的示例。",
         "修改 id 为你的永久编号；修改标题不会自动改编号。",
         "填写动作后核对每人的 startAt 与动作时长总和，不能超过 timeline.duration。"
-      ]
+      ],
+      "translations": {
+        "en": {
+          "title.zh": "My first play",
+          "summary": "A template with a Slant route for X. Complete the other players’ roles."
+        }
+      }
     }
   ],
   "sections": [

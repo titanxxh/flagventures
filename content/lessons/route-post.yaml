@@ -1,4 +1,4 @@
-# UTF-8；教学文字与原图事实分开记录。
+# UTF-8; display translations share the same routes and timing.
 format: flag-lesson
 version: 1
 id: route-post
@@ -76,3 +76,28 @@ keyframes:
     cue: 说出「POST」，再不用动画，用手指画一遍这条路线。
 notes:
   - 这是原路线树中这一条路径的单独展示；保持原图方向和相对位置，没有按标准距离重画。
+translations:
+  en:
+    title.zh: POST
+    summary: POST · Run deeper first, then cut diagonally toward the middle.
+    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.note: >-
+      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates are not
+      actual yards.
+    timeline.note: >-
+      Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
+      route and is illustrative, not official start order, equal player speeds or handoff timing.
+    notes.0: >-
+      This isolates one route from the route tree, preserving its direction and relative position without
+      imposing standard distances.
+    players.X.label.zh: POST
+    players.X.label.description: Run deeper first, then cut diagonally toward the middle.
+    players.X.label.note: The English route name is printed in the source. X is an added demonstration-player ID.
+    keyframes.start.label: Starting positions
+    keyframes.start.cue: Find X’s start and trace the route with a finger.
+    keyframes.early.label: Early movement
+    keyframes.early.cue: Follow the direction of the first part of the route.
+    keyframes.middle.label: Mid-route check
+    keyframes.middle.cue: Pause and point to the next part of the route.
+    keyframes.end.label: Route endpoints
+    keyframes.end.cue: Say “POST”, then draw the route with your finger without watching the animation.

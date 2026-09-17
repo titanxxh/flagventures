@@ -1,4 +1,4 @@
-# UTF-8；教学文字与原图事实分开记录。
+# UTF-8; display translations share the same routes and timing.
 format: flag-lesson
 version: 1
 id: hb-dive
@@ -201,3 +201,53 @@ keyframes:
 notes:
   - 保留原图可见的直线与贝塞尔曲线；不根据名称推断传球、真假交球或最终持球人。
   - 路线的共同启动和 10 秒演示时长是读图教学设定，不表示真实交接时序。
+translations:
+  en:
+    title.zh: HB DIVE
+    summary: Follow each starting position and arrow to understand the routes and teamwork.
+    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.note: >-
+      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates are not
+      actual yards.
+    timeline.note: >-
+      Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
+      route and is illustrative, not official start order, equal player speeds or handoff timing.
+    notes.0: >-
+      Visible straight and curved paths are preserved. The title does not determine passes, real or fake
+      handoffs, or the final ball carrier.
+    notes.1: Starting together and finishing in ten seconds are teaching settings, not real handoff timing.
+    players.Q.label.zh: Backfield loop
+    players.Q.label.description: Follow the very short curve to the right. The diagram does not specify what happens next.
+    players.Q.label.note: >-
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
+      standard receiving route from the play’s name.
+    players.C.label.zh: Run forward, then cut across to the left on screen.
+    players.C.label.description: Run forward, then cut across to the left on screen.
+    players.C.label.note: >-
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
+      standard receiving route from the play’s name.
+    players.X.label.zh: Run forward, then break back a short distance diagonally right.
+    players.X.label.description: Run forward, then break back a short distance diagonally right.
+    players.X.label.note: >-
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
+      standard receiving route from the play’s name.
+    players.Y.label.zh: Run diagonally forward-right from the backfield.
+    players.Y.label.description: Run diagonally forward-right from the backfield.
+    players.Y.label.note: >-
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
+      standard receiving route from the play’s name.
+    players.Z.label.zh: Run forward, then break back a short distance diagonally right.
+    players.Z.label.description: Run forward, then break back a short distance diagonally right.
+    players.Z.label.note: >-
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
+      standard receiving route from the play’s name.
+    keyframes.start.label: Starting positions
+    keyframes.start.cue: Find X and Z. Try one role, then switch.
+    keyframes.early.label: Early movement
+    keyframes.early.cue: Point to the current positions of X and Z and follow their next segments.
+    keyframes.middle.label: Mid-route check
+    keyframes.middle.cue: Point to the current positions of X and Z and follow their next segments.
+    keyframes.end.label: Route endpoints
+    keyframes.end.cue: >-
+      Recall where X and Z started and how they turned. Explain another player’s route, then look at the whole
+      team.

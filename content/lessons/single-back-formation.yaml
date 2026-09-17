@@ -1,4 +1,4 @@
-# UTF-8；教学文字与原图事实分开记录。
+# UTF-8; display translations share the same routes and timing.
 format: flag-lesson
 version: 1
 id: single-back-formation
@@ -94,3 +94,55 @@ keyframes:
 notes:
   - 球员身份按字母与起点核对，颜色仅作辅助。
   - 路线从 PDF 轮廓取中心线，标记遮挡的短起点作近似连接。没有加入传球目标或球权变化。
+translations:
+  en:
+    title.zh: SINGLE BACK
+    summary: >-
+      Find all five starting positions. Compare spacing and front-to-back order; this formation diagram does
+      not specify later movement.
+    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.note: >-
+      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates are not
+      actual yards.
+    timeline.note: This static formation shows starting positions only; no later movement is inferred.
+    notes.0: Identify players by their letters and starting positions; colors are only an aid.
+    notes.1: >-
+      Routes follow the PDF outlines with approximate short connections under player markers. No pass target
+      or possession changes have been added.
+    players.Q.label.zh: Middle starting position
+    players.Q.label.description: >-
+      Q starts in the middle of the diagram. Compare the position with C, Q and the other teammates. No later
+      route is specified.
+    players.Q.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    players.C.label.zh: Middle starting position
+    players.C.label.description: >-
+      C starts in the middle of the diagram. Compare the position with C, Q and the other teammates. No later
+      route is specified.
+    players.C.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    players.X.label.zh: Left starting position
+    players.X.label.description: >-
+      X starts on the left of the diagram. Compare the position with C, Q and the other teammates. No later
+      route is specified.
+    players.X.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    players.Y.label.zh: Middle starting position
+    players.Y.label.description: >-
+      Y starts in the middle of the diagram. Compare the position with C, Q and the other teammates. No later
+      route is specified.
+    players.Y.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    players.Z.label.zh: Right starting position
+    players.Z.label.description: >-
+      Z starts on the right of the diagram. Compare the position with C, Q and the other teammates. No later
+      route is specified.
+    players.Z.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    keyframes.start.label: Starting positions
+    keyframes.start.cue: Find every letter and compare the players’ starting positions.

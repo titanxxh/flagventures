@@ -71,6 +71,9 @@
           },
           "minItems": 1,
           "uniqueItems": true
+        },
+        "titleEn": {
+          "$ref": "#/$defs/text"
         }
       },
       "required": [
@@ -102,6 +105,9 @@
           "items": {
             "$ref": "#/$defs/group"
           }
+        },
+        "titleEn": {
+          "$ref": "#/$defs/text"
         }
       },
       "required": [

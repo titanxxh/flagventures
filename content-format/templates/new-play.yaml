@@ -103,3 +103,9 @@ keyframes:
     label: "示例路线结束"
     cue: "这里仅表示示例路径走完；完善其他人的动作后再安排全队讲解。"
 notes: ["本模板没有 source，也能完整表达自编内容；所有站位和 X 路线都是作者填写的示例。", "修改 id 为你的永久编号；修改标题不会自动改编号。", "填写动作后核对每人的 startAt 与动作时长总和，不能超过 timeline.duration。"]
+
+# 可选英文；只翻译已有文字，不复制坐标和时间。未填写的英文保留原文。
+translations:
+  en:
+    title.zh: My first play
+    summary: A template with a Slant route for X. Complete the other players’ roles.

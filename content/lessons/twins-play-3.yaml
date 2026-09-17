@@ -1,4 +1,4 @@
-# UTF-8；官网讲解、附件图形与教学设置分开记录。
+# UTF-8; display translations share the same routes and timing.
 format: flag-lesson
 version: 1
 id: twins-play-3
@@ -245,3 +245,83 @@ notes:
   - 路线坐标保留附件 p29 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
   - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。
   - 官网正文曾将短 Out 的执行者写作 safety；对应视频 1:16 明确说 center，本条按中锋 C 记录。
+translations:
+  en:
+    title.zh: TWINS PLAY 3
+    summary: X's Corner and Z's Post spread out. Y changes direction on a Chair while C offers a short Out.
+    teaching.goal: Remember Y's two turns and the other outlets.
+    teaching.cooperation: X's Corner and Z's Post spread out. Y changes direction on a Chair while C offers a short Out.
+    teaching.cue: Forward, out, then forward again; remember teammates too.
+    teaching.question: Who turns twice, and who offers a short option?
+    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.note: >-
+      Route geometry follows the supplied PDF, not measured yards. Route names and teamwork explanations also
+      use NFL FLAG’s official article and videos. Child-friendly cues, questions and animation timing are
+      teaching adaptations.
+    source.references.0.title: NFL FLAG · Twins play explanations
+    source.references.0.locator: Twins · Play 3
+    source.references.0.note: Supports the play’s intent and relative timing, not an exact stopwatch.
+    source.references.1.title: NFL FLAG · Twins video
+    source.references.1.locator: 1:12–1:35
+    source.references.1.note: Timestamps locate the narration; its order does not define player start order.
+    timeline.note: >-
+      Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
+      route and is illustrative, not official start order, equal player speeds or handoff timing.
+    notes.0: >-
+      This shows offensive routes without simulating defenders. Creating space is the play’s intent, not a
+      guaranteed outcome.
+    notes.1: The cues and questions are teaching adaptations. Agree on crossing order before practicing on the field.
+    notes.2: >-
+      Relative positions follow source page 29. Short connections approximate parts hidden beneath markers;
+      they are not extra actions or measured yards.
+    notes.3: >-
+      No complete QB read order, mandatory target or pass timing is specified. Crossing routes do not imply a
+      handoff.
+    notes.4: >-
+      The article calls the short Out runner a safety, but the video at 1:16 explicitly says center. This
+      lesson uses C.
+    players.Q.label.zh: Movement not specified
+    players.Q.label.description: Only Q’s starting position is shown. Later movement is not specified.
+    players.Q.coaching.cooperation: Observe the receiving areas offered by teammates. No fixed read order or mandatory target is specified.
+    players.Q.coaching.timing: The diagram does not specify Q’s later movement or when to pass.
+    players.Q.motion.note: >-
+      Only the known starting position is shown. Later movement is unspecified; this does not require standing
+      still.
+    players.C.label.zh: Out
+    players.C.label.description: Move forward, then across to the left. Left and right refer to the diagram.
+    players.C.label.note: >-
+      Name follows the official NFL FLAG explanation (1:12–1:35); direction and geometry retain the supplied
+      diagram on page 29.
+    players.C.coaching.cooperation: Run a short Out left to complement the deeper options.
+    players.C.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.X.label.zh: Corner
+    players.X.label.description: Move forward, then diagonally forward-left. Left and right refer to the diagram.
+    players.X.label.note: >-
+      Name follows the official NFL FLAG explanation (1:12–1:35); direction and geometry retain the supplied
+      diagram on page 29.
+    players.X.coaching.cooperation: Run a Corner away from Z's side.
+    players.X.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.Y.label.zh: Chair
+    players.Y.label.description: Move forward, then across to the right, then forward. Left and right refer to the diagram.
+    players.Y.label.note: >-
+      Name follows the official NFL FLAG explanation (1:12–1:35); direction and geometry retain the supplied
+      diagram on page 29.
+    players.Y.coaching.cooperation: Run a Chair with two turns, at a different depth from C.
+    players.Y.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    players.Z.label.zh: Post
+    players.Z.label.description: Move forward, then diagonally forward-left. Left and right refer to the diagram.
+    players.Z.label.note: >-
+      Name follows the official NFL FLAG explanation (1:12–1:35); direction and geometry retain the supplied
+      diagram on page 29.
+    players.Z.coaching.cooperation: Run a Post to offer a different deeper option from X and Y.
+    players.Z.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
+    keyframes.start.label: Line up · Find teammates
+    keyframes.start.cue: >-
+      Find Q, C, X, Y and Z. X's Corner and Z's Post spread out. Y changes direction on a Chair while C offers
+      a short Out.
+    keyframes.spread.label: Watch the routes
+    keyframes.spread.cue: Pause and compare teammates’ routes. Who turns twice, and who offers a short option?
+    keyframes.middle.label: Pause · See the teamwork
+    keyframes.middle.cue: Pause and compare teammates’ routes. Who turns twice, and who offers a short option?
+    keyframes.end.label: Recall · Explain it
+    keyframes.end.cue: Who turns twice, and who offers a short option?
