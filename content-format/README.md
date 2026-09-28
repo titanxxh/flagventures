@@ -288,7 +288,59 @@ keyframes:
 
 `guide` 是静态指示线：`from` 加 `segments`。段支持 `line` / `quadratic` / `cubic`，字段同动作段的几何部分，**没有秒数、没有 pause、没有 facePlayer**。coverage / matchup 的 guide 可省略；省略时仅展示职责文字/高亮，不擅自连一条中心到中心的线。rush 的 guide 只画箭头，不让队员自动沿它追逐。
 
-球权变化不由以上任何字段推断。v1 不引入传球、真假交接或动态跟防脚本；有明确的局部动作说明可写在讲解文字中，扩展动画需另行设计可验证的数据语义。
+球权变化不由以上任何字段推断。可用下述可选 `ball` 字段明确编写；未填写的旧条目保持只看跑位。区域、视线、球员路线交叉均不自动触发球权变化。
+
+### 球路情形：传球、交接与假动作
+
+当前阅读器在版本 1 内增加可选 `ball` 扩展，继续支持没有它的旧文件；旧版应用会拒绝含新字段的文件，需更新应用。不能仅添加一条球的几何线：每个情形都要明确球员、事件、时间与依据。
+
+```yaml
+ball:
+  initialOwner: C
+  defaultScenario: pass-x
+  note: 本次传球对象、接球点和秒数为教学选择，不是固定阅读顺序。
+  scenarios:
+    - id: pass-x
+      title: 传给 X
+      basis: illustration
+      note: 选择 X 的接应，其他人仍按本次情形跑位。
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球给 Q
+          cue: 球由中锋送到后场。
+          endLabel: Q 接到开球
+          endCue: Q 持球观察，队友继续跑位。
+        - id: pass
+          type: pass
+          from: Q
+          to: X
+          at: 3
+          endAt: 3.8
+          label: Q 出手传给 X
+          cue: 看球离手后飞向 X 将要到达的位置。
+          endLabel: X 接到球
+          endCue: 接球以后球跟着 X 一起移动。
+```
+
+这是字段片段，需要与包含 C/Q/X 的完整条目一起使用，并校准其运动。所有时间共用 `timeline`；上面的秒数是教学设置。`ball` 适用于 `offense` / `run`。
+
+- `initialOwner` 指向开球前持球人；`defaultScenario` 必须匹配情形 ID。`scenarios` 中每个 `id` 唯一，有 `title`、`note`、`basis` 和 `events`；`events: []` 表示全程由初始持球人持球。`basis` 为 `illustration` / `source` / `coach`，后两者要求条目顶层的 `source.title` 填写可识别的来源，再用情形的 `note` 说明具体依据。
+- `snap` / `pass` 必须有 `from`、`to`、`at`、`endAt`。球从出手时的给球人位置飞到接球时的接球人位置；中间不跟踪接球人，接到后随接球人跑。
+- `handoff` 在 `at` 换持球人，不填 `endAt`。双方必须在该时刻靠近，间距不大于场地宽度的 1%；它是图坐标容差，不是真实人体接触距离。
+- `fake-handoff` 有 `from` / `to`，但不换球权；`pump-fake` 只有 `from`。二者可填 `endAt` 表示假动作时长。假交接也要求双方在开始时靠近。
+- 每个事件有唯一 `id`、`label`、`cue`。有 `endAt` 时可另写 `endLabel` / `endCue`。播放器自动合并事件开始与结束关键帧；同刻球事件优先，源文件原帧不被修改。
+- 事件按 `at` 严格递增，不能重叠或超出总时长。只有当前持球人可以传/交球或做假动作；飞行结束的同一时刻可以衔接下一事件。
+- 情形可以填写 `choices: {C: released}`，须为所有仍有 `motion.choice` 的球员选定分支。选择情形时统一生效；“只看跑位”模式保留原来的手动分支选择。
+- 可选 `motions: [{player: Q, motion: ...}]` 替换本次情形中某人的完整动作，使用已有 motion 格式。用它编排共同交接点、等待与之后的带球路线。原始 `players` 不变；覆盖必须有清楚的教学依据，不能在渲染中临时挪人补洞。
+- 切换情形回到 0 秒并暂停。关闭“显示球路”恢复原始球员跑位。球员关注按钮只决定看谁，不会改变接球目标。
+- 当前只演示成功传接球与持球链，不自动判断防守、掉球、拦截或比赛规则。动画秒数不是比赛出手计时。
+
+翻译路径为 `ball.note`、`ball.scenarios.<情形ID>.title/note`、`ball.scenarios.<情形ID>.events.<事件ID>.label/cue/endLabel/endCue`。动作覆盖中 `motion.note/prompt` 和选项说明也支持翻译，路径用球员 ID，例如 `ball.scenarios.pass-x.motions.Q.motion.note`。ID、位置、时间和球权链在两种语言间共享。下载已有条目的 YAML 可取得完整维护样例。
 
 ## 9. 导入、目录和内容包
 

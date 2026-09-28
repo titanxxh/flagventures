@@ -84,7 +84,7 @@ try {
     const meta = await page.locator('#builtInData').evaluate(node => {
       const pack = JSON.parse(node.textContent);
       return {entries: pack.lessons.map(item => ({id: item.id, kind: item.kind, count: item.players.length,
-        duration: item.timeline.duration, source: item.source?.referenceAsset, sourcePage: item.source?.page,
+        duration: item.timeline.duration, ball: Boolean(item.ball), source: item.source?.referenceAsset, sourcePage: item.source?.page,
         choices: item.players.filter(p => p.motion.type === 'choice').map(p => p.id),
         guides: (item.assignments || []).filter(a => a.guide).map(a => ({id: a.id, type: a.type}))})),
       order: pack.sections.flatMap(section => section.lessonIds), assets: pack.assets};
@@ -102,8 +102,8 @@ try {
       await select(item.id);
       assert.equal(await currentTime(), 0, item.id);
       assert.equal(await page.locator('#field .player').count(), item.count, item.id);
-      assert.equal(await page.locator('#play').isDisabled(), item.duration === 0 || item.choices.length > 0, item.id);
-      for (const playerId of item.choices) await page.locator(`[data-choice-player="${playerId}"]`).first().click();
+      assert.equal(await page.locator('#play').isDisabled(), item.duration === 0 || (!item.ball && item.choices.length > 0), item.id);
+      for (const playerId of item.ball ? [] : item.choices) await page.locator(`[data-choice-player="${playerId}"]`).first().click();
       await page.locator('#frames button').last().click();
       const transforms = await positions();
       assert.ok(transforms.every(([, transform]) => transform && !/NaN|Infinity|undefined/.test(transform)), item.id);
@@ -257,6 +257,7 @@ try {
   await caseRun('official teaching explains roles, preserves conditional releases and links to sources', async () => {
     await open();
     await select('single-back-play-1');
+    await page.locator('#ballEnabled').uncheck();
     assert.equal(await page.locator('#teamPlan').isVisible(), true);
     assert.ok((await page.locator('#teamCooperation').textContent()).trim().length > 10);
     assert.equal(await page.locator('#play').isDisabled(), true, 'conditional release requires an explicit scenario');

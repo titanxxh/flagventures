@@ -1,6 +1,7 @@
 import { t } from './i18n.js';
 import { load, JSON_SCHEMA } from 'js-yaml';
 import { translationFields } from './localization.js';
+import { positionAt } from './scene.js';
 import Ajv2020 from 'ajv/dist/2020.js';
 import lessonSchema from '../content-format/lesson.schema.json' with { type: 'json' };
 import packSchema from '../content-format/pack.schema.json' with { type: 'json' };
@@ -201,6 +202,76 @@ function validateGroups(section, lessonIds, filename) {
   }
 }
 
+function ballSemantics(lesson, filename, playerIds, validateMotion) {
+  const ball = lesson.ball;
+  if (!ball) return;
+  if (!['offense', 'run'].includes(lesson.kind)) fail(filename, 'ball', '球路线仅适用于进攻和跑球战术');
+  requireRef(playerIds, ball.initialOwner, filename, 'ball.initialOwner', '球员');
+  const scenarioIds = unique(ball.scenarios, filename, 'ball.scenarios');
+  if (!scenarioIds.has(ball.defaultScenario)) fail(filename, 'ball.defaultScenario', '默认球路情形不存在');
+  for (const scenario of ball.scenarios) {
+    const field = `ball.scenarios.${scenario.id}`;
+    if (scenario.basis !== 'illustration' && !lesson.source?.title?.trim()) {
+      fail(filename, `${field}.basis`, '来源或教练球路情形必须注明可识别的来源');
+    }
+    const motions = new Map();
+    for (const override of scenario.motions || []) {
+      const overrideField = `${field}.motions.${override.player}`;
+      requireRef(playerIds, override.player, filename, `${overrideField}.player`, '球员');
+      if (motions.has(override.player)) fail(filename, overrideField, '同一情形不能重复覆盖球员动作');
+      const player = lesson.players.find(item => item.id === override.player);
+      validateMotion(player, override.motion, `${overrideField}.motion`);
+      motions.set(override.player, override.motion);
+    }
+    const players = new Map(lesson.players.map(player => [player.id,
+      motions.has(player.id) ? {...player, motion: motions.get(player.id)} : player]));
+    const choices = scenario.choices || {};
+    for (const [id, choice] of Object.entries(choices)) {
+      requireRef(playerIds, id, filename, `${field}.choices.${id}`, '球员');
+      const motion = players.get(id).motion;
+      if (motion.type !== 'choice') fail(filename, `${field}.choices.${id}`, '只能为仍有分支动作的球员选择情形');
+      if (!motion.options.some(option => option.id === choice)) fail(filename, `${field}.choices.${id}`, '球路线引用的动作选项不存在');
+    }
+    for (const player of players.values()) {
+      if (player.motion.type === 'choice' && !Object.hasOwn(choices, player.id)) {
+        fail(filename, `${field}.choices.${player.id}`, '球路线必须选择所有球员的动作分支');
+      }
+    }
+    unique(scenario.events, filename, `${field}.events`);
+    let owner = ball.initialOwner, previousAt = -1, occupiedUntil = 0;
+    for (const event of scenario.events) {
+      const eventField = `${field}.events.${event.id}`;
+      requireRef(playerIds, event.from, filename, `${eventField}.from`, '球员');
+      if (event.to !== undefined) {
+        requireRef(playerIds, event.to, filename, `${eventField}.to`, '球员');
+        if (event.from === event.to) fail(filename, `${eventField}.to`, '给球目标不能是持球人自己');
+      }
+      if (event.at <= previousAt) fail(filename, `${eventField}.at`, '球事件开始时间必须严格递增');
+      if (event.at < occupiedUntil) fail(filename, `${eventField}.at`, '球事件时间不能重叠');
+      if (event.at > lesson.timeline.duration || (event.endAt !== undefined && event.endAt > lesson.timeline.duration)) {
+        fail(filename, eventField, '球事件不能超过 timeline.duration');
+      }
+      if (event.endAt !== undefined && event.endAt <= event.at) fail(filename, `${eventField}.endAt`, '球事件结束时间必须晚于开始时间');
+      if (event.endAt === undefined && (event.endLabel !== undefined || event.endCue !== undefined)) {
+        fail(filename, eventField, '球事件结束说明需要 endAt');
+      }
+      if (event.from !== owner) fail(filename, `${eventField}.from`, '只有当前持球人可以发起球事件');
+      if (['handoff', 'fake-handoff'].includes(event.type)) {
+        const from = positionAt(players.get(event.from), event.at, choices);
+        const to = positionAt(players.get(event.to), event.at, choices);
+        const distance = Math.hypot(to[0] - from[0], to[1] - from[1]);
+        const reach = lesson.field.width / 100;
+        if (distance > reach + 1e-8) {
+          fail(filename, eventField, '交球或假交球时两名球员必须靠近，请调整动作和时间');
+        }
+      }
+      if (['snap', 'pass', 'handoff'].includes(event.type)) owner = event.to;
+      previousAt = event.at;
+      occupiedUntil = event.endAt ?? event.at;
+    }
+  }
+}
+
 function lessonSemantics(lesson, filename) {
   const translatable = translationFields(lesson);
   for (const path of Object.keys(lesson.translations?.en || {})) {
@@ -250,11 +321,7 @@ function lessonSemantics(lesson, filename) {
     }
   }
 
-  for (const player of lesson.players) {
-    const field = t`球员 ${player.id}`;
-    point(player.at, `${field}.at`);
-    if (player.label.basis === 'shape-match' && !player.label.note.trim()) fail(filename, `${field}.label.note`, '请说明形状对照依据');
-    const motion = player.motion;
+  const validateMotion = (player, motion, field) => {
     const paths = motion.type === 'choice' ? motion.options : motion.type === 'path' ? [{ id: '路线', steps: motion.steps }] : [];
     if (motion.type === 'choice') unique(motion.options, filename, `${field}.motion.options`);
     for (const option of paths) {
@@ -271,6 +338,12 @@ function lessonSemantics(lesson, filename) {
       const tolerance = Number.EPSILON * Math.max(Math.abs(end), Math.abs(lesson.timeline.duration)) * Math.max(4, option.steps.length);
       if (!Number.isFinite(end) || end - lesson.timeline.duration > tolerance) fail(filename, `${field}.${option.id}`, t`路线到 ${Number(end.toPrecision(12))} 秒，超过 timeline.duration ${lesson.timeline.duration} 秒`);
     }
+  };
+  for (const player of lesson.players) {
+    const field = t`球员 ${player.id}`;
+    point(player.at, `${field}.at`);
+    if (player.label.basis === 'shape-match' && !player.label.note.trim()) fail(filename, `${field}.label.note`, '请说明形状对照依据');
+    validateMotion(player, player.motion, field);
   }
   for (const zone of lesson.zones || []) {
     const field = t`区域 ${zone.id}`;
@@ -301,6 +374,7 @@ function lessonSemantics(lesson, filename) {
     for (const id of frame.view?.zoneIds || []) requireRef(zones, id, filename, `${field}.view.zoneIds`, '区域');
     for (const id of frame.view?.assignmentIds || []) requireRef(assignments, id, filename, `${field}.view.assignmentIds`, '职责');
   }
+  ballSemantics(lesson, filename, players, validateMotion);
 }
 
 export function validateLesson(lesson, filename = '教学条目') {

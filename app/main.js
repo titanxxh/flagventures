@@ -2,7 +2,8 @@ import { t, getLanguage, setLanguage, captureStaticTranslations } from './i18n.j
 import { localizePack } from './localization.js';
 import { getRouteMeasurements } from './route-measurements.js';
 import { dump } from 'js-yaml';
-import { getScene, getRoutes, getActiveRoute, pathToSvg } from './scene.js';
+import { getScene, getRoutes, getActiveRoute, pathToSvg, positionAt } from './scene.js';
+import { resolveBallScenario, getBallState } from './ball.js';
 import { prepareImport, validatePack } from './validation.js';
 
 const $ = id => document.getElementById(id);
@@ -18,6 +19,9 @@ let canonicalPack = builtIn;
 let libraryStatus = '内置手册';
 let pack = localizePack(builtIn, getLanguage(), t);
 let lesson;
+let sourceLesson;
+let ballScenario;
+let rebuildingLesson = false;
 let order = [];
 let state = { time: 0, playing: false, speed: 2, role: null, choices: {} };
 let hovered = null;
@@ -142,12 +146,31 @@ function buildCatalog() {
   $('catalog').replaceChildren(fragment);
 }
 function selectLesson(id, preserve = false) {
-  lesson = pack.lessons.find(item => item.id === id);
-  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: lesson?.kind === 'route' ? lesson.players.find(player => ['path', 'choice'].includes(player.motion.type))?.id || null : null, choices: {} };
+  // Replacing focused controls fires focusout synchronously. Wait until the new
+  // lesson and every control/field node agree before rendering those events.
+  rebuildingLesson = true;
+  try { rebuildLesson(id, preserve); }
+  finally { rebuildingLesson = false; }
+  render();
+}
+function rebuildLesson(id, preserve = false) {
+  sourceLesson = pack.lessons.find(item => item.id === id);
+  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: sourceLesson?.kind === 'route' ? sourceLesson.players.find(player => ['path', 'choice'].includes(player.motion.type))?.id || null : null, choices: {}, showBall: true, scenarioId: sourceLesson?.ball?.defaultScenario };
+  lesson = sourceLesson;
+  ballScenario = undefined;
+  if (sourceLesson?.ball && state.showBall) {
+    const resolved = resolveBallScenario(sourceLesson, state.scenarioId);
+    lesson = resolved.lesson;
+    ballScenario = resolved.scenario;
+    state.choices = resolved.choices;
+    state.scenarioId = ballScenario.id;
+  }
   hovered = focused = null; lastTick = undefined;
   $('routeDistances').hidden = !lesson?.routeGuide;
   $('routeOrientation').hidden = lesson?.kind !== 'route';
   $('teamPlanHeading').textContent = t(lesson?.kind === 'route' ? '这条路线怎么跑' : '这套配合想做到什么');
+  $('ballControls').hidden = !sourceLesson?.ball;
+  $('ballReadout').hidden = $('ballLegend').hidden = !ballScenario;
   if (!lesson) {
     text($('lessonTitle'), '内容包暂无教学条目');
     text($('summary'), '可以导入 YAML 添加战术，或从“我的战术文件”恢复内置手册。');
@@ -211,7 +234,7 @@ function selectLesson(id, preserve = false) {
   const index = order.indexOf(id);
   text($('lessonIndex'), `${index + 1} / ${order.length}`);
   $('previous').disabled = index === 0; $('next').disabled = index === order.length - 1;
-  buildRoles(); buildChoices(); buildField(); buildFrames(); buildDistanceGuide(); render();
+  buildRoles(); buildChoices(); buildBallControls(); buildField(); buildFrames(); buildDistanceGuide();
 }
 function buildRoles() {
   const buttons = [node('button', { class: 'role', 'data-show-all': '', 'aria-pressed': 'true' }, '看全队')];
@@ -220,7 +243,7 @@ function buildRoles() {
 }
 function buildChoices() {
   const players = lesson.players.filter(player => player.motion.type === 'choice');
-  $('choices').hidden = !players.length;
+  $('choices').hidden = !players.length || Boolean(ballScenario);
   const content = [];
   for (const player of players) {
     content.push(node('p', {}, `${player.id} · ${player.motion.prompt}`));
@@ -229,6 +252,15 @@ function buildChoices() {
     content.push(options, node('p', { class: 'choice-note', 'data-choice-note': player.id, role: 'status' }));
   }
   $('choices').replaceChildren(...content);
+}
+function buildBallControls() {
+  if (!sourceLesson.ball) return;
+  $('ballEnabled').checked = Boolean(state.showBall);
+  text($('ballChoiceHeading'), lesson.kind === 'offense' ? '这次球传给谁' : '选择球的流转');
+  $('ballOptions').replaceChildren(...sourceLesson.ball.scenarios.map(scenario =>
+    node('button', {'data-ball-scenario': scenario.id, 'aria-pressed': String(state.scenarioId === scenario.id), ...(state.showBall ? {} : {disabled: ''})}, scenario.title)));
+  text($('ballScenarioNote'), ballScenario?.note || '已切换为只看跑位。打开球路可查看传球和交接。');
+  text($('ballSourceNote'), sourceLesson.ball.note);
 }
 function buildFrames() {
   $('frames').replaceChildren(...lesson.keyframes.map((frame, index) => {
@@ -270,6 +302,8 @@ function buildField() {
   const defs = svg('defs');
   const arrow = svg('marker', { id: 'guide-arrow', viewBox: '0 0 8 8', refX: 6, refY: 4, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' });
   arrow.append(svg('path', { d: 'M0 0 L8 4 L0 8 L2 4 Z', fill: '#d7c9ff' })); defs.append(arrow);
+  const ballArrow = svg('marker', {id: 'ball-arrow', viewBox: '0 0 8 8', refX: 7, refY: 4, markerWidth: 4, markerHeight: 4, orient: 'auto'});
+  ballArrow.append(svg('path', {d: 'M0 0L8 4L0 8Z', fill: '#ffba75'})); defs.append(ballArrow);
   for (const player of lesson.players) {
     const marker = svg('marker', { id: `arrow-${player.id}`, viewBox: '0 0 8 8', refX: 6, refY: 4, markerWidth: 5, markerHeight: 5, orient: 'auto' });
     marker.append(svg('path', { d: 'M0 0 L8 4 L0 8 L2 4 Z', fill: playerColor(player) })); defs.append(marker);
@@ -336,6 +370,7 @@ function buildField() {
     const activeNode = isRoute ? svg('path', {...shape, 'data-active-route': player.id, 'marker-end': `url(#arrow-${player.id})`, visibility: 'hidden'}) : undefined;
     field.append(path); fieldNodes.routes.push({ node: path, activeNode, ...route });
   }
+  buildBallPaths(field, unit);
   const measurements = getRouteMeasurements(lesson);
   const distanceLabels = [];
   for (const [index, mark] of measurements.entries()) {
@@ -393,6 +428,17 @@ function buildField() {
     group.append(svg('circle', { r: 2.7 * unit, fill: 'transparent' }));
     field.append(group); fieldNodes.players.set(player.id, group);
   }
+  if (ballScenario) {
+    const ball = svg('g', {'data-ball': '', role: 'img', 'pointer-events': 'none'});
+    // The same small offset is used for held balls and both flight endpoints.
+    // It keeps the football visible beside a player's letter without teleporting.
+    const glyph = svg('g', {transform: `translate(${2.65 * unit} ${-1.7 * unit}) rotate(-30)`});
+    glyph.append(svg('ellipse', {rx: 1.65 * unit, ry: .96 * unit, fill: '#934725', stroke: '#fff5ce', 'stroke-width': .4 * unit}));
+    glyph.append(svg('path', {d: `M${-.85 * unit} 0H${.85 * unit} M${-.45 * unit} ${-.35 * unit}V${.35 * unit} M0 ${-.35 * unit}V${.35 * unit} M${.45 * unit} ${-.35 * unit}V${.35 * unit}`, stroke: '#fff5ce', 'stroke-width': .2 * unit, fill: 'none'}));
+    ball.append(glyph); field.append(ball); fieldNodes.ball = ball;
+    const carrier = svg('circle', {'data-ball-carrier': '', r: 2.45 * unit, stroke: '#fff5ce', 'stroke-width': .45 * unit, fill: 'none', 'pointer-events': 'none'});
+    field.insertBefore(carrier, ball); fieldNodes.carrier = carrier;
+  }
   const tooltip = svg('g', { id: 'fieldTooltip', 'pointer-events': 'none', 'aria-hidden': 'true', style: 'display:none' });
   tooltip.append(svg('rect', { width: 26 * unit, height: 7.5 * unit, rx: 1 * unit, fill: '#fffefa', stroke: '#d1ddc5', 'stroke-width': .15 * unit }));
   const first = svg('text', { x: 1.2 * unit, y: 3 * unit, fill: '#183c32', 'font-size': 2 * unit, 'font-weight': 700 });
@@ -400,14 +446,72 @@ function buildField() {
   tooltip.append(first, second); field.append(tooltip);
   Object.assign(fieldNodes, { tooltip, tooltipFirst: first, tooltipSecond: second });
 }
+
+function buildBallPaths(field, unit) {
+  $('ballReadout').hidden = $('ballLegend').hidden = !ballScenario;
+  if (!ballScenario) return;
+  const ball = getBallState(lesson, 0, state.choices, ballScenario);
+  fieldNodes.ballPaths = ball.flights.map(flight => {
+    const group = svg('g', {class: 'ball-flight', 'data-ball-flight': flight.id});
+    const points = [flight.start, flight.end].map(([x, y]) => [x + 2.65 * unit, y - 1.7 * unit]);
+    group.append(svg('path', {d: `M${points[0].join(' ')}L${points[1].join(' ')}`, stroke: '#ffba75', 'stroke-width': .55 * unit, 'stroke-dasharray': `${1.5 * unit} ${.95 * unit}`, fill: 'none', 'marker-end': 'url(#ball-arrow)'}));
+    const middle = points[0].map((value, axis) => (value + points[1][axis]) / 2);
+    group.append(svg('text', {class: 'ball-flight-label', x: middle[0] + unit, y: middle[1] - unit, fill: '#ffd0a0', 'font-size': 1.65 * unit, 'font-weight': 700}, flight.type === 'snap' ? '开球' : '传球'));
+    field.append(group);
+    return {...flight, node: group};
+  });
+  fieldNodes.ballCarries = ball.carries.map(carry => {
+    const path = svg('path', {class: 'ball-carry', 'data-ball-carry': carry.owner, stroke: '#fff5ce', 'stroke-width': .8 * unit, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: .85, fill: 'none'});
+    const player = lesson.players.find(item => item.id === carry.owner);
+    const samples = Math.min(160, Math.max(2, Math.ceil((carry.endAt - carry.at) * 12)));
+    const points = Array.from({length: samples + 1}, (_, index) => {
+      const time = carry.at + (carry.endAt - carry.at) * index / samples;
+      return {time, point: positionAt(player, time, state.choices)};
+    });
+    field.append(path);
+    return {...carry, player, points, node: path};
+  });
+}
+
+function renderBall(time) {
+  if (!ballScenario) return;
+  const ball = getBallState(lesson, time, state.choices, ballScenario);
+  const event = ball.event;
+  const fake = event && ['fake-handoff', 'pump-fake'].includes(event.type) && time <= (event.endAt ?? event.at + .6);
+  const status = ball.state === 'flight'
+    ? (event.type === 'snap' ? t`开球：${event.from} → ${event.to}` : t`传球：${event.from} → ${event.to}`)
+    : fake ? t`假动作 · 球仍在 ${ball.owner} 手里` : t`球在 ${ball.owner} 手里`;
+  text($('ballStatus'), status);
+  const eventCue = event?.endAt !== undefined && time >= event.endAt ? event.endCue || event.cue : event?.cue;
+  text($('ballEvent'), eventCue || ballScenario.title);
+  fieldNodes.ball.setAttribute('transform', `translate(${ball.position.join(' ')})`);
+  fieldNodes.ball.setAttribute('data-ball-state', ball.state);
+  fieldNodes.ball.setAttribute('data-ball-owner', ball.owner || '');
+  fieldNodes.ball.setAttribute('data-ball-position', JSON.stringify(ball.position));
+  fieldNodes.ball.setAttribute('aria-label', status);
+  fieldNodes.carrier.setAttribute('visibility', ball.owner ? 'visible' : 'hidden');
+  fieldNodes.carrier.setAttribute('data-owner', ball.owner || '');
+  fieldNodes.carrier.setAttribute('transform', `translate(${ball.position.join(' ')})`);
+  for (const path of fieldNodes.ballPaths) {
+    path.node.setAttribute('opacity', time < path.at ? .45 : time < path.endAt ? 1 : .3);
+    path.node.setAttribute('data-phase', time < path.at ? 'preview' : time < path.endAt ? 'flight' : 'complete');
+  }
+  for (const carry of fieldNodes.ballCarries) {
+    const end = Math.min(time, carry.endAt);
+    const points = carry.points.filter(item => item.time < end).map(item => item.point);
+    if (time > carry.at) points.push(positionAt(carry.player, end, state.choices));
+    carry.node.setAttribute('d', points.length > 1 ? points.map((point, index) => `${index ? 'L' : 'M'}${point.join(' ')}`).join(' ') : '');
+  }
+}
 function render() {
-  if (!lesson) return;
+  if (!lesson || rebuildingLesson) return;
   const scene = getScene(lesson, state.time, state.choices);
+  const currentBall = ballScenario ? getBallState(lesson, scene.time, state.choices, ballScenario) : undefined;
   const inspected = inspectId();
   for (const player of scene.players) {
     const group = fieldNodes.players.get(player.id);
     group.setAttribute('transform', `translate(${player.position.join(' ')})`);
-    group.setAttribute('opacity', inspected === null || player.id === inspected || (lesson.kind === 'route' && player.id === 'QB') ? 1 : .53);
+    group.setAttribute('opacity', inspected === null || player.id === inspected || player.id === currentBall?.owner || (lesson.kind === 'route' && player.id === 'QB') ? 1 : .53);
     group.setAttribute('aria-pressed', String(player.id === state.role));
     group.querySelector('.focus-ring').setAttribute('opacity', player.id === inspected ? 1 : 0);
     const facing = group.querySelector('[data-facing]');
@@ -458,20 +562,21 @@ function render() {
   }
   $('roles').querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.hasAttribute('data-show-all') ? state.role === null : button.dataset.player === state.role)));
   const player = lesson.players.find(player => player.id === inspected);
+  const scenarioMotion = ballScenario?.motions?.find(item => item.player === player?.id)?.motion;
   text($('focusStatus'), state.role === null ? '正在看全队' : t`关注 ${state.role} · 队友仍可见`);
   text($('routePerson'), player?.id || '?'); $('routePerson').style.background = player ? playerColor(player) : '#e6eadf';
   text($('routeMode'), player ? t`${player.id} 的${t(lesson.kind === 'defense' ? '分工' : '跑法')} · ${t(hovered ? '悬停查看' : focused ? '键盘查看' : '已保留')}` : '认识跑法');
   text($('routeEnglish'), player ? player.label.en || player.label.zh : '移到球员上试试');
   text($('routeChinese'), player?.label.en && player.label.en !== player.label.zh ? player.label.zh : '');
-  text($('routeDescription'), player?.label.description || '名称、路线和动作一起看。点击一个字母，边播放边观察他和队友怎样配合。');
+  text($('routeDescription'), scenarioMotion?.note || player?.label.description || '名称、路线和动作一起看。点击一个字母，边播放边观察他和队友怎样配合。');
   $('playerCoaching').hidden = !player?.coaching;
   text($('routeCooperation'), player?.coaching?.cooperation);
   text($('routeTiming'), player?.coaching?.timing);
   const selectedSituation = player?.motion.type === 'choice'
     ? player.motion.options.find(option => option.id === state.choices[player.id]) : undefined;
-  const situation = player?.motion.type === 'choice'
+  const situation = scenarioMotion?.note ? '本次球路中的动作 · 教学编排' : (player?.motion.type === 'choice'
     ? selectedSituation ? selectedSituation.note || t`本次演示：${selectedSituation.title}` : player.motion.prompt
-    : '';
+    : '');
   $('routeSituation').hidden = !situation;
   text($('routeSituation'), situation);
   const duties = player ? scene.assignments.filter(a => a.player === player.id).map(a => {
@@ -481,7 +586,7 @@ function render() {
   }) : [];
   $('routeDuties').hidden = !duties.length;
   text($('routeDuties'), duties.join(getLanguage() === 'en' ? '; ' : '；'));
-  text($('routeBasis'), player ? `${t(bases[player.label.basis])}${player.label.note ? ` · ${player.label.note}` : ''}` : '');
+  text($('routeBasis'), scenarioMotion?.note ? ballScenario.note : player ? `${t(bases[player.label.basis])}${player.label.note ? ` · ${player.label.note}` : ''}` : '');
   fieldNodes.tooltip.style.display = player && (lesson.kind !== 'route' || hovered || focused) ? '' : 'none';
   if (player) {
     const position = scene.players.find(p => p.id === player.id).position;
@@ -516,6 +621,7 @@ function render() {
     const selected = player.motion.options.find(option => option.id === state.choices[player.id]);
     text(element, selected ? selected.note || t`本次演示：${selected.title}` : '请先选择一种情形。切换选项后会回到站位并暂停。');
   });
+  renderBall(scene.time);
 }
 
 $('language').value = getLanguage();
@@ -540,6 +646,18 @@ $('play').addEventListener('click', () => {
   state.playing = !state.playing; lastTick = undefined; render();
 });
 $('reset').addEventListener('click', () => seek(0));
+$('ballEnabled').addEventListener('change', event => {
+  state.showBall = event.target.checked;
+  state.time = 0; state.playing = false; state.choices = {};
+  selectLesson(lesson.id, true);
+});
+$('ballOptions').addEventListener('click', event => {
+  const button = event.target.closest('[data-ball-scenario]');
+  if (!button || button.disabled) return;
+  state.scenarioId = button.dataset.ballScenario;
+  state.time = 0; state.playing = false;
+  selectLesson(lesson.id, true);
+});
 $('seek').addEventListener('input', event => seek(Number(event.target.value)));
 $('frames').addEventListener('click', event => { const button = event.target.closest('[data-frame]'); if (button) seek(lesson.keyframes[Number(button.dataset.frame)].at); });
 document.querySelectorAll('[data-speed]').forEach(button => button.addEventListener('click', () => {

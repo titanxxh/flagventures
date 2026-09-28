@@ -26,9 +26,17 @@
       <div class="teaching-grid">
         <div class="stage">
           <p id="routeOrientation" class="route-orientation" hidden>向内＝朝场地中间；向外＝朝边线。QB 是传球参照，“向内”不是跑回 QB 所在的位置。</p>
+          <section id="ballControls" class="ball-controls" aria-label="球的流转" hidden>
+            <div class="ball-controls-heading"><h2 id="ballChoiceHeading">这次球传给谁</h2><label class="ball-toggle"><input id="ballEnabled" type="checkbox" checked>显示球路</label></div>
+            <div id="ballOptions" class="ball-options" role="group" aria-label="选择球路情形"></div>
+            <p id="ballScenarioNote" class="ball-scenario-note"></p>
+            <details class="ball-source"><summary>演示说明</summary><p id="ballSourceNote"></p></details>
+          </section>
           <section class="board" aria-label="跑位演示">
             <div class="board-top"><span id="direction"></span><span id="playState" role="status"></span></div>
+            <div id="ballReadout" class="ball-readout" hidden><span class="ball-readout-icon" aria-hidden="true">◆</span><div><strong id="ballStatus" role="status"></strong><span id="ballEvent"></span></div></div>
             <svg id="field" role="group" aria-label="球场、球员和路线"></svg>
+            <p id="ballLegend" class="facing-hint" hidden>橙色虚线：球路 · 白色粗线：持球跑 · 球形图标：球的位置</p>
             <p id="routeMotionHint" class="facing-hint" hidden>淡线：完整路线 · 实线箭头：当前跑动方向</p>
             <p id="facingHint" class="facing-hint" hidden>小三角：面朝方向 · 虚线：看向队友</p>
             <div class="board-bottom"><span id="fieldHint"></span><span id="focusStatus"></span></div>
@@ -66,7 +74,7 @@
   <div id="toast" class="toast" role="status" hidden></div>
   <dialog id="sourceDialog" class="source-dialog"><div class="dialog-head"><h2 id="sourceTitle">原页对照</h2><button class="button light" data-close>关闭</button></div><img id="sourceImage" alt="本教学条目对应的手册原页"><p id="sourceCaption"></p></dialog>
   <dialog id="manageDialog"><div class="dialog-head"><h2>我的战术文件</h2><button class="button light" data-close>关闭</button></div><p>一份 YAML 描述一个教学条目。修改文字和路线后导入，网页会用统一方式呈现。</p><div class="file-actions"><button id="chooseFiles" class="button primary">导入 YAML / 战术包</button><button id="exportPack" class="button light">保存完整战术包</button><button id="exportLesson" class="button light">下载当前条目 YAML</button><button id="downloadTemplate" class="button light">下载新增模板</button></div><input id="fileInput" type="file" accept=".yaml,.yml,.json" multiple hidden><p class="callout">新增和修改只保留在本次打开的网页里。离开前点「保存完整战术包」，下次打开后再导入。</p><div id="importReport" role="status" hidden></div><div id="importActions" class="file-actions" hidden><button id="applyImport" class="button primary">确认应用</button><button id="cancelImport" class="button light">取消</button></div><hr><div class="restore-row"><div><strong>内置手册随时可用</strong><p>恢复内置教学内容，包括原手册与补充路线。</p></div><button id="restore" class="button light">选择内置手册</button></div></dialog>
-  <dialog id="helpDialog"><div class="dialog-head"><h2>给孩子的 5–10 分钟小课</h2><button class="button light" data-close>关闭</button></div><ol class="help-steps"><li><strong>先看站位。</strong>从左侧选一条，找找自己的字母。</li><li><strong>认识跑法。</strong>鼠标移到球员上，名称与路线一起看；点击可保留。键盘 Tab 也能查看。</li><li><strong>一起看配合。</strong>看这套战术的目标和自己的配合任务，再点击关键帧停住讲解。</li><li><strong>换位再讲。</strong>回到站位，换一名队员，让孩子用手指画路线。</li></ol><p>默认以 2 倍速演示。播放按钮下方可选择 0.5×、1×、2× 或 3×，讲细节时可随时慢放。</p><p>点击关键帧或拖动进度会暂停；按「继续播放」从那里接着走。连续播放经过关键帧不会自动停。</p><p>部分战术依据官方讲解安排先后，具体动画秒数仍是教学示意。有条件的路线需先选择演示情形；网页不会判断防守或决定传给谁。未展示后续路线的球员只保留已知站位，不表示必须站着不动。</p><p>自己编战术：下载模板 → 用文本编辑器修改 → 导入预览 → 保存完整战术包。教学内容可离线使用；资料链接和官方视频在点击后联网打开。</p><p class="hint">按 Esc 关闭弹窗。恢复内置手册或重新打开网页后，需要重新载入自己保存的战术包。</p></dialog>
+  <dialog id="helpDialog"><div class="dialog-head"><h2>给孩子的 5–10 分钟小课</h2><button class="button light" data-close>关闭</button></div><ol class="help-steps"><li><strong>先看站位。</strong>从左侧选一条，找找自己的字母。</li><li><strong>认识跑法。</strong>鼠标移到球员上，名称与路线一起看；点击可保留。键盘 Tab 也能查看。</li><li><strong>一起看配合。</strong>看这套战术的目标和自己的配合任务，再点击关键帧停住讲解。</li><li><strong>换位再讲。</strong>回到站位，换一名队员，让孩子用手指画路线。</li></ol><p>默认以 2 倍速演示。播放按钮下方可选择 0.5×、1×、2× 或 3×，讲细节时可随时慢放。</p><p>点击关键帧或拖动进度会暂停；按「继续播放」从那里接着走。连续播放经过关键帧不会自动停。</p><p>进攻战术可切换 C、X、Y、Z 四个接球目标，跑球可选择交接或跑传情形。橙色虚线表示球路，白色粗线表示持球跑；假动作不改变持球人。切换情形会回到起点并暂停。关闭“显示球路”可只看原图跑位；动画秒数和补充球路为教学设置，网页不自动判断防守。</p><p>自己编战术：下载模板 → 用文本编辑器修改 → 导入预览 → 保存完整战术包。教学内容可离线使用；资料链接和官方视频在点击后联网打开。</p><p class="hint">按 Esc 关闭弹窗。恢复内置手册或重新打开网页后，需要重新载入自己保存的战术包。</p></dialog>
   <script type="application/json" id="builtInData">__BUILT_IN_DATA__</script>
   <script type="application/json" id="templateData">__TEMPLATE_DATA__</script>
   <script>/*__APP_JS__*/</script>

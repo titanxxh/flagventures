@@ -25,6 +25,7 @@ try {
   assert.deepEqual(chinese,[],lesson.id);
  }
  await page.locator('[data-lesson="single-back-play-1"]').evaluate(n=>n.click());
+ await page.locator('#ballEnabled').uncheck();
  await page.locator('[data-choice-player="C"][data-option="released"]').click();
  await page.locator('#roles [data-player="C"]').click();
  await page.locator('#frames [data-frame="2"]').click();

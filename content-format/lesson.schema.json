@@ -93,6 +93,9 @@
     },
     "routeGuide": {
       "$ref": "#/$defs/routeGuide"
+    },
+    "ball": {
+      "$ref": "#/$defs/ball"
     }
   },
   "required": [
@@ -624,6 +627,9 @@
             "type": {
               "const": "path"
             },
+            "note": {
+              "$ref": "#/$defs/shortText"
+            },
             "startAt": {
               "$ref": "#/$defs/nonnegative"
             },
@@ -643,6 +649,9 @@
           "properties": {
             "type": {
               "const": "choice"
+            },
+            "note": {
+              "$ref": "#/$defs/shortText"
             },
             "startAt": {
               "$ref": "#/$defs/nonnegative"
@@ -1015,6 +1024,91 @@
         "cue"
       ],
       "additionalProperties": false
+    },
+    "ball": {
+      "type": "object",
+      "properties": {
+        "initialOwner": {"$ref": "#/$defs/identifier"},
+        "defaultScenario": {"$ref": "#/$defs/identifier"},
+        "note": {"$ref": "#/$defs/shortText"},
+        "scenarios": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {"$ref": "#/$defs/ballScenario"}
+        }
+      },
+      "required": ["initialOwner", "defaultScenario", "note", "scenarios"],
+      "additionalProperties": false
+    },
+    "ballScenario": {
+      "type": "object",
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "title": {"$ref": "#/$defs/shortText"},
+        "note": {"$ref": "#/$defs/shortText"},
+        "basis": {"enum": ["illustration", "source", "coach"]},
+        "choices": {
+          "type": "object",
+          "propertyNames": {"$ref": "#/$defs/identifier"},
+          "additionalProperties": {"$ref": "#/$defs/identifier"}
+        },
+        "motions": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "player": {"$ref": "#/$defs/identifier"},
+              "motion": {"$ref": "#/$defs/motion"}
+            },
+            "required": ["player", "motion"],
+            "additionalProperties": false
+          }
+        },
+        "events": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {"$ref": "#/$defs/ballEvent"}
+        }
+      },
+      "required": ["id", "title", "note", "basis", "events"],
+      "additionalProperties": false
+    },
+    "ballEvent": {
+      "type": "object",
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "type": {"enum": ["snap", "pass", "handoff", "fake-handoff", "pump-fake"]},
+        "from": {"$ref": "#/$defs/identifier"},
+        "to": {"$ref": "#/$defs/identifier"},
+        "at": {"$ref": "#/$defs/nonnegative"},
+        "endAt": {"$ref": "#/$defs/nonnegative"},
+        "label": {"$ref": "#/$defs/shortText"},
+        "cue": {"$ref": "#/$defs/shortText"},
+        "endLabel": {"$ref": "#/$defs/shortText"},
+        "endCue": {"$ref": "#/$defs/shortText"}
+      },
+      "required": ["id", "type", "from", "at", "label", "cue"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {"properties": {"type": {"enum": ["snap", "pass"]}}, "required": ["type"]},
+          "then": {"properties": {"to": {}, "endAt": {}}, "required": ["to", "endAt"]}
+        },
+        {
+          "if": {"properties": {"type": {"const": "handoff"}}, "required": ["type"]},
+          "then": {"properties": {"to": {}}, "required": ["to"], "not": {"properties": {"endAt": {}}, "required": ["endAt"]}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "fake-handoff"}}, "required": ["type"]},
+          "then": {"properties": {"to": {}}, "required": ["to"]}
+        },
+        {
+          "if": {"properties": {"type": {"const": "pump-fake"}}, "required": ["type"]},
+          "then": {"not": {"properties": {"to": {}}, "required": ["to"]}}
+        }
+      ]
     },
     "routeGuide": {
       "type": "object",

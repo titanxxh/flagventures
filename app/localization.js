@@ -10,6 +10,17 @@ export function translationFields(lesson) {
   texts('timeline', lesson.timeline, ['note']);
   texts('routeGuide', lesson.routeGuide, ['note']);
   lesson.routeGuide?.marks.forEach(mark => texts(`routeGuide.marks.${mark.id}`, mark, ['label', 'note']));
+  texts('ball', lesson.ball, ['note']);
+  lesson.ball?.scenarios.forEach(scenario => {
+    const prefix = `ball.scenarios.${scenario.id}`;
+    texts(prefix, scenario, ['title', 'note']);
+    scenario.events.forEach(event => texts(`${prefix}.events.${event.id}`, event, ['label', 'cue', 'endLabel', 'endCue']));
+    scenario.motions?.forEach(override => {
+      const motionPrefix = `${prefix}.motions.${override.player}.motion`;
+      texts(motionPrefix, override.motion, ['note', 'prompt']);
+      override.motion.options?.forEach(option => texts(`${motionPrefix}.options.${option.id}`, option, ['title', 'note']));
+    });
+  });
   lesson.notes?.forEach((note, i) => add(`notes.${i}`, note));
   for (const player of lesson.players) {
     const prefix = `players.${player.id}`;
@@ -30,7 +41,8 @@ export function localizeLesson(lesson, language) {
   const allowed = translationFields(lesson);
   function visit(value, path = '') {
     if (typeof value === 'string') return allowed.has(path) ? translations[path] ?? value : value;
-    if (Array.isArray(value)) return value.map((item, index) => visit(item, `${path}.${item?.id ?? index}`));
+    if (Array.isArray(value)) return value.map((item, index) => visit(item,
+      `${path}.${item?.id ?? (path.endsWith('.motions') ? item?.player : undefined) ?? index}`));
     if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, child]) =>
       [key, key === 'translations' ? child : visit(child, path ? `${path}.${key}` : key)]));
     return value;

@@ -1,4 +1,4 @@
-# UTF-8; display translations share the same routes and timing.
+# UTF-8; source paths retained, ball scenarios explicitly choreographed for teaching.
 format: flag-lesson
 version: 1
 id: double-reverse
@@ -6,11 +6,20 @@ kind: run
 title:
   zh: 双重反向跑
   en: DOUBLE REVERSE
-summary: 沿球员起点与图中箭头认识路线和配合。
+summary: 先 Q 交 X，再 X 交 Z；两次真实交接后，球随 Z 向左跑进。
 source:
   title: NFL FLAG 2024 中英文对照学习译本（用户附件）
   page: 51
-  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。 原图没有完整球权链；本次新增的球权顺序、会合点和球员配速是明确标注的教学改编，来源图线本身保留。
+  references:
+    - title: NFL FLAG · 交接与假交接训练
+      url: https://nflflag.com/coaches/football-drills/running-back-drills
+      locator: 交接与假交接
+      note: 支持交接和假交接的通用动作概念，不确定本页的持球顺序或秒数。
+    - title: NFL FLAG · 当前规则说明
+      url: https://nflflag.com/coaches/flag-football-rules
+      locator: 开球、后场交接与初始 QB
+      note: 核对后场交接与初始接开球球员不能直接持球越线；本图配速不是比赛计时，实际训练按球队适用规则。
 field:
   width: 100
   height: 55
@@ -42,6 +51,9 @@ players:
             - 52.800996
             - 42.662099
           seconds: 6.140232
+    coaching:
+      cooperation: 2 秒真交给 X 后退开，让 X 去找第二次交接的 Z。
+      timing: 交接时间与动作由当前教学情形共同规定；原图路线仍可在无球模式下单独查看。
   - id: C
     team: offense
     at:
@@ -77,6 +89,9 @@ players:
             - 57.646829
             - 24.041995
           seconds: 1.366789
+    coaching:
+      cooperation: 先把球开给 Q，再无球向前展开，不参与后场交接。
+      timing: 交接时间与动作由当前教学情形共同规定；原图路线仍可在无球模式下单独查看。
   - id: X
     team: offense
     at:
@@ -113,6 +128,9 @@ players:
             - 55.852609
             - 44.65446
           seconds: 0.691526
+    coaching:
+      cooperation: 2 秒接 Q 的球，4 秒在后场真交给 Z，随后无球继续跑。
+      timing: 交接时间与动作由当前教学情形共同规定；原图路线仍可在无球模式下单独查看。
   - id: 'Y'
     team: offense
     at:
@@ -148,6 +166,9 @@ players:
             - 70.278867
             - 24.222806
           seconds: 1.510963
+    coaching:
+      cooperation: 无球展开，不参加本次两次交接。
+      timing: 交接时间与动作由当前教学情形共同规定；原图路线仍可在无球模式下单独查看。
   - id: Z
     team: offense
     at:
@@ -184,79 +205,347 @@ players:
             - 36.330706
             - 36.099721
           seconds: 0.294369
+    coaching:
+      cooperation: 反向接应，在 4 秒从 X 手中接球，再持球向左跑进。
+      timing: 交接时间与动作由当前教学情形共同规定；原图路线仍可在无球模式下单独查看。
 timeline:
-  duration: 10
+  duration: 12
   basis: illustration
-  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+  note: 教学总长 12 秒。仅看原图跑位时，各原始路线仍用 10 秒走完，最后 2 秒保留讲解；开启球路时按所选情形重新安排启动、会合和交接。不是比赛跑速、官方交球次序或出手计时。
 keyframes:
   - id: start
     at: 0
-    label: 起始站位
-    cue: 先找 X 和 Z 的起点。今天先扮演其中一位，再换队友的位置试试。
-  - id: early
-    at: 2.5
-    label: 观察前段
-    cue: 观察 X 和 Z 的前段；X 的跑法是「后场绕行路线」。
-  - id: middle
-    at: 5.5
-    label: 观察中段
-    cue: 停在这里：你关注的人去了哪里？Z 又在哪里？用手指同时指出两条路线。
+    label: 开球前找球
+    cue: 球从 C 开始；先看家长选了哪个交接或传球情形。
+  - id: snap
+    at: 0.35
+    label: 接到开球
+    cue: Q 已经接到 C 的开球，球现在由 Q 持有。
+  - id: first-exchange
+    at: 2
+    label: 第一次会合
+    cue: 停住看球权短句：是真交、假交，还是这个情形的准备动作？
+  - id: second-exchange
+    at: 4
+    label: 看后续配合
+    cue: 不同情形可能在这里真交、假交、假传或继续跑动；跟着当前持球人看。
+  - id: decision
+    at: 6
+    label: 再次确认球在哪里
+    cue: 看所选情形的动作说明；不要把跑线交叉误认为自动交球。
+  - id: catch
+    at: 7
+    label: 继续持球跑进
+    cue: 跟着最后一次真交后的持球人，看无球队友如何展开空间。
   - id: end
-    at: 10
-    label: 路线终点
-    cue: 回想 X 和 Z 从哪里出发、怎样转向。换一名球员讲一遍，再回到全队。
+    at: 12
+    label: 本次演示完成
+    cue: 说出这次每一次真交和假交，最后谁持球。
 notes:
   - 保留原图可见的直线与贝塞尔曲线；不根据名称推断传球、真假交球或最终持球人。
-  - 路线的共同启动和 10 秒演示时长是读图教学设定，不表示真实交接时序。
+  - 无球模式保留原始 10 秒跑位并停留到 12 秒；球路模式的交接和配速是所选教学情形，不能从原图线条自动推断。
   - Q 的短线按图保留为读图路径；图中没有逐次说明它与交接球的关系。
 translations:
   en:
     title.zh: DOUBLE REVERSE
-    summary: Follow each starting position and arrow to understand the routes and teamwork.
+    summary: Q gives to X, then X gives to Z. After two real transfers, Z carries left.
     source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
     source.note: >-
-      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates are not
-      actual yards.
+      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates
+      are not actual yards. The source has no complete possession script. Added exchanges, meeting
+      points and pacing are explicitly labeled teaching adaptations; the source paths are retained.
     timeline.note: >-
-      Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
-      route and is illustrative, not official start order, equal player speeds or handoff timing.
+      The lesson lasts 12 seconds. Source-route view retains the original 10-second paths and holds
+      the last 2 seconds for discussion. Ball mode uses the selected timing for starts, meetings and
+      transfers. These are not game speed, official exchange order or a passing clock.
     notes.0: >-
-      Visible straight and curved paths are preserved. The title does not determine passes, real or fake
-      handoffs, or the final ball carrier.
-    notes.1: Starting together and finishing in ten seconds are teaching settings, not real handoff timing.
-    notes.2: Q’s short line is preserved; the diagram does not explain its step-by-step relationship to handoffs.
+      Visible straight and curved paths are preserved. The title does not determine passes, real or
+      fake handoffs, or the final ball carrier.
+    notes.1: >-
+      Source-route view retains the original 10-second motion and holds until 12 seconds. Ball-mode
+      exchanges and pacing belong to the chosen teaching script and are not inferred automatically
+      from the diagram.
+    notes.2: >-
+      Q’s short line is preserved; the diagram does not explain its step-by-step relationship to
+      handoffs.
     players.Q.label.zh: Follow the short backward line. Later handoff steps are not shown.
     players.Q.label.description: Follow the short backward line. Later handoff steps are not shown.
     players.Q.label.note: >-
-      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
-      standard receiving route from the play’s name.
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs,
+      or a standard receiving route from the play’s name.
     players.C.label.zh: Run forward, then take a short diagonal cut forward-right.
     players.C.label.description: Run forward, then take a short diagonal cut forward-right.
     players.C.label.note: >-
-      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
-      standard receiving route from the play’s name.
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs,
+      or a standard receiving route from the play’s name.
     players.X.label.zh: Backfield loop
     players.X.label.description: Loop backward from the left into the middle, with a short bend at the end.
     players.X.label.note: >-
-      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
-      standard receiving route from the play’s name.
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs,
+      or a standard receiving route from the play’s name.
     players.Y.label.zh: Run forward, then take a short diagonal cut forward-right.
     players.Y.label.description: Run forward, then take a short diagonal cut forward-right.
     players.Y.label.note: >-
-      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
-      standard receiving route from the play’s name.
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs,
+      or a standard receiving route from the play’s name.
     players.Z.label.zh: Backfield loop
     players.Z.label.description: Curve through the backfield from the right toward the left.
     players.Z.label.note: >-
-      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs, or a
-      standard receiving route from the play’s name.
-    keyframes.start.label: Starting positions
-    keyframes.start.cue: Find X and Z. Try one role, then switch.
-    keyframes.early.label: Early movement
-    keyframes.early.cue: Point to the current positions of X and Z and follow their next segments.
-    keyframes.middle.label: Mid-route check
-    keyframes.middle.cue: Point to the current positions of X and Z and follow their next segments.
-    keyframes.end.label: Route endpoints
-    keyframes.end.cue: >-
-      Recall where X and Z started and how they turned. Explain another player’s route, then look at the whole
-      team.
+      Describes this player’s drawn path; it does not infer the ball carrier, fake or real handoffs,
+      or a standard receiving route from the play’s name.
+    ball.scenarios.give-x-then-z.title: Q to X, then X to Z
+    ball.scenarios.give-x-then-z.note: >-
+      This teaching version chooses two real handoffs, Q→X→Z. X transfers to Z running in the
+      opposite direction, and Z carries left. This possession sequence, meeting points, pacing and
+      running extensions are teaching choices, not a sequence prescribed by the PDF. Real and fake
+      handoffs occur behind the line; seconds are for explanation.
+    ball.scenarios.give-x-then-z.events.snap.label: C snaps to Q
+    ball.scenarios.give-x-then-z.events.snap.cue: C snaps backward to Q, who then begins this handoff sequence.
+    ball.scenarios.give-x-then-z.events.handoff-q-x.label: Q hands off to X
+    ball.scenarios.give-x-then-z.events.handoff-q-x.cue: Q and X meet behind the line. A direct handoff transfers possession to X.
+    ball.scenarios.give-x-then-z.events.handoff-x-z.label: X hands off to Z
+    ball.scenarios.give-x-then-z.events.handoff-x-z.cue: X and Z meet behind the line. A direct handoff transfers possession to Z.
+    ball.note: >-
+      This possession sequence, meeting points, pacing and running extensions are teaching choices,
+      not a sequence prescribed by the PDF. Real and fake handoffs occur behind the line; seconds
+      are for explanation. The source routes are retained; ball mode uses the selected teaching
+      scenario.
+    teaching.goal: Q gives to X, then X gives to Z. After two real transfers, Z carries left.
+    teaching.cooperation: >-
+      Watch the snap and backfield meetings. Only real handoffs and completed catches change
+      possession. Off-ball teammates follow their routes without blocking.
+    teaching.cue: Find the ball. A real transfer changes hands; a fake keeps it.
+    teaching.question: Was that a real transfer or a fake? Who has the ball now, and who is helping?
+    source.references.0.title: NFL FLAG · Handoff and fake-handoff drills
+    source.references.0.locator: Handoff and fake-handoff technique
+    source.references.0.note: >-
+      Supports general handoff and fake-handoff concepts, not this page’s possession order or
+      timing.
+    source.references.1.title: NFL FLAG · Current rules overview
+    source.references.1.locator: Snap, backfield handoffs and initial QB
+    source.references.1.note: >-
+      Checks backfield handoffs and the restriction on the snap receiver running across the line.
+      Animation pacing is not game timing; use the rules applicable to your team.
+    keyframes.start.label: Find the ball before the snap
+    keyframes.start.cue: The ball starts with C. First check the selected handoff or pass scenario.
+    keyframes.snap.label: Snap received
+    keyframes.snap.cue: Q has received C’s snap and now holds the ball.
+    keyframes.first-exchange.label: First meeting
+    keyframes.first-exchange.cue: 'Pause and read the possession cue: is this a real handoff, a fake, or preparation?'
+    keyframes.second-exchange.label: Follow the next action
+    keyframes.second-exchange.cue: >-
+      Depending on the scenario, this may be a handoff, fake, pump fake or continuing run. Track the
+      current carrier.
+    keyframes.decision.label: Check who has the ball
+    keyframes.decision.cue: Read the selected action. Crossing paths do not automatically transfer the ball.
+    keyframes.catch.label: Continue carrying upfield
+    keyframes.catch.cue: >-
+      Follow the carrier after the last real handoff and watch teammates spread out without the
+      ball.
+    keyframes.end.label: Example complete
+    keyframes.end.cue: Name each real and fake transfer and the final ball carrier.
+    players.Q.coaching.cooperation: Give to X at 2 seconds, then move away while X meets Z for the next handoff.
+    players.Q.coaching.timing: >-
+      The selected teaching scenario defines both exchange times and movement. Source routes remain
+      available in route-only view.
+    players.C.coaching.cooperation: Snap to Q, then spread upfield without the ball; C takes no backfield handoff.
+    players.C.coaching.timing: >-
+      The selected teaching scenario defines both exchange times and movement. Source routes remain
+      available in route-only view.
+    players.X.coaching.cooperation: >-
+      Receive from Q at 2 seconds, give to Z in the backfield at 4 seconds, then continue without
+      the ball.
+    players.X.coaching.timing: >-
+      The selected teaching scenario defines both exchange times and movement. Source routes remain
+      available in route-only view.
+    players.Y.coaching.cooperation: Spread out without the ball; Y is not part of these two handoffs.
+    players.Y.coaching.timing: >-
+      The selected teaching scenario defines both exchange times and movement. Source routes remain
+      available in route-only view.
+    players.Z.coaching.cooperation: >-
+      Approach from the opposite direction, receive from X at 4 seconds, then carry left and
+      advance.
+    players.Z.coaching.timing: >-
+      The selected teaching scenario defines both exchange times and movement. Source routes remain
+      available in route-only view.
+    ball.scenarios.give-x-then-z.events.snap.endLabel: Q receives the snap
+    ball.scenarios.give-x-then-z.events.snap.endCue: Q has received C’s snap and now holds the ball, ready for the backfield exchange.
+    ball.scenarios.give-x-then-z.motions.Q.motion.note: >-
+      Start right and backward; this teaching scenario arranges movement around its meeting and
+      catch points. At 0.35 seconds, receive the snap. At 2 seconds, hand off to X in the backfield
+      and continue without the ball. The final leg goes left and upfield and stays behind the line.
+    ball.scenarios.give-x-then-z.motions.C.motion.note: >-
+      Movement starts after the snap. This example retains the shape of this player’s source route
+      and adjusts pacing to the 12-second teaching timeline. At 0 seconds, snap to Q.
+    ball.scenarios.give-x-then-z.motions.X.motion.note: >-
+      Start right and backward; this teaching scenario arranges movement around its meeting and
+      catch points. At 2 seconds, take Q’s backfield handoff and become the carrier. At 4 seconds,
+      hand off to Z in the backfield and continue without the ball. The final leg goes right and
+      upfield and stays behind the line.
+    ball.scenarios.give-x-then-z.motions.Y.motion.note: >-
+      Movement starts after the snap. This example retains the shape of this player’s source route
+      and adjusts pacing to the 12-second teaching timeline.
+    ball.scenarios.give-x-then-z.motions.Z.motion.note: >-
+      Start left and backward; this teaching scenario arranges movement around its meeting and catch
+      points. At 4 seconds, take X’s backfield handoff and become the carrier. The final leg goes
+      left and upfield and finishes beyond the line.
+ball:
+  initialOwner: C
+  defaultScenario: give-x-then-z
+  note: 本次交接顺序、会合点、配速及持球后延伸均为教学编排，原 PDF 未逐步规定这些动作。手递手和假交接都在开球线后发生，秒数只供讲解。 原图路线保留；开启球路时按所选情形演示配合。
+  scenarios:
+    - id: give-x-then-z
+      title: Q 交 X，再由 X 交 Z
+      note: >-
+        这是 Q→X→Z 的两次真交接教学版本：X 接应后交给反向跑来的 Z，Z 带球向左。 本次交接顺序、会合点、配速及持球后延伸均为教学编排，原 PDF
+        未逐步规定这些动作。手递手和假交接都在开球线后发生，秒数只供讲解。
+      basis: illustration
+      motions:
+        - player: Q
+          motion:
+            type: path
+            startAt: 0.35
+            steps:
+              - type: line
+                to:
+                  - 55.800996
+                  - 40.507316
+                seconds: 1.65
+              - type: pause
+                seconds: 0.4
+              - type: line
+                to:
+                  - 49.800996
+                  - 36.256619
+                seconds: 9.6
+            note: 本次先向右后方移动，按教学会合点和接球点重新编排跑位。 0.35 秒接到开球。 2 秒在后场真交给 X，随后无球。 后段向左前方跑并留在开球线后。
+        - player: C
+          motion:
+            type: path
+            startAt: 0.35
+            steps:
+              - type: line
+                to:
+                  - 52.915401
+                  - 31.951484
+                seconds: 1.204274
+              - type: line
+                to:
+                  - 52.915401
+                  - 27.243142
+                seconds: 4.71719
+              - type: line
+                to:
+                  - 56.331643
+                  - 24.93174
+                seconds: 4.136226
+              - type: line
+                to:
+                  - 57.646829
+                  - 24.041995
+                seconds: 1.59231
+            note: 接到开球后全队开始动作，本次保留该球员原图路线形状，将配速调整到 12 秒教学时间轴。 0 秒把球开给 Q。
+        - player: X
+          motion:
+            type: path
+            startAt: 0.35
+            steps:
+              - type: line
+                to:
+                  - 55.800996
+                  - 40.507316
+                seconds: 1.65
+              - type: line
+                to:
+                  - 60.800996
+                  - 44.256619
+                seconds: 2
+              - type: pause
+                seconds: 0.4
+              - type: line
+                to:
+                  - 78
+                  - 36.256619
+                seconds: 7.6
+            note: >-
+              本次先向右后方移动，按教学会合点和接球点重新编排跑位。 2 秒在后场接 Q 的真交接，球从此由 X 持有。 4 秒在后场真交给 Z，随后无球。
+              后段向右前方跑并留在开球线后。
+        - player: 'Y'
+          motion:
+            type: path
+            startAt: 0.35
+            steps:
+              - type: line
+                to:
+                  - 66.803559
+                  - 31.549906
+                seconds: 1.776149
+              - type: line
+                to:
+                  - 66.803559
+                  - 27.24318
+                seconds: 4.770152
+              - type: line
+                to:
+                  - 69.080241
+                  - 25.26455
+                seconds: 3.343428
+              - type: line
+                to:
+                  - 70.278867
+                  - 24.222806
+                seconds: 1.760271
+            note: 接到开球后全队开始动作，本次保留该球员原图路线形状，将配速调整到 12 秒教学时间轴。
+        - player: Z
+          motion:
+            type: path
+            startAt: 0.35
+            steps:
+              - type: line
+                to:
+                  - 74.285392
+                  - 39.256619
+                seconds: 1.65
+              - type: line
+                to:
+                  - 60.800996
+                  - 44.256619
+                seconds: 2
+              - type: pause
+                seconds: 0.4
+              - type: line
+                to:
+                  - 28
+                  - 20.256619
+                seconds: 7.6
+            note: 本次先向左后方移动，按教学会合点和接球点重新编排跑位。 4 秒在后场接 X 的真交接，球从此由 Z 持有。 后段向左前方跑向开球线前。
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球给 Q
+          cue: C 将球后送给 Q，Q 收到后再进行本次交接。
+          endLabel: Q 接到开球
+          endCue: Q 收到 C 的开球，球现在由 Q 持有；接着准备后场交接。
+        - id: handoff-q-x
+          type: handoff
+          from: Q
+          to: X
+          at: 2
+          label: Q 真交给 X
+          cue: Q 与 X 在开球线后会合，手递手把球交给 X；此后球由 X 持有。
+        - id: handoff-x-z
+          type: handoff
+          from: X
+          to: Z
+          at: 4
+          label: X 真交给 Z
+          cue: X 与 Z 在开球线后会合，手递手把球交给 Z；此后球由 Z 持有。
+teaching:
+  goal: 先 Q 交 X，再 X 交 Z；两次真实交接后，球随 Z 向左跑进。
+  cooperation: 先看开球，再看后场会合；只有真交接或接球才换持球人。无球队友继续自己的路线，不阻挡防守。
+  cue: 先找球，真交才换人，假交球还在。
+  question: 刚才是真交还是假交？现在球在谁手里，哪位队友正在接应？

@@ -65,7 +65,7 @@ function chosenOption(player, choices) {
   return player.motion.options.find(option => option.id === optionId);
 }
 
-function positionAt(player, time, choices) {
+export function positionAt(player, time, choices = {}) {
   const motion = player.motion;
   if (motion.type === 'still' || motion.type === 'unspecified') return copyPoint(player.at);
   const steps = motion.type === 'choice' ? chosenOption(player, choices)?.steps : motion.steps;

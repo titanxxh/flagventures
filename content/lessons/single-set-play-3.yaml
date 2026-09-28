@@ -1,4 +1,4 @@
-# UTF-8; display translations share the same routes and timing.
+# UTF-8; route and ball-flow teaching examples share timing across languages.
 format: flag-lesson
 version: 1
 id: single-set-play-3
@@ -225,7 +225,7 @@ keyframes:
     label: 回想 · 说一说
     cue: X 跑向深处后，谁来到左侧较浅区域？
 notes:
-  - 画面只演示进攻路线，没有自动模拟防守；空当和接球机会是战术意图，不保证比赛结果。
+  - 跑位与可选球路都是教学演示，没有自动模拟防守；空当和接球机会是战术意图，不保证比赛结果。
   - 口令与提问是给亲子练习的教学改写；在场上练习前，先约定交叉点的通过次序，避免相撞。
   - 路线坐标保留附件 p45 的相对位置；图上的短连接补全被球员标记遮住的部分，不代表码数或新增动作。
   - 资料未给出完整的 QB 阅读顺序、必传对象或传球时刻；路线相交不代表交球。
@@ -252,8 +252,8 @@ translations:
       Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
       route and is illustrative, not official start order, equal player speeds or handoff timing.
     notes.0: >-
-      This shows offensive routes without simulating defenders. Creating space is the play’s intent, not a
-      guaranteed outcome.
+      Routes and selectable ball-flow scenarios are teaching demonstrations without simulated defenders.
+      Creating space is the play’s intent, not a guaranteed outcome.
     notes.1: The cues and questions are teaching adaptations. Agree on crossing order before practicing on the field.
     notes.2: >-
       Relative positions follow source page 45. Short connections approximate parts hidden beneath markers;
@@ -306,3 +306,232 @@ translations:
     keyframes.middle.cue: Pause and compare teammates’ routes. Whose deep route helps C on the shallow left?
     keyframes.end.label: Recall · Explain it
     keyframes.end.cue: Whose deep route helps C on the shallow left?
+    ball.note: >-
+      These added teaching scenarios let you pass to C, X, Y or Z; they do not prescribe a unique official
+      target or QB read order. The ball leaves C at zero and reaches QB at 0.35 seconds; C may run after
+      releasing it. QB stays at the drawn position in this example. Release, flight and catch times are
+      animation settings, not game time. After catching, the receiver follows the existing route without an
+      invented continuation.
+    ball.scenarios.pass-c.title: Pass to C
+    ball.scenarios.pass-c.note: >-
+      This example selects C to catch while continuing after the break; it does not evaluate defenders or
+      guarantee an opening. Release at 5.43 seconds and catch at 6.13 seconds are teaching timings. The
+      receiver then continues the existing route.
+    ball.scenarios.pass-c.motions.Q.motion.note: >-
+      For this ball-flow example, QB holds and throws from the drawn position. The source does not prescribe
+      dropback steps; a real QB need not stand still.
+    ball.scenarios.pass-c.events.snap.label: C snaps to QB
+    ball.scenarios.pass-c.events.snap.cue: >-
+      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The 0.35-second
+      exchange is an animation setting.
+    ball.scenarios.pass-c.events.pass.label: QB passes to C
+    ball.scenarios.pass-c.events.pass.cue: >-
+      QB leads C to the future catch position. C catches while continuing after the break, then continues the
+      existing route. Passing to C is this teaching choice, not the only answer.
+    ball.scenarios.pass-x.title: Pass to X
+    ball.scenarios.pass-x.note: >-
+      This example selects X to catch while continuing after the break; it does not evaluate defenders or
+      guarantee an opening. Release at 5.15 seconds and catch at 5.85 seconds are teaching timings. The
+      receiver then continues the existing route.
+    ball.scenarios.pass-x.motions.Q.motion.note: >-
+      For this ball-flow example, QB holds and throws from the drawn position. The source does not prescribe
+      dropback steps; a real QB need not stand still.
+    ball.scenarios.pass-x.events.snap.label: C snaps to QB
+    ball.scenarios.pass-x.events.snap.cue: >-
+      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The 0.35-second
+      exchange is an animation setting.
+    ball.scenarios.pass-x.events.pass.label: QB passes to X
+    ball.scenarios.pass-x.events.pass.cue: >-
+      QB leads X to the future catch position. X catches while continuing after the break, then continues the
+      existing route. Passing to X is this teaching choice, not the only answer.
+    ball.scenarios.pass-y.title: Pass to Y
+    ball.scenarios.pass-y.note: >-
+      This example selects Y to catch while continuing after the break; it does not evaluate defenders or
+      guarantee an opening. Release at 5.69 seconds and catch at 6.39 seconds are teaching timings. The
+      receiver then continues the existing route.
+    ball.scenarios.pass-y.motions.Q.motion.note: >-
+      For this ball-flow example, QB holds and throws from the drawn position. The source does not prescribe
+      dropback steps; a real QB need not stand still.
+    ball.scenarios.pass-y.events.snap.label: C snaps to QB
+    ball.scenarios.pass-y.events.snap.cue: >-
+      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The 0.35-second
+      exchange is an animation setting.
+    ball.scenarios.pass-y.events.pass.label: QB passes to Y
+    ball.scenarios.pass-y.events.pass.cue: >-
+      QB leads Y to the future catch position. Y catches while continuing after the break, then continues the
+      existing route. Passing to Y is this teaching choice, not the only answer.
+    ball.scenarios.pass-z.title: Pass to Z
+    ball.scenarios.pass-z.note: >-
+      This example selects Z to catch while continuing after the break; it does not evaluate defenders or
+      guarantee an opening. Release at 5.46 seconds and catch at 6.16 seconds are teaching timings. The
+      receiver then continues the existing route.
+    ball.scenarios.pass-z.motions.Q.motion.note: >-
+      For this ball-flow example, QB holds and throws from the drawn position. The source does not prescribe
+      dropback steps; a real QB need not stand still.
+    ball.scenarios.pass-z.events.snap.label: C snaps to QB
+    ball.scenarios.pass-z.events.snap.cue: >-
+      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The 0.35-second
+      exchange is an animation setting.
+    ball.scenarios.pass-z.events.pass.label: QB passes to Z
+    ball.scenarios.pass-z.events.pass.cue: >-
+      QB leads Z to the future catch position. Z catches while continuing after the break, then continues the
+      existing route. Passing to Z is this teaching choice, not the only answer.
+    ball.scenarios.pass-c.events.snap.endLabel: QB receives the snap
+    ball.scenarios.pass-c.events.snap.endCue: >-
+      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow this play’s
+      movement timing.
+    ball.scenarios.pass-c.events.pass.endLabel: C catches the ball
+    ball.scenarios.pass-c.events.pass.endCue: >-
+      C catches while continuing after the break and continues carrying the ball along the existing route. No
+      extra after-catch route is added in this example.
+    ball.scenarios.pass-x.events.snap.endLabel: QB receives the snap
+    ball.scenarios.pass-x.events.snap.endCue: >-
+      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow this play’s
+      movement timing.
+    ball.scenarios.pass-x.events.pass.endLabel: X catches the ball
+    ball.scenarios.pass-x.events.pass.endCue: >-
+      X catches while continuing after the break and continues carrying the ball along the existing route. No
+      extra after-catch route is added in this example.
+    ball.scenarios.pass-y.events.snap.endLabel: QB receives the snap
+    ball.scenarios.pass-y.events.snap.endCue: >-
+      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow this play’s
+      movement timing.
+    ball.scenarios.pass-y.events.pass.endLabel: Y catches the ball
+    ball.scenarios.pass-y.events.pass.endCue: >-
+      Y catches while continuing after the break and continues carrying the ball along the existing route. No
+      extra after-catch route is added in this example.
+    ball.scenarios.pass-z.events.snap.endLabel: QB receives the snap
+    ball.scenarios.pass-z.events.snap.endCue: >-
+      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow this play’s
+      movement timing.
+    ball.scenarios.pass-z.events.pass.endLabel: Z catches the ball
+    ball.scenarios.pass-z.events.pass.endCue: >-
+      Z catches while continuing after the break and continues carrying the ball along the existing route. No
+      extra after-catch route is added in this example.
+ball:
+  initialOwner: C
+  defaultScenario: pass-c
+  note: >-
+    球路是本应用补充的教学示例，可分别选择传给 C、X、Y、Z；不代表官网规定唯一目标或 QB 阅读顺序。球在 0 秒离开 C，0.35 秒到达 QB；C 可在出球后跑动。QB
+    本次保留图示站位。出手、飞行和接球秒数仅为慢放编排，不是比赛用时；接球后沿已有路线继续，不补画额外跑动。
+  scenarios:
+    - id: pass-c
+      title: 传给 C
+      basis: illustration
+      note: 本次示范选择 C，在他变向后仍在跑动时接球；没有判断防守或保证空位。第 5.43 秒出手、第 6.13 秒接球仅为教学节奏，接球后继续原路线。
+      motions:
+        - player: Q
+          motion:
+            type: still
+            note: 本次球路示例让 QB 保留原图站位持球、传球；原资料未指定后撤步，静止不代表真实比赛必须站住。
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球给 QB
+          cue: 先看球从 C 送到 QB；球在 0 秒已离开 C，C 可在出球后起跑。0.35 秒只是演示时间。
+          endLabel: QB 接到开球
+          endCue: QB 现在接到球并持球观察；刚才出球后，C 已可以按本战术的跑动安排行动。
+        - id: pass
+          type: pass
+          from: Q
+          to: C
+          at: 5.43
+          endAt: 6.13
+          label: QB 传给 C
+          cue: QB 提前把球送向 C 即将到达的位置；C 在变向后仍在跑动时接住后继续原路线。本次传给 C 是教学选择，不是唯一答案。
+          endLabel: C 接到球
+          endCue: C 在变向后仍在跑动时接到球，接下来带球沿已有路线继续；本次不补画新的接球后路线。
+    - id: pass-x
+      title: 传给 X
+      basis: illustration
+      note: 本次示范选择 X，在他变向后仍在跑动时接球；没有判断防守或保证空位。第 5.15 秒出手、第 5.85 秒接球仅为教学节奏，接球后继续原路线。
+      motions:
+        - player: Q
+          motion:
+            type: still
+            note: 本次球路示例让 QB 保留原图站位持球、传球；原资料未指定后撤步，静止不代表真实比赛必须站住。
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球给 QB
+          cue: 先看球从 C 送到 QB；球在 0 秒已离开 C，C 可在出球后起跑。0.35 秒只是演示时间。
+          endLabel: QB 接到开球
+          endCue: QB 现在接到球并持球观察；刚才出球后，C 已可以按本战术的跑动安排行动。
+        - id: pass
+          type: pass
+          from: Q
+          to: X
+          at: 5.15
+          endAt: 5.85
+          label: QB 传给 X
+          cue: QB 提前把球送向 X 即将到达的位置；X 在变向后仍在跑动时接住后继续原路线。本次传给 X 是教学选择，不是唯一答案。
+          endLabel: X 接到球
+          endCue: X 在变向后仍在跑动时接到球，接下来带球沿已有路线继续；本次不补画新的接球后路线。
+    - id: pass-y
+      title: 传给 Y
+      basis: illustration
+      note: 本次示范选择 Y，在他变向后仍在跑动时接球；没有判断防守或保证空位。第 5.69 秒出手、第 6.39 秒接球仅为教学节奏，接球后继续原路线。
+      motions:
+        - player: Q
+          motion:
+            type: still
+            note: 本次球路示例让 QB 保留原图站位持球、传球；原资料未指定后撤步，静止不代表真实比赛必须站住。
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球给 QB
+          cue: 先看球从 C 送到 QB；球在 0 秒已离开 C，C 可在出球后起跑。0.35 秒只是演示时间。
+          endLabel: QB 接到开球
+          endCue: QB 现在接到球并持球观察；刚才出球后，C 已可以按本战术的跑动安排行动。
+        - id: pass
+          type: pass
+          from: Q
+          to: 'Y'
+          at: 5.69
+          endAt: 6.39
+          label: QB 传给 Y
+          cue: QB 提前把球送向 Y 即将到达的位置；Y 在变向后仍在跑动时接住后继续原路线。本次传给 Y 是教学选择，不是唯一答案。
+          endLabel: Y 接到球
+          endCue: Y 在变向后仍在跑动时接到球，接下来带球沿已有路线继续；本次不补画新的接球后路线。
+    - id: pass-z
+      title: 传给 Z
+      basis: illustration
+      note: 本次示范选择 Z，在他变向后仍在跑动时接球；没有判断防守或保证空位。第 5.46 秒出手、第 6.16 秒接球仅为教学节奏，接球后继续原路线。
+      motions:
+        - player: Q
+          motion:
+            type: still
+            note: 本次球路示例让 QB 保留原图站位持球、传球；原资料未指定后撤步，静止不代表真实比赛必须站住。
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球给 QB
+          cue: 先看球从 C 送到 QB；球在 0 秒已离开 C，C 可在出球后起跑。0.35 秒只是演示时间。
+          endLabel: QB 接到开球
+          endCue: QB 现在接到球并持球观察；刚才出球后，C 已可以按本战术的跑动安排行动。
+        - id: pass
+          type: pass
+          from: Q
+          to: Z
+          at: 5.46
+          endAt: 6.16
+          label: QB 传给 Z
+          cue: QB 提前把球送向 Z 即将到达的位置；Z 在变向后仍在跑动时接住后继续原路线。本次传给 Z 是教学选择，不是唯一答案。
+          endLabel: Z 接到球
+          endCue: Z 在变向后仍在跑动时接到球，接下来带球沿已有路线继续；本次不补画新的接球后路线。
