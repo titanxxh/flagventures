@@ -91,6 +91,47 @@ function positionAt(player, time, choices) {
   return copyPoint(from);
 }
 
+function facingAt(player, time, choices, positions, attackDirection) {
+  const motion = player.motion;
+  const steps = motion.type === 'choice' ? chosenOption(player, choices)?.steps : motion.steps;
+  // Existing lessons do not infer body orientation from a route name or shape.
+  if (!steps?.some(step => step.facePlayer)) return undefined;
+  let from = player.at, start = motion.startAt;
+  const segments = steps.map(step => {
+    const segment = {from, start, step};
+    start += step.seconds;
+    if (step.type !== 'pause') from = step.to;
+    return segment;
+  });
+  let index = 0;
+  for (let i = 1; i < segments.length; i++) if (time >= segments[i].start) index = i;
+  const active = segments[index];
+  const unitVector = vector => {
+    const length = Math.hypot(...vector);
+    return length > 1e-9 ? vector.map(value => value / length) : undefined;
+  };
+  const target = active.step.facePlayer;
+  if (target) {
+    const here = positions.get(player.id), there = positions.get(target);
+    const direction = unitVector(there.map((value, axis) => value - here[axis]));
+    if (direction) return {direction, target};
+  }
+  // Holds and coincident target positions use the nearest run tangent. Seeking
+  // backwards produces the same orientation without remembering previous frames.
+  const candidates = [...segments.slice(0, index + 1).reverse(), ...segments.slice(index + 1)];
+  for (const segment of candidates) {
+    const {step, from, start} = segment;
+    if (step.type === 'pause') continue;
+    const progress = Math.max(0, Math.min(1, (time - start) / step.seconds));
+    const point = amount => step.type === 'line' ? interpolate(from, step.to, amount) : alongCurve(from, step, amount);
+    const before = point(Math.max(0, progress - .0001));
+    const after = point(Math.min(1, progress + .0001));
+    const direction = unitVector(after.map((value, axis) => value - before[axis]));
+    if (direction) return {direction};
+  }
+  return {direction: [0, attackDirection === 'down' ? 1 : -1]};
+}
+
 /**
  * choices maps player IDs to option IDs. Missing or invalid choices hold the
  * entire scene at zero; the returned IDs let the UI explain what remains to pick.
@@ -110,12 +151,13 @@ export function getScene(lesson, time, choices = {}) {
     keyframe = candidate;
   }
   const view = keyframe?.view;
+  const positions = new Map(lesson.players.map(player => [player.id, positionAt(player, effectiveTime, choices)]));
   return {
     time: effectiveTime,
-    players: lesson.players.map(player => ({
-      ...player,
-      position: positionAt(player, effectiveTime, choices),
-    })),
+    players: lesson.players.map(player => {
+      const facing = facingAt(player, effectiveTime, choices, positions, lesson.field?.attackDirection);
+      return {...player, position: positions.get(player.id), ...(facing ? {facing} : {})};
+    }),
     keyframe,
     zones: (lesson.zones || []).filter(zone => !view || view.zoneIds.includes(zone.id)),
     assignments: (lesson.assignments || [])

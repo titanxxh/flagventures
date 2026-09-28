@@ -62,6 +62,7 @@ players:
             - 8
             - 45
           seconds: 3
+          facePlayer: QB
     coaching:
       cooperation: 你从 QB 左前方起跑；回身后面向后方的 QB，让传球者看见你的胸口和双手。
       timing: 演示从 0 秒开始，10 秒走完；转折关键帧帮助记忆动作，没有规定开球后必须等待几秒。
@@ -96,11 +97,11 @@ keyframes:
   - id: turn
     at: 7
     label: 7 码回身
-    cue: 从开球线直跑了 7 码；现在回身，下一段退回 2 码。
+    cue: 从开球线直跑了 7 码；现在转身面向 QB，再退回 2 码。小三角指向 QB，胸口和双手朝着他。
   - id: end
     at: 10
     label: 动作完成
-    cue: 说出 HITCH，按「直跑、回身、给 QB 看手。」用手指画一遍。
+    cue: 保持面向 QB，给他看见胸口和双手。说出 HITCH，再按「直跑、回身、给 QB 看手。」画一遍。
 notes:
   - 全场按码数比例绘制：30 码宽、70 码长，含两端各 10 码端区。X 从左侧开球线起跑，QB 在后方 5 码作参照；这不是完整五人阵型。
   - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。距离标签标明官方示例或教学设置；真实路线深度、传球时机和练习距离由教练与 QB 约定。
@@ -169,9 +170,9 @@ translations:
       Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
       upward; inside means toward the field center.
     keyframes.turn.label: 7-yard turn
-    keyframes.turn.cue: You are 7 yards beyond the line of scrimmage. Turn back; the next segment returns 2 yards.
+    keyframes.turn.cue: You are 7 yards beyond the line of scrimmage. Face QB, then return 2 yards. The small triangle points toward QB; show him your chest and hands.
     keyframes.end.label: Route complete
-    keyframes.end.cue: 'Say HITCH, then trace the route: “Run, turn back, show your hands.”'
+    keyframes.end.cue: 'Keep facing QB and show your chest and hands. Say HITCH, then trace the route: “Run, turn back, show your hands.”'
     source.references.1.title: NFL FLAG · Field dimensions
     source.references.1.locator: Flag Football Field
     source.references.1.note: >-

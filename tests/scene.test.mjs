@@ -28,6 +28,53 @@ const freeze = value => {
   return value;
 };
 
+test('Hitch faces the live QB from the turn boundary, independently of the return path', () => {
+  const data = lesson([
+    player('X', [8,50], {type:'path', startAt:0, steps:[line([8,43],7), {...line([8,45],3),facePlayer:'QB'}]}),
+    player('QB', [15,55], {type:'path', startAt:0, steps:[line([20,55],10)]}),
+  ]);
+  for(const at of [0,6.999,7,8.5,10,0,7]){
+    const scene=getScene(data,at);
+    const x=scene.players[0],qb=scene.players[1];
+    assert.ok(x.facing,'the return route exposes its body direction');
+    if(at<7) assert.deepEqual(x.facing,{direction:[0,-1]});
+    else {
+      const vector=qb.position.map((n,i)=>n-x.position[i]);
+      const length=Math.hypot(...vector);
+      nearPoint(x.facing.direction,vector.map(n=>n/length));
+      assert.equal(x.facing.target,'QB');
+      assert.equal(x.position[0],8,'body rotation must not change route geometry');
+    }
+  }
+  const before=getScene(data,8.5);
+  getScene(data,0);
+  assert.deepEqual(getScene(data,8.5),before);
+});
+
+test('facing follows selected paths and remains finite for coincident players, waits and curve endpoints', () => {
+  const data=lesson([
+    player('X',[0,0],{type:'choice',startAt:1,prompt:'Pick',options:[
+      {id:'return',title:'Return',steps:[
+        {type:'quadratic',control:[0,4],to:[4,4],seconds:2},
+        {type:'pause',seconds:1},
+        {...line([4,2],2),facePlayer:'QB'},
+        {type:'pause',seconds:1,facePlayer:'QB'},
+      ]},
+      {id:'straight',title:'Straight',steps:[line([0,10],5)]},
+    ]}),
+    player('QB',[4,2],{type:'still',note:'Reference'}),
+  ]);
+  assert.equal(getScene(data,4).players[0].facing,undefined,'unselected choice has no invented facing');
+  assert.equal(getScene(data,4,{X:'straight'}).players[0].facing,undefined,'legacy option remains unchanged');
+  for(const at of [0,2,3,3.5,4,5,6,7,10]){
+    const facing=getScene(data,at,{X:'return'}).players[0].facing;
+    assert.ok(facing.direction.every(Number.isFinite));
+    assert.ok(Math.abs(Math.hypot(...facing.direction)-1)<1e-7);
+  }
+  nearPoint(getScene(data,3.5,{X:'return'}).players[0].facing.direction,[1,0],0.002);
+  assert.deepEqual(getScene(data,10,{X:'return'}).players[0].facing.direction,[0,-1]);
+});
+
 test('independent start times, local pauses and end retention survive backward seeking', () => {
   const data = freeze(lesson([
     player('X', [0, 0], {type: 'path', startAt: 1, steps: [

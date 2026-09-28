@@ -260,7 +260,12 @@ function lessonSemantics(lesson, filename) {
     for (const option of paths) {
       let end = motion.startAt;
       option.steps.forEach((step, index) => {
-        geometry(step, t`${field}.${option.id}.第 ${index + 1} 段`);
+        const stepField = t`${field}.${option.id}.第 ${index + 1} 段`;
+        geometry(step, stepField);
+        if (step.facePlayer !== undefined) {
+          requireRef(players, step.facePlayer, filename, `${stepField}.facePlayer`, '目标球员');
+          if (step.facePlayer === player.id) fail(filename, `${stepField}.facePlayer`, '面向目标不能是球员自己');
+        }
         end += step.seconds;
       });
       const tolerance = Number.EPSILON * Math.max(Math.abs(end), Math.abs(lesson.timeline.duration)) * Math.max(4, option.steps.length);

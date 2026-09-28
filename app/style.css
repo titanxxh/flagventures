@@ -32,4 +32,5 @@ select:focus-visible { outline: 3px solid #c9943a; outline-offset: 3px; }
 .distance-marker { cursor:pointer; outline:none; }
 .distance-marker-focus { opacity:0; pointer-events:none; }
 .distance-marker:focus-visible .distance-marker-focus { opacity:1; }
+.facing-hint { margin:0; padding:0 17px 12px; color:#ffe8a7; font-size:11px; }
 @media(max-width:650px) { .distance-marks { grid-template-columns:1fr; } }

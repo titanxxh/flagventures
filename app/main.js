@@ -265,7 +265,7 @@ function buildField() {
   field.setAttribute('viewBox', `${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}`);
   field.style.overflow = 'hidden';
   field.replaceChildren();
-  fieldNodes = { players: new Map(), routes: [], zones: new Map(), assignments: new Map(), unit, viewport };
+  fieldNodes = { players: new Map(), routes: [], zones: new Map(), assignments: new Map(), facingGuides: new Map(), unit, viewport };
   const defs = svg('defs');
   const arrow = svg('marker', { id: 'guide-arrow', viewBox: '0 0 8 8', refX: 6, refY: 4, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' });
   arrow.append(svg('path', { d: 'M0 0 L8 4 L0 8 L2 4 Z', fill: '#d7c9ff' })); defs.append(arrow);
@@ -369,6 +369,12 @@ function buildField() {
       field.append(svg('text', {x: x - unit, y: (top + bottom) / 2, fill: '#ffe8a7', 'font-size': 2.2 * unit, 'text-anchor': 'end', 'dominant-baseline': 'middle'}, depthLabel(firstMark.depthYards)));
     }
   }
+  const facingPlayers = new Set(getRoutes(lesson).filter(route => route.steps.some(step => step.facePlayer)).map(route => route.playerId));
+  $('facingHint').hidden = facingPlayers.size === 0;
+  for (const id of facingPlayers) {
+    const guide = svg('line', {'data-facing-guide': id, stroke: '#ffe8a7', 'stroke-width': .2 * unit, 'stroke-dasharray': `${.45 * unit} ${.6 * unit}`, 'pointer-events': 'none', visibility: 'hidden'});
+    field.append(guide); fieldNodes.facingGuides.set(id, guide);
+  }
   for (const player of lesson.players) {
     const group = svg('g', { class: 'player', 'data-player': player.id, tabindex: 0, role: 'button', 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` });
     group.append(svg('circle', { class: 'focus-ring', r: 2.85 * unit, fill: 'none', stroke: '#fff8d6', 'stroke-width': .25 * unit, opacity: 0 }));
@@ -376,6 +382,7 @@ function buildField() {
     if (player.team === 'defense') group.append(svg('path', { ...common, d: `M0 ${-2.2 * unit}L${2.2 * unit} ${1.85 * unit}L${-2.2 * unit} ${1.85 * unit}Z` }));
     else if (player.id === 'C') group.append(svg('rect', { ...common, x: -1.85 * unit, y: -1.85 * unit, width: 3.7 * unit, height: 3.7 * unit, rx: .45 * unit }));
     else group.append(svg('circle', { ...common, r: 1.95 * unit }));
+    if (facingPlayers.has(player.id)) group.append(svg('path', {'data-facing': '', d: `M${-1.1 * unit} ${-2.65 * unit}L0 ${-4.25 * unit}L${1.1 * unit} ${-2.65 * unit}Z`, fill: '#ffe8a7', stroke: '#153b2f', 'stroke-width': .2 * unit, visibility: 'hidden'}));
     group.append(svg('text', { x: 0, y: (player.team === 'defense' ? .95 : .75) * unit, 'text-anchor': 'middle', 'font-size': (player.id.length > 2 ? 1.25 : player.id.length > 1 ? 1.7 : 2.2) * unit, 'font-weight': 750, fill: '#153b2f' }, player.id));
     if (isRoute && player.id === 'QB') group.append(svg('text', {x: 0, y: 4.5 * unit, 'text-anchor': 'middle', fill: '#ffd3a2', 'font-size': 1.6 * unit}, '传球参照'));
     group.append(svg('circle', { r: 2.7 * unit, fill: 'transparent' }));
@@ -398,6 +405,23 @@ function render() {
     group.setAttribute('opacity', inspected === null || player.id === inspected || (lesson.kind === 'route' && player.id === 'QB') ? 1 : .53);
     group.setAttribute('aria-pressed', String(player.id === state.role));
     group.querySelector('.focus-ring').setAttribute('opacity', player.id === inspected ? 1 : 0);
+    const facing = group.querySelector('[data-facing]');
+    const guide = fieldNodes.facingGuides.get(player.id);
+    if (facing) {
+      facing.setAttribute('visibility', player.facing ? 'visible' : 'hidden');
+      facing.setAttribute('data-face-player', player.facing?.target || '');
+      guide.setAttribute('visibility', player.facing?.target ? 'visible' : 'hidden');
+      if (player.facing) {
+        const [dx, dy] = player.facing.direction;
+        facing.setAttribute('transform', `rotate(${Math.atan2(dy, dx) * 180 / Math.PI + 90})`);
+        facing.setAttribute('data-direction', JSON.stringify(player.facing.direction));
+        group.setAttribute('aria-label', player.facing.target ? t`${player.id}：面向 ${player.facing.target}，点击保留` : t`${player.id}：面朝跑动方向，点击保留`);
+        if (player.facing.target) {
+          const target = scene.players.find(item => item.id === player.facing.target);
+          for (const [key, value] of Object.entries({x1: player.position[0], y1: player.position[1], x2: target.position[0], y2: target.position[1]})) guide.setAttribute(key, value);
+        }
+      }
+    }
   }
   for (const route of fieldNodes.routes) {
     const option = state.choices[route.playerId];

@@ -463,6 +463,9 @@
             },
             "seconds": {
               "$ref": "#/$defs/positive"
+            },
+            "facePlayer": {
+              "$ref": "#/$defs/identifier"
             }
           },
           "required": [
@@ -486,6 +489,9 @@
             },
             "seconds": {
               "$ref": "#/$defs/positive"
+            },
+            "facePlayer": {
+              "$ref": "#/$defs/identifier"
             }
           },
           "required": [
@@ -513,6 +519,9 @@
             },
             "seconds": {
               "$ref": "#/$defs/positive"
+            },
+            "facePlayer": {
+              "$ref": "#/$defs/identifier"
             }
           },
           "required": [
@@ -532,6 +541,9 @@
             },
             "seconds": {
               "$ref": "#/$defs/positive"
+            },
+            "facePlayer": {
+              "$ref": "#/$defs/identifier"
             }
           },
           "required": [

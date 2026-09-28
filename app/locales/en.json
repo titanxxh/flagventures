@@ -268,5 +268,9 @@
   "距离标注的球员必须使用单条 path 路线": "The measured player must use a single path motion",
   "标注引用的动作段不存在": "The referenced motion step does not exist",
   "来源示例必须注明参考资料编号": "An official example requires a source reference index",
-  "标注引用的参考资料不存在": "The referenced source does not exist"
+  "标注引用的参考资料不存在": "The referenced source does not exist",
+  "面向目标不能是球员自己": "The facing target cannot be the player themself",
+  "小三角：面朝方向 · 虚线：看向队友": "Triangle: body direction · Dotted line: looking toward a teammate",
+  "{0}：面向 {1}，点击保留": "{0}: facing {1}; click to pin",
+  "{0}：面朝跑动方向，点击保留": "{0}: facing the running direction; click to pin"
 }

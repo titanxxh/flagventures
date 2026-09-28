@@ -7,6 +7,28 @@ try {
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(pathToFileURL(resolve('dist/Flagventures.html')).href);
+ // A return route must show the receiver facing QB, independently of the run path.
+ await page.locator('[data-lesson="route-hitch"]').evaluate(n=>n.click());
+ const facing=page.locator('#field [data-player="X"] [data-facing]');
+ assert.equal(await facing.count(),1,'Hitch needs a visible body-facing indicator');
+ const seek=async time=>page.locator('#seek').evaluate((n,t)=>{n.value=t;n.dispatchEvent(new Event('input',{bubbles:true}));},time);
+ for(const time of [0,6.99,7,8.5,10,0,7]){
+  await seek(time);
+  assert.equal(await facing.getAttribute('visibility'),'visible');
+  const direction=JSON.parse(await facing.getAttribute('data-direction'));
+  if(time<7){
+   assert.deepEqual(direction,[0,-1]);
+   assert.equal(await facing.getAttribute('data-face-player'),'');
+  }else{
+   const positions=await page.locator('#field .player').evaluateAll(nodes=>Object.fromEntries(nodes.map(n=>[n.dataset.player,n.transform.baseVal.getItem(0).matrix]).map(([id,m])=>[id,[m.e,m.f]])));
+   const dx=positions.QB[0]-positions.X[0],dy=positions.QB[1]-positions.X[1];
+   assert.ok(Math.abs(direction[0]*dy-direction[1]*dx)<1e-6,'body faces QB, not just the return direction');
+   assert.ok(direction[0]*dx+direction[1]*dy>0);
+   assert.equal(await facing.getAttribute('data-face-player'),'QB');
+   assert.equal(await page.locator('[data-facing-guide="X"]').getAttribute('visibility'),'visible');
+  }
+ }
+ await page.locator('#reset').click();
  const lessons=await page.locator('#builtInData').evaluate(n=>JSON.parse(n.textContent).lessons.filter(l=>l.kind==='route'));
  for(const language of ['zh','en']){
   await page.selectOption('#language',language);
