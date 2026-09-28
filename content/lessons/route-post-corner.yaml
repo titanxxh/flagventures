@@ -16,17 +16,22 @@ source:
   title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 4
   note: >-
-    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。首次变向的 7 码采用官方路线树示例；第二次变向设在 10
-    码深度及后段长度均为本图选择，官方未指定。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
+    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。首次变向的 7
+    码采用官方路线树示例；第二次变向设在 10 码深度及后段长度均为本图选择，官方未指定。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
   references:
     - title: NFL FLAG · 路线树说明
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: POST CORNER
-      note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+      note: 已同时核对正文与第 6–9 路线图：先直跑 7 码，内斜切，再向外斜切；第二次变向深度未指定。
     - title: NFL FLAG · 球场尺寸
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+    - title: NFL FLAG · 官方路线图（6–9）
+      url: >-
+        https://nflstatic.s3.amazonaws.com/attachments/ckhmre5uq232e0jlg1wnfqwlr-screen-shot-2020-11-17-at-8-00-34-pm.max.png
+      locator: 8 · POST CORNER
+      note: 核对内斜切后再外斜切的双变向；原图没有给第二转折点精确码数，本图的 10 码为教学设置。
 field:
   width: 30
   height: 70
@@ -47,7 +52,9 @@ players:
       en: POST CORNER
       description: 本图先直跑 7 码，再像 Post 一样内斜切；到 10 码深度时第二次变向，像 Corner 一样外斜切。
       basis: source
-      note: 路线形状依据 NFL FLAG 官网。首次变向的 7 码采用官方路线树示例；第二次变向设在 10 码深度及后段长度均为本图选择，官方未指定。具体深度应与教练和 QB 约定。
+      note: >-
+        已核对 NFL FLAG 官方图与正文，直跑、内斜切、外斜切顺序一致。首次变向的 7 码来自正文；第二次变向设在 10
+        码深度与后段长度为本图教学设置。没有把防守者停住误作接球手必须停顿。
     motion:
       type: path
       startAt: 0
@@ -116,99 +123,111 @@ notes:
 translations:
   en:
     summary: >-
-      POST CORNER · In this example, run 7 yards and cut inside like Post, then make the second cut outside
-      like Corner at a depth of 10 yards.
+      POST CORNER · In this example, run 7 yards and cut inside like Post, then make the second cut
+      outside like Corner at a depth of 10 yards.
     title.zh: 8 · POST CORNER
     source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Names and original numbering are retained from the PDF; route explanations are supplemented from NFL
-      FLAG. The diagram is redrawn in yards on a 30 × 70-yard field, including two 10-yard end zones; depths
-      are measured from the line of scrimmage. The first cut uses the route tree’s 7-yard example. The second
-      cut at 10-yard depth and the remaining length are drawing choices; the guide does not specify them. QB
-      placement and animation duration are teaching choices, not a PDF tracing, official game timing or
-      prescribed throw time.
+      Names and original numbering are retained from the PDF; route explanations are supplemented
+      from NFL FLAG. The diagram is redrawn in yards on a 30 × 70-yard field, including two 10-yard
+      end zones; depths are measured from the line of scrimmage. The first cut uses the route tree’s
+      7-yard example. The second cut at 10-yard depth and the remaining length are drawing choices;
+      the guide does not specify them. QB placement and animation duration are teaching choices, not
+      a PDF tracing, official game timing or prescribed throw time.
     source.references.0.title: NFL FLAG · Route tree guide
     source.references.0.locator: POST CORNER
     source.references.0.note: >-
-      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
-      adaptations.
+      Checked against both the text and the 6–9 route diagram: a 7-yard stem, inside angle and then
+      outside angle. The second cut depth is not prescribed.
     notes.0: >-
-      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
-      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
-      formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones.
+      X starts on the left of the line, with QB 5 yards behind as a reference; this is not a full
+      five-player formation.
     notes.1: >-
-      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
-      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
-      passing timing and practice distances with your coach and QB.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not
+      animated. Distance labels distinguish official examples from teaching choices. Agree on actual
+      route depths, passing timing and practice distances with your coach and QB.
     teaching.goal: >-
-      In this example, run 7 yards and cut inside like Post, then make the second cut outside like Corner at a
-      depth of 10 yards.
+      In this example, run 7 yards and cut inside like Post, then make the second cut outside like
+      Corner at a depth of 10 yards.
     teaching.cooperation: >-
-      Move from ahead and left of the QB toward the middle, then angle to the deep outside. Both cuts belong
-      to one route, not two separate passes.
+      Move from ahead and left of the QB toward the middle, then angle to the deep outside. Both
+      cuts belong to one route, not two separate passes.
     teaching.cue: Straight, angle in, angle out.
     teaching.question: Which route does the first cut resemble? And the second cut?
     players.X.name: Receiver X
     players.X.label.zh: POST CORNER
     players.X.label.description: >-
-      In this example, run 7 yards and cut inside like Post, then make the second cut outside like Corner at a
-      depth of 10 yards.
+      In this example, run 7 yards and cut inside like Post, then make the second cut outside like
+      Corner at a depth of 10 yards.
     players.X.label.note: >-
-      The route shape follows NFL FLAG. The first cut uses the route tree’s 7-yard example. The second cut at
-      10-yard depth and the remaining length are drawing choices; the guide does not specify them. Agree on
-      actual depths with your coach and QB.
+      The straight-inside-outside sequence has been checked against the NFL FLAG image and text. The
+      first 7-yard stem comes from the text; the second cut at 10-yard depth and remaining length
+      are teaching choices. A defender stopping does not require the receiver to pause.
     players.X.coaching.cooperation: >-
-      Move from ahead and left of the QB toward the middle, then angle to the deep outside. Both cuts belong
-      to one route, not two separate passes.
+      Move from ahead and left of the QB toward the middle, then angle to the deep outside. Both
+      cuts belong to one route, not two separate passes.
     players.X.coaching.timing: >-
-      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
-      delay after the snap.
+      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not
+      prescribe a delay after the snap.
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
-      a teaching position, not a required game stance or instruction to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative
+      direction. This is a teaching position, not a required game stance or instruction to stand
+      still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
-      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and release time
-      are not specified.
-    players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
+      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and
+      release time are not specified.
+    players.QB.coaching.timing: >-
+      The marker stays fixed only as a positional reference, not to specify real-game movement
+      order.
     timeline.note: >-
-      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
-      are not real running time and cannot be converted into yardage. QB stays still as a positional
-      reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards;
+      playback seconds are not real running time and cannot be converted into yardage. QB stays
+      still as a positional reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
-      upward; inside means toward the field center.
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind.
+      Attack goes upward; inside means toward the field center.
     keyframes.post.label: Post at 7 yd
-    keyframes.post.cue: After a 7-yard stem, angle toward the middle. This first-cut depth comes from the official example.
+    keyframes.post.cue: >-
+      After a 7-yard stem, angle toward the middle. This first-cut depth comes from the official
+      example.
     keyframes.corner.label: Corner at 10 yd depth
     keyframes.corner.cue: >-
-      This drawing makes the second cut outside at 10-yard depth beyond the line; that depth is a teaching
-      choice.
+      This drawing makes the second cut outside at 10-yard depth beyond the line; that depth is a
+      teaching choice.
     keyframes.end.label: Route complete
     keyframes.end.cue: 'Say POST CORNER, then trace the route: “Straight, angle in, angle out.”'
     source.references.1.title: NFL FLAG · Field dimensions
     source.references.1.locator: Flag Football Field
     source.references.1.note: >-
-      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
-      scrimmage and QB position are teaching choices.
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated
+      line of scrimmage and QB position are teaching choices.
     routeGuide.note: >-
-      Depth is measured from the line of scrimmage. The first cut uses the route tree’s 7-yard example. The
-      second cut at 10-yard depth and the remaining length are drawing choices; the guide does not specify
-      them. Other remaining lengths and QB’s position 5 yards behind the line are teaching choices; agree on
-      practice distances with your coach and QB.
+      Depth is measured from the line of scrimmage. The first cut uses the route tree’s 7-yard
+      example. The second cut at 10-yard depth and the remaining length are drawing choices; the
+      guide does not specify them. Other remaining lengths and QB’s position 5 yards behind the line
+      are teaching choices; agree on practice distances with your coach and QB.
     routeGuide.marks.post.label: Inside cut at 7 yd
     routeGuide.marks.post.note: The official route tree begins with a 7-yard stem followed by a Post-like inside cut.
     routeGuide.marks.corner.label: Outside at 10 yd depth
     routeGuide.marks.corner.note: >-
-      The second cut at 10-yard depth is a teaching choice. The source describes the outside cut without
-      specifying its depth.
+      The second cut at 10-yard depth is a teaching choice. The source describes the outside cut
+      without specifying its depth.
+    source.references.2.title: NFL FLAG · Official route diagram (6–9)
+    source.references.2.locator: 8 · POST CORNER
+    source.references.2.note: >-
+      Verifies the inside-then-outside double move. The diagram does not prescribe the second cut
+      depth; this drawing uses 10 yards as a teaching choice.
 routeGuide:
   player: X
-  note: 距离从开球线计算。首次变向的 7 码采用官方路线树示例；第二次变向设在 10 码深度及后段长度均为本图选择，官方未指定。其余后段长度及 QB 在开球线后 5 码的站位是教学设置；具体练习距离与教练、QB 约定。
+  note: >-
+    距离从开球线计算。首次变向的 7 码采用官方路线树示例；第二次变向设在 10 码深度及后段长度均为本图选择，官方未指定。其余后段长度及 QB 在开球线后 5
+    码的站位是教学设置；具体练习距离与教练、QB 约定。
   marks:
     - id: post
       step: 0

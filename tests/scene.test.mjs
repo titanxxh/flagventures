@@ -91,7 +91,7 @@ test('active segment requires a selected choice and preserves curve objects and 
   assert.equal(getActiveRoute(player('Q', [1, 2], {type: 'unspecified', note: 'Unknown'}), 2), undefined);
 });
 
-test('Hitch faces the live QB from the turn boundary, independently of the return path', () => {
+test('an explicit facing target follows the live QB independently of the movement direction', () => {
   const data = lesson([
     player('X', [8,50], {type:'path', startAt:0, steps:[line([8,43],7), {...line([8,45],3),facePlayer:'QB'}]}),
     player('QB', [15,55], {type:'path', startAt:0, steps:[line([20,55],10)]}),

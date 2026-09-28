@@ -6,18 +6,18 @@ kind: route
 title:
   zh: 0 · 急停回身
   en: HITCH
-summary: HITCH · 本图先直跑 7 码，减速回身，再向开球线方向退回 2 码，面向 QB 接应。
+summary: HITCH · 先直跑 7 码，急停转身，再朝 QB 斜着回跑约 2 码，形成向内后方的钩形接应。
 teaching:
-  goal: 本图先直跑 7 码，减速回身，再向开球线方向退回 2 码，面向 QB 接应。
-  cooperation: 你从 QB 左前方起跑；回身后面向后方的 QB，让传球者看见你的胸口和双手。
-  cue: 直跑、回身、给 QB 看手。
-  question: 回身以后，你的眼睛应该找谁？
+  goal: 先直跑 7 码，急停转身，再朝 QB 斜着回跑约 2 码，形成向内后方的钩形接应。
+  cooperation: 你从 QB 左前方起跑；急停后朝右后方的 QB 斜着迎回，身体面向他，让他看见胸口和双手。
+  cue: 直跑、钩回、迎着 QB 接。
+  question: 钩回来时，你和 QB 的距离变近还是变远？
 source:
   title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 3
   note: >-
-    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。首次回身采用官方路线树的 7 码示例；退回 2
-    码是对来源“退回几码”的教学取值。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
+    名称与原书编号保留自附件；跑法按 NFL FLAG 官网的图和文字核对。球场按 30 × 70 码绘制，含两端各 10 码端区。首段 7 码采用官方路线树文字示例；官网图示向内后方钩回。本图朝所示 QB 斜回约
+    2 码，2 码指实际回跑路程，终点距开球线约 5.3 码。精确回跑角度和长度、QB 站位与动画时长为教学设置。
   references:
     - title: NFL FLAG · 路线树说明
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
@@ -27,6 +27,11 @@ source:
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+    - title: NFL FLAG · 基础路线图 0–5
+      url: >-
+        https://nflstatic.s3.amazonaws.com/attachments/ckhmrilp9233r0jlg45p0cmj1-screen-shot-2020-11-17-at-8-03-55-pm.max.png
+      locator: 0 — HITCH
+      note: 核对直跑后向内后方钩回的图形；不把图片像素当作固定码数或角度。
 field:
   width: 30
   height: 70
@@ -45,9 +50,11 @@ players:
     label:
       zh: 急停回身
       en: HITCH
-      description: 本图先直跑 7 码，减速回身，再向开球线方向退回 2 码，面向 QB 接应。
+      description: 先直跑 7 码，急停转身，再朝 QB 斜着回跑约 2 码，形成向内后方的钩形接应。
       basis: source
-      note: 路线形状依据 NFL FLAG 官网。首次回身采用官方路线树的 7 码示例；退回 2 码是对来源“退回几码”的教学取值。具体深度应与教练和 QB 约定。
+      note: >-
+        首段 7 码采用官方路线树文字示例；官网图示向内后方钩回。本图朝所示 QB 斜回约 2 码，2 码指实际回跑路程，终点距开球线约 5.3 码。精确回跑角度和长度、QB
+        站位与动画时长为教学设置。具体深度应与教练和 QB 约定。
     motion:
       type: path
       startAt: 0
@@ -59,12 +66,12 @@ players:
           seconds: 7
         - type: line
           to:
-            - 8
-            - 45
+            - 9.007742051
+            - 44.727557802
           seconds: 3
           facePlayer: QB
     coaching:
-      cooperation: 你从 QB 左前方起跑；回身后面向后方的 QB，让传球者看见你的胸口和双手。
+      cooperation: 你从 QB 左前方起跑；急停后朝右后方的 QB 斜着迎回，身体面向他，让他看见胸口和双手。
       timing: 演示从 0 秒开始，10 秒走完；转折关键帧帮助记忆动作，没有规定开球后必须等待几秒。
   - id: QB
     team: offense
@@ -97,27 +104,28 @@ keyframes:
   - id: turn
     at: 7
     label: 7 码回身
-    cue: 从开球线直跑了 7 码；现在转身面向 QB，再退回 2 码。小三角指向 QB，胸口和双手朝着他。
+    cue: 直跑 7 码后急停转身，朝 QB 所在方向斜着回跑约 2 码。跑动线弯成小钩，小三角也面向 QB。
   - id: end
     at: 10
-    label: 动作完成
-    cue: 保持面向 QB，给他看见胸口和双手。说出 HITCH，再按「直跑、回身、给 QB 看手。」画一遍。
+    label: 钩回接应 QB
+    cue: 你已朝 QB 迎回约 2 码，现在距开球线约 5.3 码。保持胸口和双手朝向 QB，准备接球。
 notes:
   - 全场按码数比例绘制：30 码宽、70 码长，含两端各 10 码端区。X 从左侧开球线起跑，QB 在后方 5 码作参照；这不是完整五人阵型。
   - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。距离标签标明官方示例或教学设置；真实路线深度、传球时机和练习距离由教练与 QB 约定。
 translations:
   en:
     summary: >-
-      HITCH · In this example, run straight for 7 yards, turn back and return 2 yards toward the line of
-      scrimmage, facing QB.
+      HITCH · Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about 2 yards,
+      making an inward hook.
     title.zh: 0 · HITCH
     source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Names and original numbering are retained from the PDF; route explanations are supplemented from NFL
-      FLAG. The diagram is redrawn in yards on a 30 × 70-yard field, including two 10-yard end zones; depths
-      are measured from the line of scrimmage. The first turn uses the route tree’s 7-yard example. Returning
-      2 yards is a teaching interpretation of its approximate return distance. QB placement and animation
-      duration are teaching choices, not a PDF tracing, official game timing or prescribed throw time.
+      Names and original numbering are retained from the PDF; movement was checked against both the NFL FLAG
+      diagram and text. The field is drawn at 30 × 70 yards, including two 10-yard end zones. The 7-yard stem
+      follows the official route-tree text, and the diagram shows a hook back inside. This example runs about
+      2 yards diagonally toward the illustrated QB; 2 yards is the return-path length, ending at about 5.3
+      yards of depth. The precise return angle and length, QB position and animation timing are teaching
+      choices.
     source.references.0.title: NFL FLAG · Route tree guide
     source.references.0.locator: HITCH
     source.references.0.note: >-
@@ -132,21 +140,26 @@ translations:
       Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
       passing timing and practice distances with your coach and QB.
     teaching.goal: >-
-      In this example, run straight for 7 yards, turn back and return 2 yards toward the line of scrimmage,
-      facing QB.
-    teaching.cooperation: You start ahead and left of the QB. Turn back toward the QB and present your chest and hands.
-    teaching.cue: Run, turn back, show your hands.
-    teaching.question: Who do you look for after turning back?
+      Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about 2 yards, making
+      an inward hook.
+    teaching.cooperation: >-
+      Start ahead and left of QB. Plant, turn and run diagonally back toward QB on your right, presenting your
+      chest and hands.
+    teaching.cue: Run, hook back, come toward QB.
+    teaching.question: Does the hook bring you closer to QB or farther away?
     players.X.name: Receiver X
     players.X.label.zh: HITCH
     players.X.label.description: >-
-      In this example, run straight for 7 yards, turn back and return 2 yards toward the line of scrimmage,
-      facing QB.
+      Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about 2 yards, making
+      an inward hook.
     players.X.label.note: >-
-      The route shape follows NFL FLAG. The first turn uses the route tree’s 7-yard example. Returning 2 yards
-      is a teaching interpretation of its approximate return distance. Agree on actual depths with your coach
-      and QB.
-    players.X.coaching.cooperation: You start ahead and left of the QB. Turn back toward the QB and present your chest and hands.
+      The 7-yard stem follows the official route-tree text, and the diagram shows a hook back inside. This
+      example runs about 2 yards diagonally toward the illustrated QB; 2 yards is the return-path length,
+      ending at about 5.3 yards of depth. The precise return angle and length, QB position and animation
+      timing are teaching choices. Agree on practice depths with your coach and QB.
+    players.X.coaching.cooperation: >-
+      Start ahead and left of QB. Plant, turn and run diagonally back toward QB on your right, presenting your
+      chest and hands.
     players.X.coaching.timing: >-
       The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
       delay after the snap.
@@ -170,24 +183,39 @@ translations:
       Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
       upward; inside means toward the field center.
     keyframes.turn.label: 7-yard turn
-    keyframes.turn.cue: You are 7 yards beyond the line of scrimmage. Face QB, then return 2 yards. The small triangle points toward QB; show him your chest and hands.
-    keyframes.end.label: Route complete
-    keyframes.end.cue: 'Keep facing QB and show your chest and hands. Say HITCH, then trace the route: “Run, turn back, show your hands.”'
+    keyframes.turn.cue: >-
+      After a 7-yard stem, plant and turn, then run diagonally back toward QB for about 2 yards. The run path
+      makes a small hook; the triangle also faces QB.
+    keyframes.end.label: Hook back toward QB
+    keyframes.end.cue: >-
+      You have come about 2 yards toward QB and are now at about 5.3 yards of depth. Keep your chest and hands
+      toward QB, ready for the catch.
     source.references.1.title: NFL FLAG · Field dimensions
     source.references.1.locator: Flag Football Field
     source.references.1.note: >-
       The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
       scrimmage and QB position are teaching choices.
     routeGuide.note: >-
-      Depth is measured from the line of scrimmage. The first turn uses the route tree’s 7-yard example.
-      Returning 2 yards is a teaching interpretation of its approximate return distance. Other remaining
-      lengths and QB’s position 5 yards behind the line are teaching choices; agree on practice distances with
-      your coach and QB.
+      The 7-yard stem follows the official route-tree text, and the diagram shows a hook back inside. This
+      example runs about 2 yards diagonally toward the illustrated QB; 2 yards is the return-path length,
+      ending at about 5.3 yards of depth. The precise return angle and length, QB position and animation
+      timing are teaching choices. Distance labels show depth beyond the line, not total distance traveled.
     routeGuide.marks.turn.label: Turn at 7 yd
     routeGuide.marks.turn.note: 'Official route-tree example: turn after a 7-yard stem. Agree on the practice depth with QB.'
+    source.references.2.title: NFL FLAG · Basic route diagram 0–5
+    source.references.2.locator: 0 — HITCH
+    source.references.2.note: >-
+      Shows the straight stem followed by an inward, backward hook. Image pixels do not prescribe distances or
+      angles.
+    routeGuide.marks.return.label: Hook about 2 yd toward QB
+    routeGuide.marks.return.note: >-
+      This example returns about 2 yards diagonally, ending at about 5.3 yards of depth. Two yards is the
+      return-path length, not a 2-yard loss of depth. Angle and length are teaching choices.
 routeGuide:
   player: X
-  note: 距离从开球线计算。首次回身采用官方路线树的 7 码示例；退回 2 码是对来源“退回几码”的教学取值。其余后段长度及 QB 在开球线后 5 码的站位是教学设置；具体练习距离与教练、QB 约定。
+  note: >-
+    首段 7 码采用官方路线树文字示例；官网图示向内后方钩回。本图朝所示 QB 斜回约 2 码，2 码指实际回跑路程，终点距开球线约 5.3 码。精确回跑角度和长度、QB
+    站位与动画时长为教学设置。距离标签显示纵向深度，不是累计跑过的路程。
   marks:
     - id: turn
       step: 0
@@ -195,3 +223,8 @@ routeGuide:
       basis: source-example
       note: 官方路线树示例：直跑 7 码后回身。具体练习深度可与 QB 约定。
       sourceReference: 0
+    - id: return
+      step: 1
+      label: 朝 QB 钩回约 2 码
+      basis: illustration
+      note: 本图斜向回跑约 2 码，终点深度约 5.3 码；2 码是实际回跑路程，不是深度减少 2 码。角度与长度为教学设置。

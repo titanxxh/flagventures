@@ -6,31 +6,37 @@ kind: route
 title:
   zh: 6 · 内切回转向外
   en: OPTION
-summary: OPTION · 本图直跑 2 码后斜向内，到开球线前 5 码深度再回转向外横跑；这是 Option / Whip 的自定距离示例。
+summary: OPTION · 本图直跑 2 码后斜向内，到 5 码最深点再向开球线短回钩，随后在 4 码深度向外横跑；这些距离为教学设置。
 teaching:
-  goal: 本图直跑 2 码后斜向内，到开球线前 5 码深度再回转向外横跑；这是 Option / Whip 的自定距离示例。
-  cooperation: 你先向 QB 前方的中路移动，再向外侧接应。这里演示确定好的双变向，不会自动读防守、临时选一条路。
-  cue: 先斜进，停稳转，往外走。
-  question: 内切之后，你接下来去中间还是边线？
+  goal: 本图直跑 2 码后斜向内，到 5 码最深点再向开球线短回钩，随后在 4 码深度向外横跑；这些距离为教学设置。
+  cooperation: 先向 QB 前方的中路移动，再回身、回钩向外接应。图中面向 QB 表示准备接球，回钩方向仍由路线决定；不自动读防守或选择分支。
+  cue: 斜进，钩回来，再横出。
+  question: 最深到 5 码后回钩，横出时离开球线是 5 码还是 4 码？
 source:
   title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 4
   note: >-
-    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。官网只说明动作，没有指定码数。本图的 2 码直跑、5
-    码深度回转及后段长度均为教学设置；深度不等于斜跑的累计路程。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
+    名称和原书编号保留自附件；动作以 NFL FLAG 官网路线树图文为主，训练页补充回身细节。场地按 30 × 70 码绘制，含两端各 10
+    码端区；距离从开球线计算。官网图示先内斜切，再向开球线短回钩，最后向外横跑。官方未指定码数；本图用 2 码直跑、5 码最深点和回钩后 4 码深度横出。约 1 码回撤、0.25
+    秒停顿和横跑长度均为教学设置。QB 站位和所有动画秒数均为教学设置，不是比赛规定、指定传球时刻或原 PDF 路线描摹。
   references:
     - title: NFL FLAG · 路线树说明
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: OPTION
-      note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+      note: 文字说明先像 Slant 一样向中路，再向边线横跑；附图另外画出内切顶点后的短回钩。
     - title: NFL FLAG · 接球手训练
       url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
       locator: Whip / Option
-      note: 用于比较路线与核对名称，不把示例距离作为儿童训练标准。
+      note: Whip / Option 小节补充回身后向相反方向横出的动作；没有指定起步、回钩或横跑距离。
     - title: NFL FLAG · 球场尺寸
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+    - title: NFL FLAG · 官方路线图（6–9）
+      url: >-
+        https://nflstatic.s3.amazonaws.com/attachments/ckhmre5uq232e0jlg1wnfqwlr-screen-shot-2020-11-17-at-8-00-34-pm.max.png
+      locator: 6 · OPTION
+      note: 图中内斜切到顶点后短回钩，再水平向外；图片不提供本应用采用的精确距离。
 field:
   width: 30
   height: 70
@@ -49,9 +55,11 @@ players:
     label:
       zh: 内切回转向外
       en: OPTION
-      description: 本图直跑 2 码后斜向内，到开球线前 5 码深度再回转向外横跑；这是 Option / Whip 的自定距离示例。
+      description: 本图直跑 2 码后斜向内，到 5 码最深点再向开球线短回钩，随后在 4 码深度向外横跑；这些距离为教学设置。
       basis: source
-      note: 路线形状依据 NFL FLAG 官网。官网只说明动作，没有指定码数。本图的 2 码直跑、5 码深度回转及后段长度均为教学设置；深度不等于斜跑的累计路程。具体深度应与教练和 QB 约定。
+      note: >-
+        官网图示先内斜切，再向开球线短回钩，最后向外横跑。官方未指定码数；本图用 2 码直跑、5 码最深点和回钩后 4 码深度横出。约 1 码回撤、0.25
+        秒停顿和横跑长度均为教学设置。实际距离和变向节奏应与教练、QB 约定。
     motion:
       type: path
       startAt: 0
@@ -66,16 +74,23 @@ players:
             - 11
             - 45
           seconds: 3
+        - type: line
+          to:
+            - 10.8
+            - 46
+          seconds: 0.75
+          facePlayer: QB
         - type: pause
-          seconds: 1
+          seconds: 0.25
+          facePlayer: QB
         - type: line
           to:
             - 3
-            - 45
+            - 46
           seconds: 4
     coaching:
-      cooperation: 你先向 QB 前方的中路移动，再向外侧接应。这里演示确定好的双变向，不会自动读防守、临时选一条路。
-      timing: 演示从 0 秒开始，10 秒走完；转折关键帧帮助记忆动作，没有规定开球后必须等待几秒。
+      cooperation: 先向 QB 前方的中路移动，再回身、回钩向外接应。图中面向 QB 表示准备接球，回钩方向仍由路线决定；不自动读防守或选择分支。
+      timing: 2 秒开始内斜切，5 秒回钩，5.75 秒到回钩点，6 秒横出；0.25 秒停顿帮助看清动作，所有秒数均为教学设置。
   - id: QB
     team: offense
     at:
@@ -110,16 +125,20 @@ keyframes:
     cue: 本图直跑 2 码后像 Slant 一样斜向内；2 码为教学设置。
   - id: pivot
     at: 5
-    label: 5 码深度回转
-    cue: 到开球线前 5 码深度后准备向外回转。1 秒停顿只为看清动作，码数和停顿均非官方规定。
+    label: 5 码最深点开始回钩
+    cue: 这里最深到 5 码；开始向开球线回钩，并面向 QB 准备接应。不要把原地停顿当作回钩。
+  - id: hooked
+    at: 5.75
+    label: 回钩到 4 码深度
+    cue: 已向开球线回撤约 1 码，现在深度为 4 码。动画在此短停 0.25 秒后向外横跑。
   - id: cut-out
     at: 6
-    label: 在 5 码深度外横切
-    cue: 停顿后朝边线横跑，保持开球线前 5 码深度。
+    label: 在 4 码深度外横切
+    cue: 从回钩点朝边线横跑，保持开球线前 4 码深度；与先前 5 码最深点区分开。
   - id: end
     at: 10
     label: 动作完成
-    cue: 说出 OPTION，按「先斜进，停稳转，往外走。」用手指画一遍。
+    cue: 说出 OPTION，按「斜进，钩回来，再横出。」用手指画一遍。
 notes:
   - 全场按码数比例绘制：30 码宽、70 码长，含两端各 10 码端区。X 从左侧开球线起跑，QB 在后方 5 码作参照；这不是完整五人阵型。
   - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。距离标签标明官方示例或教学设置；真实路线深度、传球时机和练习距离由教练与 QB 约定。
@@ -127,113 +146,133 @@ notes:
 translations:
   en:
     summary: >-
-      OPTION · This illustrative Option / Whip uses a 2-yard stem, slants inside to a depth of 5 yards beyond
-      the line, then pivots and runs outside.
+      OPTION · Run a 2-yard stem, slant inside to the deepest point at 5 yards, hook back toward the
+      line, then run outside at 4-yard depth. These distances are teaching choices.
     title.zh: 6 · OPTION
     source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Names and original numbering are retained from the PDF; route explanations are supplemented from NFL
-      FLAG. The diagram is redrawn in yards on a 30 × 70-yard field, including two 10-yard end zones; depths
-      are measured from the line of scrimmage. The official guide describes the movement without specifying
-      yardage. The 2-yard stem, pivot at 5-yard depth and remaining length are teaching choices; depth is not
-      total distance traveled. QB placement and animation duration are teaching choices, not a PDF tracing,
-      official game timing or prescribed throw time.
+      Names and original numbering are retained from the PDF. Movement follows the NFL FLAG route
+      tree image and text, with receiver drills adding pivot details. The field is 30 × 70 yards
+      including two 10-yard end zones; depth is measured from the line of scrimmage. The official
+      diagram slants inside, hooks briefly back toward the line, then runs outside. No yardage is
+      prescribed: this drawing uses a 2-yard stem, a deepest point of 5 yards, and an outside run at
+      4-yard depth. The roughly 1-yard retreat, 0.25-second pause and sideways length are teaching
+      choices. QB placement and all animation durations are teaching choices, not game requirements,
+      prescribed throw times or a tracing of the PDF.
     source.references.0.title: NFL FLAG · Route tree guide
     source.references.0.locator: OPTION
     source.references.0.note: >-
-      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
-      adaptations.
+      The text describes a Slant-like inside move followed by an outside run; its diagram also shows
+      the short hook back after the inside peak.
     source.references.1.title: NFL FLAG · Wide receiver drills
     source.references.1.locator: Whip / Option
     source.references.1.note: >-
-      Used to compare routes and check terminology, without treating example distances as requirements for
-      children.
+      Whip / Option adds the backward pivot before running parallel in the opposite direction; it
+      does not fix stem, retreat or sideways distances.
     notes.0: >-
-      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
-      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
-      formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones.
+      X starts on the left of the line, with QB 5 yards behind as a reference; this is not a full
+      five-player formation.
     notes.1: >-
-      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
-      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
-      passing timing and practice distances with your coach and QB.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not
+      animated. Distance labels distinguish official examples from teaching choices. Agree on actual
+      route depths, passing timing and practice distances with your coach and QB.
     notes.2: >-
-      Option can mean a coverage-based choice in other playbooks. This lesson only shows the Option / Whip
-      movement described in this NFL FLAG guide; it does not infer extra branches.
+      Option can mean a coverage-based choice in other playbooks. This lesson only shows the Option
+      / Whip movement described in this NFL FLAG guide; it does not infer extra branches.
     teaching.goal: >-
-      This illustrative Option / Whip uses a 2-yard stem, slants inside to a depth of 5 yards beyond the line,
-      then pivots and runs outside.
+      Run a 2-yard stem, slant inside to the deepest point at 5 yards, hook back toward the line,
+      then run outside at 4-yard depth. These distances are teaching choices.
     teaching.cooperation: >-
-      Move toward the middle ahead of the QB, then offer an outside target. This demonstrates a planned double
-      move, not an automatic choice based on coverage.
-    teaching.cue: Slant in, plant and pivot, go out.
-    teaching.question: After the inside cut, do you continue to the middle or turn toward the sideline?
+      Move toward the middle ahead of QB, turn back and hook outside to offer a target. Facing QB
+      represents readiness to catch; the path still determines the retreat direction. Coverage does
+      not choose a branch automatically.
+    teaching.cue: Slant in, hook back, then go out.
+    teaching.question: After the hook back from 5-yard depth, is the outside run 5 or 4 yards beyond the line?
     players.X.name: Receiver X
     players.X.label.zh: OPTION
     players.X.label.description: >-
-      This illustrative Option / Whip uses a 2-yard stem, slants inside to a depth of 5 yards beyond the line,
-      then pivots and runs outside.
+      Run a 2-yard stem, slant inside to the deepest point at 5 yards, hook back toward the line,
+      then run outside at 4-yard depth. These distances are teaching choices.
     players.X.label.note: >-
-      The route shape follows NFL FLAG. The official guide describes the movement without specifying yardage.
-      The 2-yard stem, pivot at 5-yard depth and remaining length are teaching choices; depth is not total
-      distance traveled. Agree on actual depths with your coach and QB.
+      The official diagram slants inside, hooks briefly back toward the line, then runs outside. No
+      yardage is prescribed: this drawing uses a 2-yard stem, a deepest point of 5 yards, and an
+      outside run at 4-yard depth. The roughly 1-yard retreat, 0.25-second pause and sideways length
+      are teaching choices. Agree on practice depths and timing with your coach and QB.
     players.X.coaching.cooperation: >-
-      Move toward the middle ahead of the QB, then offer an outside target. This demonstrates a planned double
-      move, not an automatic choice based on coverage.
+      Move toward the middle ahead of QB, turn back and hook outside to offer a target. Facing QB
+      represents readiness to catch; the path still determines the retreat direction. Coverage does
+      not choose a branch automatically.
     players.X.coaching.timing: >-
-      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
-      delay after the snap.
+      Slant inside at 2 seconds, hook back at 5, reach the hook point at 5.75, and go outside at 6.
+      The 0.25-second pause helps show the move; all timing is illustrative.
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
-      a teaching position, not a required game stance or instruction to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative
+      direction. This is a teaching position, not a required game stance or instruction to stand
+      still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
-      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and release time
-      are not specified.
-    players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
+      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and
+      release time are not specified.
+    players.QB.coaching.timing: >-
+      The marker stays fixed only as a positional reference, not to specify real-game movement
+      order.
     timeline.note: >-
-      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
-      are not real running time and cannot be converted into yardage. QB stays still as a positional
-      reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards;
+      playback seconds are not real running time and cannot be converted into yardage. QB stays
+      still as a positional reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
-      upward; inside means toward the field center.
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind.
+      Attack goes upward; inside means toward the field center.
     keyframes.cut-in.label: Inside after 2 yd
     keyframes.cut-in.cue: This drawing slants inside after a 2-yard stem; that distance is a teaching choice.
-    keyframes.pivot.label: Pivot at 5 yd depth
+    keyframes.pivot.label: Hook back from the 5 yd peak
     keyframes.pivot.cue: >-
-      At 5 yards of depth beyond the line, prepare to pivot outside. The one-second pause makes the move
-      visible; neither distance nor pause is prescribed.
-    keyframes.cut-out.label: Outside at 5 yd depth
-    keyframes.cut-out.cue: After the pause, run sideways toward the sideline, staying 5 yards beyond the line.
+      This is the deepest point at 5 yards. Begin the hook back toward the line while facing QB; a
+      stationary pause is not the hook itself.
+    keyframes.cut-out.label: Outside at 4 yd depth
+    keyframes.cut-out.cue: >-
+      Run toward the sideline at 4-yard depth from the hook point, distinct from the earlier 5-yard
+      peak.
     keyframes.end.label: Route complete
-    keyframes.end.cue: 'Say OPTION, then trace the route: “Slant in, plant and pivot, go out.”'
+    keyframes.end.cue: 'Say OPTION, then trace the route: “Slant in, hook back, then go out.”'
     source.references.2.title: NFL FLAG · Field dimensions
     source.references.2.locator: Flag Football Field
     source.references.2.note: >-
-      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
-      scrimmage and QB position are teaching choices.
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated
+      line of scrimmage and QB position are teaching choices.
     routeGuide.note: >-
-      Depth is measured from the line of scrimmage. The official guide describes the movement without
-      specifying yardage. The 2-yard stem, pivot at 5-yard depth and remaining length are teaching choices;
-      depth is not total distance traveled. Other remaining lengths and QB’s position 5 yards behind the line
-      are teaching choices; agree on practice distances with your coach and QB.
+      Yardage is depth from the line. The 2-yard stem, 5-yard peak, outside run at 4-yard depth and
+      all remaining lengths are teaching choices. The official image and text support the hook, but
+      do not specify these distances.
     routeGuide.marks.cut-in.label: Inside cut at 2 yd
     routeGuide.marks.cut-in.note: >-
-      The 2-yard straight stem is a drawing choice. The source describes a Slant-like inward move without
-      specifying this distance.
-    routeGuide.marks.pivot.label: Pivot at 5 yd depth
+      The 2-yard straight stem is a drawing choice. The source describes a Slant-like inward move
+      without specifying this distance.
+    routeGuide.marks.pivot.label: Hook from the 5 yd peak
     routeGuide.marks.pivot.note: >-
-      Pivoting outside at a depth of 5 yards is an illustrative choice. Five yards measures depth beyond the
-      line, not the total distance run.
+      Five yards is the deepest point of this drawing. The next move retreats to 4-yard depth,
+      rather than running outside directly at 5 yards.
+    keyframes.hooked.label: Hook reaches 4 yd depth
+    keyframes.hooked.cue: >-
+      After roughly 1 yard of retreat toward the line, depth is 4 yards. The animation pauses here
+      for 0.25 seconds before going outside.
+    routeGuide.marks.hooked.label: Outside after hooking to 4 yd
+    routeGuide.marks.hooked.note: >-
+      This drawing retreats roughly 1 yard to 4-yard depth, briefly pauses, then goes outside. The
+      source shows a short hook without prescribing its length.
+    source.references.3.title: NFL FLAG · Official route diagram (6–9)
+    source.references.3.locator: 6 · OPTION
+    source.references.3.note: >-
+      Shows the short hook back after the inside peak, followed by a horizontal outside run; it does
+      not provide the exact distances used here.
 routeGuide:
   player: X
-  note: >-
-    距离从开球线计算。官网只说明动作，没有指定码数。本图的 2 码直跑、5 码深度回转及后段长度均为教学设置；深度不等于斜跑的累计路程。其余后段长度及 QB 在开球线后 5
-    码的站位是教学设置；具体练习距离与教练、QB 约定。
+  note: 码数是从开球线计算的深度。2 码起步、5 码最深点、回钩后 4 码横出及所有后段长度均为教学设置；官方图文支持回钩动作，没有给这些距离。
   marks:
     - id: cut-in
       step: 0
@@ -242,6 +281,11 @@ routeGuide:
       note: 2 码直跑起步是本图教学设置；来源只说明先像 Slant 一样向内，不指定这个距离。
     - id: pivot
       step: 1
-      label: 5 码深度回转
+      label: 5 码最深点开始回钩
       basis: illustration
-      note: 到开球线前 5 码深度回转向外，是本图自定示例；5 码指纵向深度，不是累计跑了 5 码。
+      note: 5 码是本图内斜切的最深点；随后回撤到 4 码深度，并非在 5 码深度直接横出。
+    - id: hooked
+      step: 2
+      label: 回钩后 4 码深度横出
+      basis: illustration
+      note: 本图回撤约 1 码到 4 码深度；这里短停后横出。官方图示有短回钩，但没有指定回撤距离。

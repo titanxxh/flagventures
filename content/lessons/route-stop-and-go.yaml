@@ -6,27 +6,37 @@ kind: route
 title:
   zh: 7 · 停后再冲
   en: STOP AND GO
-summary: STOP AND GO · 本图先直跑约 7 码，短暂停住做出接短球的样子，再沿原方向跑深；演示到 20 码。
+summary: STOP AND GO · 先直跑约 7 码，再钩回面向 QB，假装接短球；随后向外侧短横移，再向前跑深。本图回跑约 2 码、横移约 2 码，终点为 20 码深度。
 teaching:
-  goal: 本图先直跑约 7 码，短暂停住做出接短球的样子，再沿原方向跑深；演示到 20 码。
-  cooperation: 短暂停顿让动作看起来像给 QB 提供短传接应，随后继续向前跑深。这里未规定 QB 必须假传或何时出手。
-  cue: 跑、停一下、再冲。
-  question: 如果你在停住之后不再跑，这还是 Stop and Go 吗？
+  goal: 先直跑约 7 码，再钩回面向 QB，假装接短球；随后向外侧短横移，再向前跑深。本图回跑约 2 码、横移约 2 码，终点为 20 码深度。
+  cooperation: 用回身、钩回和假接动作给 QB 提供短传接应的样子，再向外转出跑深。这里不演示真实传球，也不规定 QB 必须假传或何时出手。
+  cue: 先跑深，钩回假接，转出再冲。
+  question: 回身假装接短球之后，是继续站住，还是转出再向前跑？
 source:
   title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 4
   note: >-
-    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。首次假停采用官方路线树的约 7 码示例；停 1 秒与最终跑到
-    20 码是本图设置，不是官方规定。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
+    名称和原书编号保留自附件；动作以 NFL FLAG 官网路线树图文为主，训练页补充回身细节。场地按 30 × 70 码绘制，含两端各 10 码端区；距离从开球线计算。首次约 7
+    码采用官方路线树示例。官网图中有钩回和短横移，训练页解释是假装 Comeback 后再跑深。本图向 QB 回跑约 2 码、横移约 2 码、暂停 1 秒及最终 20 码深度均为教学设置。QB
+    站位和所有动画秒数均为教学设置，不是比赛规定、指定传球时刻或原 PDF 路线描摹。
   references:
     - title: NFL FLAG · 路线树说明
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: STOP AND GO
-      note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+      note: 正文给出先跑约 7 码再停后起跑；图中还画出回身钩回、短横移，再从外侧继续跑深。
     - title: NFL FLAG · 球场尺寸
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+    - title: NFL FLAG · 接球手训练
+      url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
+      locator: Stop-N-Go
+      note: 解释向开球线回身、假装 Comeback 接短球，然后再次转身跑深；提示可侧步摆脱。没有给回撤和横移的精确距离。
+    - title: NFL FLAG · 官方路线图（6–9）
+      url: >-
+        https://nflstatic.s3.amazonaws.com/attachments/ckhmre5uq232e0jlg1wnfqwlr-screen-shot-2020-11-17-at-8-00-34-pm.max.png
+      locator: 7 · STOP AND GO
+      note: 图示在直跑后钩回、短横移，再从原直跑线外侧向前；各短段长度按本应用的教学尺度绘制。
 field:
   width: 30
   height: 70
@@ -45,9 +55,11 @@ players:
     label:
       zh: 停后再冲
       en: STOP AND GO
-      description: 本图先直跑约 7 码，短暂停住做出接短球的样子，再沿原方向跑深；演示到 20 码。
+      description: 先直跑约 7 码，再钩回面向 QB，假装接短球；随后向外侧短横移，再向前跑深。本图回跑约 2 码、横移约 2 码，终点为 20 码深度。
       basis: source
-      note: 路线形状依据 NFL FLAG 官网。首次假停采用官方路线树的约 7 码示例；停 1 秒与最终跑到 20 码是本图设置，不是官方规定。具体深度应与教练和 QB 约定。
+      note: >-
+        首次约 7 码采用官方路线树示例。官网图中有钩回和短横移，训练页解释是假装 Comeback 后再跑深。本图向 QB 回跑约 2 码、横移约 2 码、暂停 1 秒及最终 20
+        码深度均为教学设置。动作顺序以官网图文核对；小三角在钩回和假接时面向 QB。
     motion:
       type: path
       startAt: 0
@@ -57,16 +69,28 @@ players:
             - 8
             - 43
           seconds: 3
-        - type: pause
-          seconds: 1
         - type: line
           to:
-            - 8
+            - 9.007742051
+            - 44.727557802
+          seconds: 0.75
+          facePlayer: QB
+        - type: pause
+          seconds: 1
+          facePlayer: QB
+        - type: line
+          to:
+            - 7
+            - 44.727557802
+          seconds: 0.75
+        - type: line
+          to:
+            - 7
             - 30
-          seconds: 6
+          seconds: 4.5
     coaching:
-      cooperation: 短暂停顿让动作看起来像给 QB 提供短传接应，随后继续向前跑深。这里未规定 QB 必须假传或何时出手。
-      timing: 演示从 0 秒开始，10 秒走完；转折关键帧帮助记忆动作，没有规定开球后必须等待几秒。
+      cooperation: 用回身、钩回和假接动作给 QB 提供短传接应的样子，再向外转出跑深。这里不演示真实传球，也不规定 QB 必须假传或何时出手。
+      timing: 3 秒开始钩回，3.75 秒假接，4.75 秒向外转出，5.5 秒再跑深；假接停 1 秒及全部时长都是教学安排。
   - id: QB
     team: offense
     at:
@@ -97,117 +121,168 @@ keyframes:
     cue: 从开球线的 0 码开始看：X 在左侧，QB 在后方 5 码的中间。上方是进攻方向，“内”指场地中间。
   - id: stop
     at: 3
-    label: 约 7 码假停
-    cue: 从开球线跑到约 7 码处假停；动画用 1 秒让小朋友看清，之后还要再跑。
+    label: 约 7 码开始钩回
+    cue: 先直跑约 7 码，现在转身面向 QB 并开始短回撤；不是只停在原地。
+  - id: fake-catch
+    at: 3.75
+    label: 回钩后面向 QB 假接
+    cue: 已向 QB 回跑约 2 码，当前深度约 5.3 码；面向 QB 假装准备接短球。回跑距离及 1 秒停顿为教学设置。
   - id: go
-    at: 4
-    label: 从 7 码继续向前
-    cue: 停顿结束，从 7 码位置沿同一条线继续向前；本图终点设为 20 码。
+    at: 4.75
+    label: 向外侧转出
+    cue: 结束假接，向外侧短横移约 2 码，准备摆脱后再向前；横移距离为教学设置。
+  - id: deep
+    at: 5.5
+    label: 从外侧再跑深
+    cue: 已经转到原直跑线外侧，现在朝端区继续跑深；本图终点为 20 码深度，不是规定距离。
   - id: end
     at: 10
     label: 动作完成
-    cue: 说出 STOP AND GO，按「跑、停一下、再冲。」用手指画一遍。
+    cue: 说出 STOP AND GO，按「先跑深，钩回假接，转出再冲。」用手指画一遍。
 notes:
   - 全场按码数比例绘制：30 码宽、70 码长，含两端各 10 码端区。X 从左侧开球线起跑，QB 在后方 5 码作参照；这不是完整五人阵型。
   - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。距离标签标明官方示例或教学设置；真实路线深度、传球时机和练习距离由教练与 QB 约定。
 translations:
   en:
     summary: >-
-      STOP AND GO · In this example, run about 7 yards, briefly stop as if preparing for a short catch, then
-      continue deep along the same line; the drawing ends at 20 yards.
+      STOP AND GO · Run about 7 yards, hook back facing QB as if taking a short catch, move briefly
+      outside, then go deep. This drawing returns about 2 yards, sidesteps about 2 yards and ends at
+      20-yard depth.
     title.zh: 7 · STOP AND GO
     source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Names and original numbering are retained from the PDF; route explanations are supplemented from NFL
-      FLAG. The diagram is redrawn in yards on a 30 × 70-yard field, including two 10-yard end zones; depths
-      are measured from the line of scrimmage. The first stop uses the route tree’s roughly 7-yard example.
-      The one-second pause and 20-yard endpoint are drawing choices, not official requirements. QB placement
-      and animation duration are teaching choices, not a PDF tracing, official game timing or prescribed throw
-      time.
+      Names and original numbering are retained from the PDF. Movement follows the NFL FLAG route
+      tree image and text, with receiver drills adding pivot details. The field is 30 × 70 yards
+      including two 10-yard end zones; depth is measured from the line of scrimmage. The initial
+      roughly 7 yards follow the route tree example. Its image shows a hook back and short sideways
+      move; the receiver drill describes a fake Comeback before going deep. The roughly 2-yard
+      return toward QB, roughly 2-yard sidestep, one-second pause and final 20-yard depth are
+      teaching choices. QB placement and all animation durations are teaching choices, not game
+      requirements, prescribed throw times or a tracing of the PDF.
     source.references.0.title: NFL FLAG · Route tree guide
     source.references.0.locator: STOP AND GO
     source.references.0.note: >-
-      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
-      adaptations.
+      The text gives an initial run of about 7 yards before stopping and going; the image also shows
+      the hook back and short sidestep before continuing deep on the outside.
     notes.0: >-
-      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
-      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
-      formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones.
+      X starts on the left of the line, with QB 5 yards behind as a reference; this is not a full
+      five-player formation.
     notes.1: >-
-      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
-      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
-      passing timing and practice distances with your coach and QB.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not
+      animated. Distance labels distinguish official examples from teaching choices. Agree on actual
+      route depths, passing timing and practice distances with your coach and QB.
     teaching.goal: >-
-      In this example, run about 7 yards, briefly stop as if preparing for a short catch, then continue deep
-      along the same line; the drawing ends at 20 yards.
+      Run about 7 yards, hook back facing QB as if taking a short catch, move briefly outside, then
+      go deep. This drawing returns about 2 yards, sidesteps about 2 yards and ends at 20-yard
+      depth.
     teaching.cooperation: >-
-      The brief stop suggests a short target for the QB before you continue deep. This example does not
-      require a QB pump fake or prescribe a release time.
-    teaching.cue: Run, stop, then go.
-    teaching.question: If you stop and never go again, is it still Stop and Go?
+      Turn and hook back as if offering QB a short completion, then break outside and go deep. An
+      actual pass is not animated, and no QB pump fake or throw time is prescribed.
+    teaching.cue: Run deep, hook back and fake, break out and go.
+    teaching.question: >-
+      After turning back as if taking a short catch, do you stay there or break out and run deep
+      again?
     players.X.name: Receiver X
     players.X.label.zh: STOP AND GO
     players.X.label.description: >-
-      In this example, run about 7 yards, briefly stop as if preparing for a short catch, then continue deep
-      along the same line; the drawing ends at 20 yards.
+      Run about 7 yards, hook back facing QB as if taking a short catch, move briefly outside, then
+      go deep. This drawing returns about 2 yards, sidesteps about 2 yards and ends at 20-yard
+      depth.
     players.X.label.note: >-
-      The route shape follows NFL FLAG. The first stop uses the route tree’s roughly 7-yard example. The
-      one-second pause and 20-yard endpoint are drawing choices, not official requirements. Agree on actual
-      depths with your coach and QB.
+      The initial roughly 7 yards follow the route tree example. Its image shows a hook back and
+      short sideways move; the receiver drill describes a fake Comeback before going deep. The
+      roughly 2-yard return toward QB, roughly 2-yard sidestep, one-second pause and final 20-yard
+      depth are teaching choices. The sequence follows the official image and text; the facing
+      triangle points toward QB during the return and fake catch.
     players.X.coaching.cooperation: >-
-      The brief stop suggests a short target for the QB before you continue deep. This example does not
-      require a QB pump fake or prescribe a release time.
+      Turn and hook back as if offering QB a short completion, then break outside and go deep. An
+      actual pass is not animated, and no QB pump fake or throw time is prescribed.
     players.X.coaching.timing: >-
-      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
-      delay after the snap.
+      Hook back at 3 seconds, fake the catch at 3.75, break outside at 4.75 and go deep at 5.5. The
+      one-second fake-catch pause and all durations are teaching choices.
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
-      a teaching position, not a required game stance or instruction to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative
+      direction. This is a teaching position, not a required game stance or instruction to stand
+      still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
-      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and release time
-      are not specified.
-    players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
+      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and
+      release time are not specified.
+    players.QB.coaching.timing: >-
+      The marker stays fixed only as a positional reference, not to specify real-game movement
+      order.
     timeline.note: >-
-      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
-      are not real running time and cannot be converted into yardage. QB stays still as a positional
-      reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards;
+      playback seconds are not real running time and cannot be converted into yardage. QB stays
+      still as a positional reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
-      upward; inside means toward the field center.
-    keyframes.stop.label: Fake stop at about 7 yd
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind.
+      Attack goes upward; inside means toward the field center.
+    keyframes.stop.label: Hook back at about 7 yd
     keyframes.stop.cue: >-
-      Stop briefly about 7 yards beyond the line. The animation pauses for one second so the move is visible;
-      you still go again.
-    keyframes.go.label: Go again from 7 yd
-    keyframes.go.cue: The pause ends. Continue straight from the 7-yard mark; this drawing ends at 20 yards.
+      After roughly 7 yards, turn toward QB and start a short return; do not merely remain
+      stationary.
+    keyframes.go.label: Break to the outside
+    keyframes.go.cue: >-
+      Finish the fake catch and move roughly 2 yards outside before running forward again. This
+      sideways distance is a teaching choice.
     keyframes.end.label: Route complete
-    keyframes.end.cue: 'Say STOP AND GO, then trace the route: “Run, stop, then go.”'
+    keyframes.end.cue: 'Say STOP AND GO, then trace the route: “Run deep, hook back and fake, break out and go.”'
     source.references.1.title: NFL FLAG · Field dimensions
     source.references.1.locator: Flag Football Field
     source.references.1.note: >-
-      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
-      scrimmage and QB position are teaching choices.
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated
+      line of scrimmage and QB position are teaching choices.
     routeGuide.note: >-
-      Depth is measured from the line of scrimmage. The first stop uses the route tree’s roughly 7-yard
-      example. The one-second pause and 20-yard endpoint are drawing choices, not official requirements. Other
-      remaining lengths and QB’s position 5 yards behind the line are teaching choices; agree on practice
-      distances with your coach and QB.
-    routeGuide.marks.stop.label: Fake stop at about 7 yd
+      Depth is measured from the line. The initial roughly 7 yards are sourced; returning about 2
+      yards toward QB brings depth to about 5.3 yards. The return, roughly 2-yard sidestep,
+      one-second pause and final 20-yard depth are drawing choices. Return distance differs from the
+      change in depth.
+    routeGuide.marks.stop.label: Hook back at about 7 yd
     routeGuide.marks.stop.note: >-
-      The official route tree demonstrates a stop at about 7 yards before going again. It does not specify the
-      pause length or final depth.
+      The route tree demonstrates the first stop and turn after about 7 yards. Its image shows a
+      hook back without specifying return or sidestep distances.
+    keyframes.fake-catch.label: Face QB for the fake catch
+    keyframes.fake-catch.cue: >-
+      After returning roughly 2 yards toward QB, depth is about 5.3 yards. Face QB as if taking a
+      short catch. The return distance and one-second pause are illustrative.
+    keyframes.deep.label: Go deep from the outside
+    keyframes.deep.cue: >-
+      You are now outside the original stem. Continue upfield toward the end zone; the drawing ends
+      at 20-yard depth as a teaching choice.
+    routeGuide.marks.fake-catch.label: Fake catch at about 5.3 yd depth
+    routeGuide.marks.fake-catch.note: >-
+      The drawing returns about 2 yards toward QB from the 7-yard peak, reducing depth to about 5.3
+      yards, then faces QB for a one-second fake catch. These values are illustrative.
+    source.references.2.title: NFL FLAG · Wide receiver drills
+    source.references.2.locator: Stop-N-Go
+    source.references.2.note: >-
+      Explains turning back toward the line to fake a Comeback catch, then turning upfield again; it
+      also mentions a sidestep. Return and sidestep distances are not specified.
+    source.references.3.title: NFL FLAG · Official route diagram (6–9)
+    source.references.3.locator: 7 · STOP AND GO
+    source.references.3.note: >-
+      Shows the hook back and short sidestep after the stem, then a deep run outside the original
+      path; the short segment lengths are chosen for this teaching diagram.
 routeGuide:
   player: X
-  note: 距离从开球线计算。首次假停采用官方路线树的约 7 码示例；停 1 秒与最终跑到 20 码是本图设置，不是官方规定。其余后段长度及 QB 在开球线后 5 码的站位是教学设置；具体练习距离与教练、QB 约定。
+  note: >-
+    深度从开球线计。首次约 7 码来自官方示例；向 QB 回跑约 2 码后，纵向深度约为 5.3 码。回跑、横移约 2 码、暂停 1 秒及最终 20
+    码深度都是本图教学设置；回跑长度与纵向深度减少量不同。
   marks:
     - id: stop
       step: 0
-      label: 约 7 码假停
+      label: 约 7 码开始钩回
       basis: source-example
-      note: 官方路线树示例在约 7 码处假停后再跑；并未指定停多久或最终跑多远。
+      note: 官方路线树以约 7 码示范首次停与转；图示有回身钩回，后续回跑和横移距离未指定。
       sourceReference: 0
+    - id: fake-catch
+      step: 1
+      label: 回钩后约 5.3 码深度
+      basis: illustration
+      note: 本图从 7 码顶点向 QB 回跑约 2 码，纵向深度减至约 5.3 码；随后面向 QB 停 1 秒假接。这些距离与秒数是教学设置。

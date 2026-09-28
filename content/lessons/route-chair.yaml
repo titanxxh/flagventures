@@ -6,9 +6,9 @@ kind: route
 title:
   zh: 9 · 椅形路线
   en: CHAIR
-summary: CHAIR · 本图先直跑约 5 码，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
+summary: CHAIR · 本图采用路线树的约 4 码起步，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
 teaching:
-  goal: 本图先直跑约 5 码，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
+  goal: 本图采用路线树的约 4 码起步，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
   cooperation: 你先在 QB 前方提供向外的动作，再沿外侧跑深。QB 可观察你两次转向后的空间；本图不指定传球时刻。
   cue: 直跑、横出去、再向前。
   question: Chair 比 Out 多了最后哪一段？
@@ -16,21 +16,26 @@ source:
   title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 4
   note: >-
-    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。采用官方接球手练习的约 5 码版本；官方路线树另有约 4
-    码示例。横跑 6 码后的第二次变向及后段长度为本图设置。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
+    名称和原书编号保留自附件；动作已与 NFL FLAG 路线树图文核对。场地按 30 × 70 码绘制，含两端各 10 码端区；距离从开球线计算。采用官方路线树图文的约 4
+    码首次外切；接球手训练页另用约 5 码，属于不同示例。横跑 6 码后再向前及后段长度为本图教学设置。QB 站位和所有动画秒数均为教学设置，不是比赛规定、指定传球时刻或原 PDF 路线描摹。
   references:
     - title: NFL FLAG · 路线树说明
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: CHAIR
-      note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+      note: 本条以路线树的约 4 码示例为主；图示直跑、向外横切，再向前跑深。
     - title: NFL FLAG · 接球手训练
       url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
       locator: Chair
-      note: 用于核对本条路线的距离示例或未指定固定距离的说明；不是所有球员必须使用的深度。
+      note: 同样说明 Out 后再向前的两次直角转向，但用约 5 码起步，是另一距离示例。
     - title: NFL FLAG · 球场尺寸
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+    - title: NFL FLAG · 官方路线图（6–9）
+      url: >-
+        https://nflstatic.s3.amazonaws.com/attachments/ckhmre5uq232e0jlg1wnfqwlr-screen-shot-2020-11-17-at-8-00-34-pm.max.png
+      locator: 9 · CHAIR
+      note: 核对直跑、向外横跑、再向前的轮廓；本图在 QB 左侧镜像呈现相同关系。
 field:
   width: 30
   height: 70
@@ -49,9 +54,11 @@ players:
     label:
       zh: 椅形路线
       en: CHAIR
-      description: 本图先直跑约 5 码，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
+      description: 本图采用路线树的约 4 码起步，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
       basis: source
-      note: 路线形状依据 NFL FLAG 官网。采用官方接球手练习的约 5 码版本；官方路线树另有约 4 码示例。横跑 6 码后的第二次变向及后段长度为本图设置。具体深度应与教练和 QB 约定。
+      note: >-
+        采用官方路线树图文的约 4 码首次外切；接球手训练页另用约 5 码，属于不同示例。横跑 6
+        码后再向前及后段长度为本图教学设置。两次转向均连续跑动，不自动加入停顿；实际练习距离与教练、QB 约定。
     motion:
       type: path
       startAt: 0
@@ -59,12 +66,12 @@ players:
         - type: line
           to:
             - 8
-            - 45
+            - 46
           seconds: 4
         - type: line
           to:
             - 2
-            - 45
+            - 46
           seconds: 2
         - type: line
           to:
@@ -104,12 +111,12 @@ keyframes:
     cue: 从开球线的 0 码开始看：X 在左侧，QB 在后方 5 码的中间。上方是进攻方向，“内”指场地中间。
   - id: out
     at: 4
-    label: 约 5 码先向外
-    cue: 从开球线直跑约 5 码，先像 Out 一样朝边线横跑。
+    label: 约 4 码先向外
+    cue: 按路线树示例直跑约 4 码，先像 Out 一样朝边线横跑。
   - id: up
     at: 6
     label: 横跑 6 码再向前
-    cue: 本图横跑了 6 码，深度仍为 5 码；现在转约 90° 向前。横跑距离是教学设置。
+    cue: 本图在 4 码深度横跑了 6 码，现在转约 90° 向前；横跑距离为教学设置。
   - id: end
     at: 10
     label: 动作完成
@@ -120,117 +127,127 @@ notes:
 translations:
   en:
     summary: >-
-      CHAIR · In this example, run about 5 yards, cut outside like Out, then turn about 90° upfield; the
-      outline resembles a chair.
+      CHAIR · This uses the route tree’s roughly 4-yard stem, followed by an outside cut like Out
+      and a roughly 90° turn upfield; the outline resembles a chair.
     title.zh: 9 · CHAIR
     source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Names and original numbering are retained from the PDF; route explanations are supplemented from NFL
-      FLAG. The diagram is redrawn in yards on a 30 × 70-yard field, including two 10-yard end zones; depths
-      are measured from the line of scrimmage. This uses the receiver drill’s roughly 5-yard version; the
-      official route tree also shows about 4 yards. The second cut after 6 sideways yards and the remaining
-      length are drawing choices. QB placement and animation duration are teaching choices, not a PDF tracing,
-      official game timing or prescribed throw time.
+      Names and original numbering are retained from the PDF. Movement has been checked against the
+      NFL FLAG route tree image and text. The field is 30 × 70 yards including two 10-yard end
+      zones; depth is measured from the line. The first outside cut follows the route tree image and
+      text at about 4 yards. The receiver drill gives about 5 yards as a different example. The
+      6-yard sideways run before turning upfield and the remaining length are teaching choices. QB
+      placement and all animation durations are teaching choices, not game requirements, prescribed
+      throw times or a tracing of the PDF.
     source.references.0.title: NFL FLAG · Route tree guide
     source.references.0.locator: CHAIR
     source.references.0.note: >-
-      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
-      adaptations.
+      This lesson follows the route tree’s roughly 4-yard example; the diagram goes straight,
+      outside and then deep.
     notes.0: >-
-      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
-      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
-      formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones.
+      X starts on the left of the line, with QB 5 yards behind as a reference; this is not a full
+      five-player formation.
     notes.1: >-
-      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
-      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
-      passing timing and practice distances with your coach and QB.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not
+      animated. Distance labels distinguish official examples from teaching choices. Agree on actual
+      route depths, passing timing and practice distances with your coach and QB.
     teaching.goal: >-
-      In this example, run about 5 yards, cut outside like Out, then turn about 90° upfield; the outline
-      resembles a chair.
+      This uses the route tree’s roughly 4-yard stem, followed by an outside cut like Out and a
+      roughly 90° turn upfield; the outline resembles a chair.
     teaching.cooperation: >-
-      Show an outside move ahead of the QB, then go deep along the outside. The QB can watch the space after
-      each cut; no throw timing is prescribed.
+      Show an outside move ahead of the QB, then go deep along the outside. The QB can watch the
+      space after each cut; no throw timing is prescribed.
     teaching.cue: Straight, sideways out, then upfield.
     teaching.question: What final segment does Chair add to Out?
     players.X.name: Receiver X
     players.X.label.zh: CHAIR
     players.X.label.description: >-
-      In this example, run about 5 yards, cut outside like Out, then turn about 90° upfield; the outline
-      resembles a chair.
+      This uses the route tree’s roughly 4-yard stem, followed by an outside cut like Out and a
+      roughly 90° turn upfield; the outline resembles a chair.
     players.X.label.note: >-
-      The route shape follows NFL FLAG. This uses the receiver drill’s roughly 5-yard version; the official
-      route tree also shows about 4 yards. The second cut after 6 sideways yards and the remaining length are
-      drawing choices. Agree on actual depths with your coach and QB.
+      The first outside cut follows the route tree image and text at about 4 yards. The receiver
+      drill gives about 5 yards as a different example. The 6-yard sideways run before turning
+      upfield and the remaining length are teaching choices. Both changes of direction remain
+      continuous without added pauses. Agree on practice distances with your coach and QB.
     players.X.coaching.cooperation: >-
-      Show an outside move ahead of the QB, then go deep along the outside. The QB can watch the space after
-      each cut; no throw timing is prescribed.
+      Show an outside move ahead of the QB, then go deep along the outside. The QB can watch the
+      space after each cut; no throw timing is prescribed.
     players.X.coaching.timing: >-
-      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
-      delay after the snap.
+      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not
+      prescribe a delay after the snap.
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
-      a teaching position, not a required game stance or instruction to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative
+      direction. This is a teaching position, not a required game stance or instruction to stand
+      still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
-      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and release time
-      are not specified.
-    players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
+      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and
+      release time are not specified.
+    players.QB.coaching.timing: >-
+      The marker stays fixed only as a positional reference, not to specify real-game movement
+      order.
     timeline.note: >-
-      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
-      are not real running time and cannot be converted into yardage. QB stays still as a positional
-      reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards;
+      playback seconds are not real running time and cannot be converted into yardage. QB stays
+      still as a positional reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
-      upward; inside means toward the field center.
-    keyframes.out.label: Out at about 5 yd
-    keyframes.out.cue: After about 5 yards from the line, run sideways toward the sideline like Out.
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind.
+      Attack goes upward; inside means toward the field center.
+    keyframes.out.label: Out at about 4 yd
+    keyframes.out.cue: >-
+      Following the route tree example, run about 4 yards before cutting toward the sideline like
+      Out.
     keyframes.up.label: Up after 6 yd across
     keyframes.up.cue: >-
-      The drawing has moved 6 yards sideways while staying 5 yards deep. Now turn about 90° upfield. The
-      sideways distance is a teaching choice.
+      This drawing runs 6 yards sideways at 4-yard depth, then turns about 90° upfield. The sideways
+      distance is a teaching choice.
     keyframes.end.label: Route complete
     keyframes.end.cue: 'Say CHAIR, then trace the route: “Straight, sideways out, then upfield.”'
     source.references.1.title: NFL FLAG · Wide receiver drills
     source.references.1.locator: Chair
     source.references.1.note: >-
-      Verifies the route’s example depth or lack of a fixed depth; these are not distances required for every
-      player.
+      Describes the same two square cuts, outside and then upfield, but uses about 5 yards as a
+      different stem-depth example.
     source.references.2.title: NFL FLAG · Field dimensions
     source.references.2.locator: Flag Football Field
     source.references.2.note: >-
-      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
-      scrimmage and QB position are teaching choices.
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated
+      line of scrimmage and QB position are teaching choices.
     routeGuide.note: >-
-      Depth is measured from the line of scrimmage. This uses the receiver drill’s roughly 5-yard version; the
-      official route tree also shows about 4 yards. The second cut after 6 sideways yards and the remaining
-      length are drawing choices. Other remaining lengths and QB’s position 5 yards behind the line are
-      teaching choices; agree on practice distances with your coach and QB.
-    routeGuide.marks.out.label: Outside at about 5 yd
+      Depth is measured from the line. The first outside cut uses the route tree’s roughly 4 yards;
+      the drill’s roughly 5 yards is a different example. This drawing turns upfield after 6
+      sideways yards. Sideways and remaining lengths are teaching choices; agree on actual distances
+      with your coach and QB.
+    routeGuide.marks.out.label: Outside at about 4 yd
     routeGuide.marks.out.note: >-
-      This follows the receiver drill’s outside cut after about 5 yards. The official route tree uses about 4
-      yards; both are examples.
+      Uses the official route tree’s outside cut after about 4 yards. The receiver drill uses about
+      5 yards as another example; neither is a fixed requirement.
     routeGuide.marks.up.label: Go up after 6 yd across
     routeGuide.marks.up.note: >-
-      The drawing runs 6 yards sideways at 5-yard depth before turning upfield. The source does not specify
-      that sideways distance.
+      This drawing goes 6 yards sideways at 4-yard depth before turning upfield; the source does not
+      prescribe that sideways distance.
+    source.references.3.title: NFL FLAG · Official route diagram (6–9)
+    source.references.3.locator: 9 · CHAIR
+    source.references.3.note: >-
+      Verifies the straight-out-upfield shape; this drawing mirrors it to the left of QB while
+      preserving those relationships.
 routeGuide:
   player: X
-  note: >-
-    距离从开球线计算。采用官方接球手练习的约 5 码版本；官方路线树另有约 4 码示例。横跑 6 码后的第二次变向及后段长度为本图设置。其余后段长度及 QB 在开球线后 5
-    码的站位是教学设置；具体练习距离与教练、QB 约定。
+  note: 距离从开球线计算。首次外切采用路线树的约 4 码；训练页的约 5 码是另一示例。本图横跑 6 码后再向前，横跑与后段长度均为教学设置，实际距离与教练、QB 约定。
   marks:
     - id: out
       step: 0
-      label: 约 5 码外横切
+      label: 约 4 码外横切
       basis: source-example
-      note: 采用官方接球手训练约 5 码后向外横切的示例；官方路线树另用约 4 码，两者都是示例。
-      sourceReference: 1
+      note: 采用官方路线树先跑约 4 码再外横切的示例；训练页约 5 码为另一示例，都不是固定要求。
+      sourceReference: 0
     - id: up
       step: 1
       label: 横跑 6 码再向前
       basis: illustration
-      note: 本图在 5 码深度横跑 6 码后再向前；官方没有指定这段横向距离。
+      note: 本图在 4 码深度横跑 6 码后转向前；官方没有指定横向跑多远。

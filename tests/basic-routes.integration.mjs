@@ -19,7 +19,14 @@ try {
   await seek(time);
   assert.equal(await facing.getAttribute('visibility'),'visible');
   const direction=JSON.parse(await facing.getAttribute('data-direction'));
-  assert.equal(await activeArrow.getAttribute('d'),time<7?'M 8 50 L 8 43':'M 8 43 L 8 45','blue arrow switches direction only at the turn');
+  const arrow=await activeArrow.evaluate(n=>{const length=n.getTotalLength(),a=n.getPointAtLength(0),b=n.getPointAtLength(length);return {from:[a.x,a.y],to:[b.x,b.y],length};});
+  if(time<7) assert.deepEqual([arrow.from,arrow.to],[[8,50],[8,43]],'blue arrow starts with the forward stem');
+  else {
+   assert.deepEqual(arrow.from,[8,43]);
+   assert.ok(arrow.to[0]>8 && arrow.to[1]>43,'Hitch hooks inward and back');
+   assert.ok(Math.abs(arrow.length-2)<.001,'diagonal return travels about two yards');
+   assert.ok(Math.abs((arrow.to[0]-8)*12-(arrow.to[1]-43)*7)<.001,'return arrow aims toward QB');
+  }
   assert.equal(await activeArrow.getAttribute('marker-end'),'url(#arrow-X)');
   if(time<7){
    assert.deepEqual(direction,[0,-1]);
@@ -34,6 +41,31 @@ try {
   }
  }
  await page.locator('#reset').click();
+ const routePoints=()=>page.locator('#field [data-active-route="X"]').evaluate(n=>{const a=n.getPointAtLength(0),b=n.getPointAtLength(n.getTotalLength());return {from:[a.x,a.y],to:[b.x,b.y]};});
+ await page.locator('[data-lesson="route-option"]').evaluate(n=>n.click());
+ await seek(5);
+ const optionHook=await routePoints();
+ assert.ok(optionHook.to[1]>optionHook.from[1],'Option visibly retreats from its inside tip');
+ await seek(6);
+ const optionOut=await routePoints();
+ assert.ok(optionOut.to[0]<optionOut.from[0]);
+ assert.equal(optionOut.from[1],optionOut.to[1]);
+ assert.equal(optionOut.from[1],optionHook.to[1],'Option exits from the hook, not the old tip');
+ await page.locator('[data-lesson="route-stop-and-go"]').evaluate(n=>n.click());
+ await seek(3.75);
+ assert.equal(await page.locator('#field [data-player="X"] [data-facing]').getAttribute('data-face-player'),'QB');
+ const fakeCatchPosition=await page.locator('#field [data-player="X"]').getAttribute('transform');
+ await seek(4.5);
+ assert.equal(await page.locator('#field [data-player="X"]').getAttribute('transform'),fakeCatchPosition,'fake catch holds after returning');
+ await seek(4.75);
+ const escape=await routePoints();
+ assert.ok(escape.to[0]<escape.from[0]);
+ assert.equal(escape.to[1],escape.from[1]);
+ await seek(5.5);
+ const deep=await routePoints();
+ assert.equal(deep.from[0],deep.to[0]);
+ assert.ok(deep.to[1]<deep.from[1]);
+ assert.equal(await page.locator('#field [data-player="X"] [data-facing]').getAttribute('data-face-player'),'','deep run faces downfield again');
  const lessons=await page.locator('#builtInData').evaluate(n=>JSON.parse(n.textContent).lessons.filter(l=>l.kind==='route'));
  for(const language of ['zh','en']){
   await page.selectOption('#language',language);

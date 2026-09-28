@@ -211,7 +211,7 @@ test('route distances use official examples or explicitly chosen demonstration d
     'route-hitch': [7, 'source-example'], 'route-slant': [2, 'illustration'],
     'route-out': [5, 'source-example'], 'route-in': [10, 'source-example'],
     'route-post': [7, 'source-example'], 'route-corner': [7, 'source-example'],
-    'route-chair': [5, 'source-example'], 'route-stop-and-go': [7, 'source-example'],
+    'route-chair': [4, 'source-example'], 'route-stop-and-go': [7, 'source-example'],
     'route-post-corner': [7, 'source-example'], 'route-option': [2, 'illustration'],
     'route-fly': [20, 'illustration'],
   };
@@ -226,4 +226,34 @@ test('route distances use official examples or explicitly chosen demonstration d
     if (basis === 'source-example') assert.ok(data.source.references[mark.sourceReference], id);
     assert.ok(guide.note, id);
   }
+});
+
+test('official return moves keep their hook geometry instead of retracing or only pausing', () => {
+  const hitch = lesson('route-hitch');
+  const x = hitch.players.find(p => p.id === 'X'), qb = hitch.players.find(p => p.id === 'QB');
+  const [stem, back] = x.motion.steps;
+  const toward = qb.at.map((n,i) => n-stem.to[i]);
+  const returned = back.to.map((n,i) => n-stem.to[i]);
+  assert.ok(returned[0] > 0 && returned[1] > 0, 'Hitch hooks inside and back, never retraces its stem');
+  assert.ok(Math.abs(returned[0]*toward[1]-returned[1]*toward[0]) < 1e-6, 'this illustration returns toward QB');
+  assert.ok(Math.abs(Math.hypot(...returned)-2) < 1e-6, 'two yards measures diagonal travel, not depth');
+  assert.ok(Math.abs((hitch.field.lineOfScrimmageY-back.to[1])-5.2724) < .001);
+
+  const option = lesson('route-option').players.find(p=>p.id==='X').motion.steps;
+  const optionRuns = option.filter(s=>s.type!=='pause');
+  assert.equal(optionRuns.length,4,'Option includes its small hook before running outside');
+  assert.ok(optionRuns[1].to[0]>optionRuns[0].to[0] && optionRuns[1].to[1]<optionRuns[0].to[1]);
+  assert.ok(optionRuns[2].to[1]>optionRuns[1].to[1], 'Option retreats from the slant tip');
+  assert.ok(optionRuns[3].to[0]<optionRuns[2].to[0]);
+  assert.equal(optionRuns[3].to[1],optionRuns[2].to[1], 'outside cut stays at the returned depth');
+
+  const stopGo = lesson('route-stop-and-go').players.find(p=>p.id==='X').motion.steps;
+  const stopGoRuns = stopGo.filter(s=>s.type!=='pause');
+  assert.equal(stopGoRuns.length,4,'Stop & Go includes return, outside escape and another deep run');
+  assert.ok(stopGoRuns[1].to[0]>stopGoRuns[0].to[0] && stopGoRuns[1].to[1]>stopGoRuns[0].to[1]);
+  assert.ok(stopGo.some(s=>s.type==='pause' && s.facePlayer==='QB'),'fake catch faces QB');
+  assert.ok(stopGoRuns[2].to[0]<stopGoRuns[0].to[0], 'escape past the outside of the original stem');
+  assert.equal(stopGoRuns[2].to[1],stopGoRuns[1].to[1]);
+  assert.equal(stopGoRuns[3].to[0],stopGoRuns[2].to[0]);
+  assert.ok(stopGoRuns[3].to[1]<stopGoRuns[0].to[1]);
 });
