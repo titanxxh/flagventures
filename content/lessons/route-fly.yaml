@@ -1,4 +1,4 @@
-# UTF-8; standard teaching diagrams share geometry and timing across languages.
+# UTF-8; yard-scale teaching geometry and timing are shared across languages.
 format: flag-lesson
 version: 1
 id: route-fly
@@ -6,9 +6,9 @@ kind: route
 title:
   zh: 5 · 直线深跑
   en: FLY
-summary: FLY · 沿同一条直线向前深跑，不安排内切或外切；也常叫 Go。
+summary: FLY · 沿同一条直线向前深跑，不变向；本图演示到 20 码，实际深度与 QB 约定，也常叫 Go。
 teaching:
-  goal: 沿同一条直线向前深跑，不安排内切或外切；也常叫 Go。
+  goal: 沿同一条直线向前深跑，不变向；本图演示到 20 码，实际深度与 QB 约定，也常叫 Go。
   cooperation: 你与 QB 的前后距离逐渐增大，提供较深的接球方向。这里没有画传球弧线，不能据动画终点推定必须传球。
   cue: 一条直线，向前跑深。
   question: Fly 有没有转弯点？它和 Stop and Go 少了哪个动作？
@@ -16,40 +16,50 @@ source:
   title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 3
   note: >-
-    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。此图按定义重新绘制，统一 X 和 QB 起点，并非原 PDF
-    路线描摹。全场轮廓不按真实比赛比例；坐标、转折距离与动画秒数仅为教学示意，不是比赛码数、官方用时或传球时刻。
+    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。官方没有给 Fly 固定深度；20
+    码只是本图演示终点，不是变向点、规定停点或接球点。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
   references:
     - title: NFL FLAG · 路线树说明
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: FLY
       note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+    - title: NFL FLAG · 接球手训练
+      url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
+      locator: Fly
+      note: 用于核对本条路线的距离示例或未指定固定距离的说明；不是所有球员必须使用的深度。
+    - title: NFL FLAG · 球场尺寸
+      url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
+      locator: Flag Football Field
+      note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
 field:
-  width: 60
-  height: 100
+  width: 30
+  height: 70
+  unit: yard
+  endZoneDepth: 10
   attackDirection: up
-  lineOfScrimmageY: 74
+  lineOfScrimmageY: 50
 players:
   - id: X
     team: offense
     at:
-      - 16
-      - 74
+      - 8
+      - 50
     color: '#80d4ff'
     name: 接球手 X
     label:
       zh: 直线深跑
       en: FLY
-      description: 沿同一条直线向前深跑，不安排内切或外切；也常叫 Go。
+      description: 沿同一条直线向前深跑，不变向；本图演示到 20 码，实际深度与 QB 约定，也常叫 Go。
       basis: source
-      note: 路线名称和动作含义依据 NFL FLAG 官网；起点、线段长度和动画节奏为本应用的教学设置。
+      note: 路线形状依据 NFL FLAG 官网。官方没有给 Fly 固定深度；20 码只是本图演示终点，不是变向点、规定停点或接球点。具体深度应与教练和 QB 约定。
     motion:
       type: path
       startAt: 0
       steps:
         - type: line
           to:
-            - 16
-            - 16
+            - 8
+            - 30
           seconds: 10
     coaching:
       cooperation: 你与 QB 的前后距离逐渐增大，提供较深的接球方向。这里没有画传球弧线，不能据动画终点推定必须传球。
@@ -57,14 +67,14 @@ players:
   - id: QB
     team: offense
     at:
-      - 30
-      - 83
+      - 15
+      - 55
     color: '#ff9690'
     name: 四分卫 QB
     label:
       zh: 四分卫位置参照
       en: QB
-      description: 站在开球线后方中间，帮助辨认接球手相对 QB 的跑动方向；静止图标不代表比赛中 QB 必须不动。
+      description: 本图 QB 位于开球线后方 5 码、场地横向中间，帮助辨认接球手相对 QB 的方向；这是教学站位，不要求比赛中 QB 必须这样站或保持不动。
       basis: author
       note: 为比较基础路线新增的教学站位，不是原 PDF 规定的 QB 位置。
     motion:
@@ -76,46 +86,52 @@ players:
 timeline:
   duration: 10
   basis: illustration
-  note: 动画总长 10 秒，只把动作先后拆开供教学；秒数、速度和转折距离不是官方规定。QB 静止为位置参照。
+  note: 动画总长 10 秒，仅展示动作先后；图形和距离刻度按码数绘制，播放秒数不是实跑用时，不能用秒数换算码数。QB 静止只是位置参照。
 keyframes:
   - id: start
     at: 0
     label: 起始站位
-    cue: 找到开球线、左侧的 X 和后方的 QB。上方是进攻方向，场地中间是“内”。
+    cue: 从开球线的 0 码开始看：X 在左侧，QB 在后方 5 码的中间。上方是进攻方向，“内”指场地中间。
   - id: middle
     at: 5
-    label: 保持直线
-    cue: 前半段没有转弯，后半段也沿这条线继续跑。
+    label: 直跑到 10 码
+    cue: 这里距开球线 10 码；保持同一条直线，继续向前。
   - id: end
     at: 10
-    label: 动作完成
-    cue: 说出 FLY，按「一条直线，向前跑深。」用手指画一遍。
+    label: 本图到 20 码
+    cue: 本图画到开球线前 20 码，没有转弯；这不是比赛中必须停下或接球的位置。
 notes:
-  - 全场示意：X 固定从左侧开球线起跑，QB 位于开球线后方中间。这样可比较每条路线的“内、外、深、回身”；不是完整的五人阵型。
-  - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。真实路线深度和传接球时机应按球队教练安排。
+  - 全场按码数比例绘制：30 码宽、70 码长，含两端各 10 码端区。X 从左侧开球线起跑，QB 在后方 5 码作参照；这不是完整五人阵型。
+  - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。距离标签标明官方示例或教学设置；真实路线深度、传球时机和练习距离由教练与 QB 约定。
 translations:
   en:
-    summary: FLY · Run straight upfield without an inside or outside cut; this is also commonly called Go.
+    summary: >-
+      FLY · Run straight upfield without a cut. This drawing ends at 20 yards; agree on the actual depth with
+      QB. Also called Go.
     title.zh: 5 · FLY
     source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Names and original numbering are retained from the PDF; explanations are supplemented from NFL FLAG.
-      This diagram is newly drawn from route definitions with shared X and QB starting positions, not traced
-      from the PDF. The full-field outline is not to regulation scale; coordinates, cut depths and animation
-      seconds are teaching choices, not game yardage, official timing or throw times.
+      Names and original numbering are retained from the PDF; route explanations are supplemented from NFL
+      FLAG. The diagram is redrawn in yards on a 30 × 70-yard field, including two 10-yard end zones; depths
+      are measured from the line of scrimmage. The official guide sets no fixed Fly depth. Twenty yards is
+      only this drawing’s endpoint, not a cut, required stop or catch point. QB placement and animation
+      duration are teaching choices, not a PDF tracing, official game timing or prescribed throw time.
     source.references.0.title: NFL FLAG · Route tree guide
     source.references.0.locator: FLY
     source.references.0.note: >-
       Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
       adaptations.
     notes.0: >-
-      Full-field teaching view: X starts on the left of the line of scrimmage, with QB behind the line near
-      the middle. The shared setup makes inside, outside, deep and return movements comparable; it is not a
-      full five-player formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
+      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
+      formation.
     notes.1: >-
-      The stationary QB is a teaching reference. Snapping, passing, dropbacks and defense are not animated.
-      Your coach sets actual route depths and passing timing.
-    teaching.goal: Run straight upfield without an inside or outside cut; this is also commonly called Go.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
+      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
+      passing timing and practice distances with your coach and QB.
+    teaching.goal: >-
+      Run straight upfield without a cut. This drawing ends at 20 yards; agree on the actual depth with QB.
+      Also called Go.
     teaching.cooperation: >-
       Your distance ahead of the QB grows, creating a deeper target. No pass is drawn here, and the route
       endpoint is not a required throw.
@@ -123,10 +139,13 @@ translations:
     teaching.question: Does Fly have a cut? What action appears in Stop and Go but not here?
     players.X.name: Receiver X
     players.X.label.zh: FLY
-    players.X.label.description: Run straight upfield without an inside or outside cut; this is also commonly called Go.
+    players.X.label.description: >-
+      Run straight upfield without a cut. This drawing ends at 20 yards; agree on the actual depth with QB.
+      Also called Go.
     players.X.label.note: >-
-      The route name and movement follow the NFL FLAG guide; starting positions, segment lengths and animation
-      timing are teaching choices.
+      The route shape follows NFL FLAG. The official guide sets no fixed Fly depth. Twenty yards is only this
+      drawing’s endpoint, not a cut, required stop or catch point. Agree on actual depths with your coach and
+      QB.
     players.X.coaching.cooperation: >-
       Your distance ahead of the QB grows, creating a deeper target. No pass is drawn here, and the route
       endpoint is not a required throw.
@@ -136,8 +155,8 @@ translations:
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      Shown behind the line near the middle to clarify the receiver’s movement relative to QB. The stationary
-      marker does not require a real QB to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
+      a teaching position, not a required game stance or instruction to stand still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
@@ -145,13 +164,44 @@ translations:
       are not specified.
     players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
     timeline.note: >-
-      The ten-second animation separates movement stages for teaching. Seconds, speed and cut depths are not
-      official requirements. QB stays fixed as a positional reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
+      are not real running time and cannot be converted into yardage. QB stays still as a positional
+      reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Find the line of scrimmage, X on the left and QB behind. The attack goes upward; inside means toward the
-      middle.
-    keyframes.middle.label: Stay straight
-    keyframes.middle.cue: There is no cut halfway through; keep following the same line.
-    keyframes.end.label: Route complete
-    keyframes.end.cue: 'Say FLY, then trace the route: “One straight line, go deep.”'
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
+      upward; inside means toward the field center.
+    keyframes.middle.label: Straight to 10 yd
+    keyframes.middle.cue: You are 10 yards beyond the line. Keep going straight upfield.
+    keyframes.end.label: Drawing ends at 20 yd
+    keyframes.end.cue: >-
+      The drawing ends 20 yards beyond the line with no cut. This is not a required stopping or catching
+      point.
+    source.references.1.title: NFL FLAG · Wide receiver drills
+    source.references.1.locator: Fly
+    source.references.1.note: >-
+      Verifies the route’s example depth or lack of a fixed depth; these are not distances required for every
+      player.
+    source.references.2.title: NFL FLAG · Field dimensions
+    source.references.2.locator: Flag Football Field
+    source.references.2.note: >-
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
+      scrimmage and QB position are teaching choices.
+    routeGuide.note: >-
+      Depth is measured from the line of scrimmage. The official guide sets no fixed Fly depth. Twenty yards
+      is only this drawing’s endpoint, not a cut, required stop or catch point. Other remaining lengths and
+      QB’s position 5 yards behind the line are teaching choices; agree on practice distances with your coach
+      and QB.
+    routeGuide.marks.end.label: Drawn to 20 yd
+    routeGuide.marks.end.note: >-
+      Twenty yards is this app’s illustrative endpoint. The official guide asks you to agree on depth with QB;
+      Fly has no cut.
+routeGuide:
+  player: X
+  note: 距离从开球线计算。官方没有给 Fly 固定深度；20 码只是本图演示终点，不是变向点、规定停点或接球点。其余后段长度及 QB 在开球线后 5 码的站位是教学设置；具体练习距离与教练、QB 约定。
+  marks:
+    - id: end
+      step: 0
+      label: 演示到 20 码
+      basis: illustration
+      note: 20 码是本应用选的演示终点；官方要求按战术与 QB 约定深度，Fly 本身没有变向点。

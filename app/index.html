@@ -45,6 +45,7 @@
             </div>
           </div>
           <label class="sr-only" for="seek">演示进度，调整后暂停</label><input id="seek" type="range" min="0" max="10" step="0.01" value="0">
+          <section id="routeDistances" class="route-distances" hidden><h2>从开球线看距离</h2><p class="distance-help">深度从开球线起算，不是累计跑过的路程。点击标注可停在对应位置。</p><p id="distanceNote"></p><div id="distanceMarks" class="distance-marks"></div></section>
           <div class="frame-header"><h2>停下来，一步一步看</h2><span>点关键帧，画面会一直停留</span></div>
           <div id="frames" class="frames" aria-label="关键帧"></div>
           <section class="cue" aria-label="当前画面讲解"><span id="frameNumber" class="frame-number"></span><div><h2 id="frameTitle"></h2><p id="frameCue"></p></div></section>

@@ -205,3 +205,25 @@ test('defense retains exact coverage counts and the source distinction between a
   assert.equal(new Set(cover4.assignments.filter(a => a.type === 'coverage').map(a => a.zone)).size, 4);
   assert.ok(cover4.field.width > 100, 'preserves the reference ellipse extending slightly outside the printed frame');
 });
+
+test('route distances use official examples or explicitly chosen demonstration depths', () => {
+  const expected = {
+    'route-hitch': [7, 'source-example'], 'route-slant': [2, 'illustration'],
+    'route-out': [5, 'source-example'], 'route-in': [10, 'source-example'],
+    'route-post': [7, 'source-example'], 'route-corner': [7, 'source-example'],
+    'route-chair': [5, 'source-example'], 'route-stop-and-go': [7, 'source-example'],
+    'route-post-corner': [7, 'source-example'], 'route-option': [2, 'illustration'],
+    'route-fly': [20, 'illustration'],
+  };
+  for (const [id, [depth, basis]] of Object.entries(expected)) {
+    const data = lesson(id), guide = data.routeGuide;
+    assert.equal(data.field.unit, 'yard', id);
+    assert.equal(data.field.endZoneDepth, 10, id);
+    const player = data.players.find(p => p.id === guide.player);
+    const mark = guide.marks[0];
+    assert.equal(data.field.lineOfScrimmageY - player.motion.steps[mark.step].to[1], depth, id);
+    assert.equal(mark.basis, basis, id);
+    if (basis === 'source-example') assert.ok(data.source.references[mark.sourceReference], id);
+    assert.ok(guide.note, id);
+  }
+});

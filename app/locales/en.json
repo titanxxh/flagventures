@@ -252,5 +252,21 @@
   "边线": "Sideline",
   "传球参照": "Passing reference",
   "恢复内置教学内容，包括原手册与补充路线。": "Restore the built-in playbook and supplemental routes.",
-  "向内＝朝场地中间；向外＝朝边线。QB 是传球参照，“向内”不是跑回 QB 所在的位置。": "In means toward the middle; out means toward the sideline. QB is the passing reference, not the destination of an inward route."
+  "向内＝朝场地中间；向外＝朝边线。QB 是传球参照，“向内”不是跑回 QB 所在的位置。": "In means toward the middle; out means toward the sideline. QB is the passing reference, not the destination of an inward route.",
+  "从开球线看距离": "Distance from the line of scrimmage",
+  "深度从开球线起算，不是累计跑过的路程。点击标注可停在对应位置。": "Depth is measured from the line of scrimmage, not along the route. Select a marker to pause there.",
+  "全场按码绘制 · 秒数仅为演示时间": "Field drawn in yards · Seconds are for demonstration",
+  "{0} 码": "{0} yd",
+  "{0} · 深度 {1} 码（约 {2} 米）": "{0} · Depth {1} yd (about {2} m)",
+  "官方示例": "Official example",
+  "本次演示设置": "Demo setting",
+  "查看距离出处 ↗": "View distance source ↗",
+  "端区深度需要 field.unit 为 yard": "End zone depth requires field.unit to be yard",
+  "两个端区的深度之和必须小于场地高度": "The two end zones must total less than the field height",
+  "距离标注仅适用于基础路线": "Distance guides apply only to basic routes",
+  "距离标注需要以码为单位的场地和开球线": "Distance guides require a yard-based field and a line of scrimmage",
+  "距离标注的球员必须使用单条 path 路线": "The measured player must use a single path motion",
+  "标注引用的动作段不存在": "The referenced motion step does not exist",
+  "来源示例必须注明参考资料编号": "An official example requires a source reference index",
+  "标注引用的参考资料不存在": "The referenced source does not exist"
 }

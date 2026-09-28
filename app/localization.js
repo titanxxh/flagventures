@@ -8,6 +8,8 @@ export function translationFields(lesson) {
   texts('source', lesson.source, ['title', 'note']);
   lesson.source?.references?.forEach((ref, i) => texts(`source.references.${i}`, ref, ['title', 'locator', 'note']));
   texts('timeline', lesson.timeline, ['note']);
+  texts('routeGuide', lesson.routeGuide, ['note']);
+  lesson.routeGuide?.marks.forEach(mark => texts(`routeGuide.marks.${mark.id}`, mark, ['label', 'note']));
   lesson.notes?.forEach((note, i) => add(`notes.${i}`, note));
   for (const player of lesson.players) {
     const prefix = `players.${player.id}`;

@@ -1,4 +1,4 @@
-# UTF-8; standard teaching diagrams share geometry and timing across languages.
+# UTF-8; yard-scale teaching geometry and timing are shared across languages.
 format: flag-lesson
 version: 1
 id: route-slant
@@ -6,9 +6,9 @@ kind: route
 title:
   zh: 1 · 短斜内切
   en: SLANT
-summary: SLANT · 先短直跑，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
+summary: SLANT · 本图先短直跑约 2 码，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
 teaching:
-  goal: 先短直跑，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
+  goal: 本图先短直跑约 2 码，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
   cooperation: 你从 QB 左前方朝中路斜跑，为 QB 提供内侧接球方向。“向内”指向场地中间，不是跑回 QB 脚下。
   cue: 短短直跑，斜着进中间。
   question: Slant 转弯以后还在往前跑吗？In 转弯后又是什么方向？
@@ -16,8 +16,8 @@ source:
   title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 3
   note: >-
-    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。此图按定义重新绘制，统一 X 和 QB 起点，并非原 PDF
-    路线描摹。全场轮廓不按真实比赛比例；坐标、转折距离与动画秒数仅为教学示意，不是比赛码数、官方用时或传球时刻。
+    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。官网描述先短跑几码；本图用约 2
+    码表现这一短起步，未规定所有 Slant 都在 2 码处变向。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
   references:
     - title: NFL FLAG · 路线树说明
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
@@ -31,38 +31,44 @@ source:
       url: https://blogs.usafootball.com/blog/7334/coaching-the-wide-receiver-separation-techniques
       locator: Dig / Out 的直角变向
       note: 用于说明 Dig 的常见用法；与 NFL FLAG 的命名并不完全一致。
+    - title: NFL FLAG · 球场尺寸
+      url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
+      locator: Flag Football Field
+      note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
 field:
-  width: 60
-  height: 100
+  width: 30
+  height: 70
+  unit: yard
+  endZoneDepth: 10
   attackDirection: up
-  lineOfScrimmageY: 74
+  lineOfScrimmageY: 50
 players:
   - id: X
     team: offense
     at:
-      - 16
-      - 74
+      - 8
+      - 50
     color: '#80d4ff'
     name: 接球手 X
     label:
       zh: 短斜内切
       en: SLANT
-      description: 先短直跑，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
+      description: 本图先短直跑约 2 码，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
       basis: source
-      note: 路线名称和动作含义依据 NFL FLAG 官网；起点、线段长度和动画节奏为本应用的教学设置。
+      note: 路线形状依据 NFL FLAG 官网。官网描述先短跑几码；本图用约 2 码表现这一短起步，未规定所有 Slant 都在 2 码处变向。具体深度应与教练和 QB 约定。
     motion:
       type: path
       startAt: 0
       steps:
         - type: line
           to:
-            - 16
-            - 66
+            - 8
+            - 48
           seconds: 2
         - type: line
           to:
-            - 34
-            - 48
+            - 15
+            - 41
           seconds: 8
     coaching:
       cooperation: 你从 QB 左前方朝中路斜跑，为 QB 提供内侧接球方向。“向内”指向场地中间，不是跑回 QB 脚下。
@@ -70,14 +76,14 @@ players:
   - id: QB
     team: offense
     at:
-      - 30
-      - 83
+      - 15
+      - 55
     color: '#ff9690'
     name: 四分卫 QB
     label:
       zh: 四分卫位置参照
       en: QB
-      description: 站在开球线后方中间，帮助辨认接球手相对 QB 的跑动方向；静止图标不代表比赛中 QB 必须不动。
+      description: 本图 QB 位于开球线后方 5 码、场地横向中间，帮助辨认接球手相对 QB 的方向；这是教学站位，不要求比赛中 QB 必须这样站或保持不动。
       basis: author
       note: 为比较基础路线新增的教学站位，不是原 PDF 规定的 QB 位置。
     motion:
@@ -89,34 +95,37 @@ players:
 timeline:
   duration: 10
   basis: illustration
-  note: 动画总长 10 秒，只把动作先后拆开供教学；秒数、速度和转折距离不是官方规定。QB 静止为位置参照。
+  note: 动画总长 10 秒，仅展示动作先后；图形和距离刻度按码数绘制，播放秒数不是实跑用时，不能用秒数换算码数。QB 静止只是位置参照。
 keyframes:
   - id: start
     at: 0
     label: 起始站位
-    cue: 找到开球线、左侧的 X 和后方的 QB。上方是进攻方向，场地中间是“内”。
+    cue: 从开球线的 0 码开始看：X 在左侧，QB 在后方 5 码的中间。上方是进攻方向，“内”指场地中间。
   - id: cut
     at: 2
-    label: 斜向内切
-    cue: 到这里斜切约 45°；与 In 的直角横切作比较。
+    label: 约 2 码斜切
+    cue: 从开球线短跑约 2 码，在这里斜切约 45°；与 In 的 10 码直角横切示例比较。
   - id: end
     at: 10
     label: 动作完成
     cue: 说出 SLANT，按「短短直跑，斜着进中间。」用手指画一遍。
 notes:
-  - 全场示意：X 固定从左侧开球线起跑，QB 位于开球线后方中间。这样可比较每条路线的“内、外、深、回身”；不是完整的五人阵型。
-  - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。真实路线深度和传接球时机应按球队教练安排。
+  - 全场按码数比例绘制：30 码宽、70 码长，含两端各 10 码端区。X 从左侧开球线起跑，QB 在后方 5 码作参照；这不是完整五人阵型。
+  - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。距离标签标明官方示例或教学设置；真实路线深度、传球时机和练习距离由教练与 QB 约定。
   - Slant（斜内切）与 In / Square In（向内横切）不是同一条路线：都往中间，但斜切与直角横切不同。球队也可能把向内横切称为 Dig，具体深度和叫法以队内定义为准。
 translations:
   en:
-    summary: SLANT · Take a short straight stem, then cut roughly 45° toward the middle while continuing upfield.
+    summary: >-
+      SLANT · In this example, take an approximately 2-yard stem, then cut roughly 45° toward the middle while
+      continuing upfield.
     title.zh: 1 · SLANT
     source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Names and original numbering are retained from the PDF; explanations are supplemented from NFL FLAG.
-      This diagram is newly drawn from route definitions with shared X and QB starting positions, not traced
-      from the PDF. The full-field outline is not to regulation scale; coordinates, cut depths and animation
-      seconds are teaching choices, not game yardage, official timing or throw times.
+      Names and original numbering are retained from the PDF; route explanations are supplemented from NFL
+      FLAG. The diagram is redrawn in yards on a 30 × 70-yard field, including two 10-yard end zones; depths
+      are measured from the line of scrimmage. The guide describes a short stem of a couple of yards; this
+      drawing uses about 2 yards, not a fixed depth for every Slant. QB placement and animation duration are
+      teaching choices, not a PDF tracing, official game timing or prescribed throw time.
     source.references.0.title: NFL FLAG · Route tree guide
     source.references.0.locator: SLANT
     source.references.0.note: >-
@@ -131,17 +140,20 @@ translations:
     source.references.2.locator: Square cuts in Dig / Out
     source.references.2.note: Documents a common use of Dig; terminology is not identical across the NFL FLAG and USA Football guides.
     notes.0: >-
-      Full-field teaching view: X starts on the left of the line of scrimmage, with QB behind the line near
-      the middle. The shared setup makes inside, outside, deep and return movements comparable; it is not a
-      full five-player formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
+      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
+      formation.
     notes.1: >-
-      The stationary QB is a teaching reference. Snapping, passing, dropbacks and defense are not animated.
-      Your coach sets actual route depths and passing timing.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
+      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
+      passing timing and practice distances with your coach and QB.
     notes.2: >-
       Slant and In / Square In are different routes: both go inside, but one angles diagonally and the other
       makes a square cut. Teams may also use Dig for an in-breaking route; agree on depth and terminology with
       your coach.
-    teaching.goal: Take a short straight stem, then cut roughly 45° toward the middle while continuing upfield.
+    teaching.goal: >-
+      In this example, take an approximately 2-yard stem, then cut roughly 45° toward the middle while
+      continuing upfield.
     teaching.cooperation: >-
       From ahead and left of the QB, angle toward the middle to offer an inside target. Inside means toward
       the field center, not back to the QB’s feet.
@@ -149,10 +161,12 @@ translations:
     teaching.question: Does Slant keep moving upfield after the cut? Which way does In go after its cut?
     players.X.name: Receiver X
     players.X.label.zh: SLANT
-    players.X.label.description: Take a short straight stem, then cut roughly 45° toward the middle while continuing upfield.
+    players.X.label.description: >-
+      In this example, take an approximately 2-yard stem, then cut roughly 45° toward the middle while
+      continuing upfield.
     players.X.label.note: >-
-      The route name and movement follow the NFL FLAG guide; starting positions, segment lengths and animation
-      timing are teaching choices.
+      The route shape follows NFL FLAG. The guide describes a short stem of a couple of yards; this drawing
+      uses about 2 yards, not a fixed depth for every Slant. Agree on actual depths with your coach and QB.
     players.X.coaching.cooperation: >-
       From ahead and left of the QB, angle toward the middle to offer an inside target. Inside means toward
       the field center, not back to the QB’s feet.
@@ -162,8 +176,8 @@ translations:
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      Shown behind the line near the middle to clarify the receiver’s movement relative to QB. The stationary
-      marker does not require a real QB to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
+      a teaching position, not a required game stance or instruction to stand still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
@@ -171,13 +185,40 @@ translations:
       are not specified.
     players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
     timeline.note: >-
-      The ten-second animation separates movement stages for teaching. Seconds, speed and cut depths are not
-      official requirements. QB stays fixed as a positional reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
+      are not real running time and cannot be converted into yardage. QB stays still as a positional
+      reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Find the line of scrimmage, X on the left and QB behind. The attack goes upward; inside means toward the
-      middle.
-    keyframes.cut.label: Diagonal cut
-    keyframes.cut.cue: Cut about 45° here. Compare this with In’s square turn.
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
+      upward; inside means toward the field center.
+    keyframes.cut.label: Cut at about 2 yd
+    keyframes.cut.cue: >-
+      After a short stem of about 2 yards from the line, cut about 45°. Compare this with the 10-yard
+      square-cut In example.
     keyframes.end.label: Route complete
     keyframes.end.cue: 'Say SLANT, then trace the route: “Short stem, diagonal to the middle.”'
+    source.references.3.title: NFL FLAG · Field dimensions
+    source.references.3.locator: Flag Football Field
+    source.references.3.note: >-
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
+      scrimmage and QB position are teaching choices.
+    routeGuide.note: >-
+      Depth is measured from the line of scrimmage. The guide describes a short stem of a couple of yards;
+      this drawing uses about 2 yards, not a fixed depth for every Slant. Other remaining lengths and QB’s
+      position 5 yards behind the line are teaching choices; agree on practice distances with your coach and
+      QB.
+    routeGuide.marks.cut.label: Inside cut at about 2 yd
+    routeGuide.marks.cut.note: >-
+      The source gives an approximate short stem. The 2-yard depth is an illustrative interpretation, followed
+      by an inside cut of about 45°.
+routeGuide:
+  player: X
+  note: 距离从开球线计算。官网描述先短跑几码；本图用约 2 码表现这一短起步，未规定所有 Slant 都在 2 码处变向。其余后段长度及 QB 在开球线后 5 码的站位是教学设置；具体练习距离与教练、QB 约定。
+  marks:
+    - id: cut
+      step: 0
+      label: 约 2 码内斜切
+      basis: illustration
+      note: 官方只给短跑几码的近似描述；2 码是本图的近似教学取值，随后向内斜切约 45°。
+      sourceReference: 1

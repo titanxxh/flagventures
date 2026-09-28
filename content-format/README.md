@@ -46,7 +46,8 @@ YAML 便于加中文注释和逐行编辑；JSON 内容包便于可靠导出。�
 | `summary` | 一两句中文讲解目标 |
 | `teaching` | 可省略的全队讲解：目标 `goal`、配合 `cooperation`、记忆口令 `cue`、提问 `question` |
 | `source` | 可省略的出处：`title`、可选 `page`、`note`、`references`、`referenceAsset`；`referenceAsset` 是内容包内的图片编号，不是磁盘路径 |
-| `field` | 画布尺寸、进攻方向和可选开球线位置 |
+| `field` | 画布尺寸、进攻方向和可选开球线位置；可显式声明以码为单位 |
+| `routeGuide` | 基础路线的可选距离标注，引用球员动作段及距离依据 |
 | `players` | 稳定身份、起点、悬停说明与各自的动作 |
 | `zones` / `assignments` | 可省略的防守区域与分工关系；与人物跑动分开 |
 | `timeline` | 演示总时长及其依据，明确是否为教学示意 |
@@ -76,15 +77,50 @@ source:
 
 新增的讲解文字、参考标题、定位和说明均须为非空白短文本，每项最多 500 字符，URL 最多 2048 字符。字段内容按普通文字显示。参考链接、讲解与可选原页图片相互独立；有官网或视频说明也可以保留原 PDF 页码，说明不同资料各自支持的事实。
 
-## 4. 坐标容易统一，也不冒充真实码数
+## 4. 坐标与可选码数标注
 
 例子使用宽 `100`、高 `55` 的画布：`[0, 0]` 在左上，x 越大越向右，y 越大越向下。`attackDirection: up` 表示向上进攻，`down` 表示向下进攻；方向用于箭头与讲解，**不会自动镜像数据**。
 
-`at: [20, 35]` 表示队员在画布的 x=20、y=35 处。尺寸可改；所有点、曲线控制点和覆盖区域应位于画布内，若图形越界应调整画布或数据，不静默裁掉路线。这些是绘图单位，不能解释成码数或真实跑动距离。
+`at: [20, 35]` 表示队员在画布的 x=20、y=35 处。尺寸可改；所有点、曲线控制点和覆盖区域应位于画布内，若图形越界应调整画布或数据，不静默裁掉路线。未声明 `field.unit` 时，这些是绘图单位，不能解释成码数或真实跑动距离。
 
 原书样例保留各页形状、方向和相对站位；不根据“某类标准阵型”统一重置各页站位。
 
 `field` 必填 `width`、`height`、`attackDirection`；`lineOfScrimmageY` 可省略，表示开球线的 y 坐标。只有存在此字段时才画开球线。
+
+### 按码绘制基础路线
+
+可选 `unit: yard` 明确表示 **x、y 每个坐标单位都是 1 码**，包括宽高、球员起点、路线终点及曲线控制点。只有按真实比例重新填写坐标时才能加这个字段，不能只给原有示意图换上单位。可选 `endZoneDepth` 是两端各自的端区深度，必须为正数，且两个端区深度之和小于 `height`；填写时必须同时声明 `unit: yard`。`height` 包含两端端区。
+
+基础路线可增加 `routeGuide`，例如：
+
+```yaml
+field:
+  width: 30
+  height: 70
+  unit: yard
+  endZoneDepth: 10
+  attackDirection: up
+  lineOfScrimmageY: 50
+# X 从 [10, 50] 起跑，motion.steps[0] 到 [10, 45]。
+routeGuide:
+  player: X
+  note: 距离是从开球线量起的深度；具体战术可由教练调整。
+  marks:
+    - id: cut
+      step: 0
+      label: 向外转 90°
+      basis: source-example
+      note: 这是参考资料给出的五码示例，不是所有 Out 路线的固定距离。
+      sourceReference: 0
+```
+
+`routeGuide` 只适用于 `kind: route`，要求场地单位为 `yard`，并提供开球线。`player` 引用本条目已有球员，该球员必须使用单条 `motion.type: path`；条件分支不支持此标注。`marks` 至少一项，`id` 唯一，`step` 是从 **0** 开始的动作段序号，指向该段**结束时**的位置。支持直线、曲线及暂停段；暂停段仍使用上一段终点。标注点击的时间由 `startAt` 加前面各段和当前段的 `seconds` 求和，不能另存一套坐标或时间。
+
+距离深度由段终点与开球线的 y 坐标差计算，向进攻方向为正，开球线后方为负。例子中的转折点深度为 5 码；横跑后深度仍为 5 码，因此**深度不是累计跑动路程**。1 码为 0.9144 米。动画秒数不用于换算比赛速度或跑动距离。
+
+每个标注的 `label`、`basis`、`note` 必填。`basis: source-example` 表示参考资料中的距离示例，必须填写 `sourceReference`，引用 `source.references` 从 0 开始的有效序号；`basis: illustration` 表示应用或作者选择的教学距离，应在 `note` 说明并可省略引用。两者都不表示路线名称规定了唯一距离。如果资料只有范围或“几码”，为动画选定的具体值应标为 `illustration`，说明范围和选值，不能标成官方精确距离。
+
+`field.unit`、`field.endZoneDepth` 和 `routeGuide` 都是版本 1 的可选字段；已有不带标注的内容继续按原有绘图坐标运行。
 
 ## 5. 球员、术语和动作
 
@@ -302,8 +338,11 @@ translations:
     players.X.label.description: Run forward, then cut toward the middle.
     keyframes.start.label: Starting positions
     keyframes.start.cue: Find your starting position.
+    routeGuide.note: Depth is measured from the line of scrimmage.
+    routeGuide.marks.cut.label: Cut outside at 90°
+    routeGuide.marks.cut.note: A source example, not a fixed depth for every Out route.
 ```
 
-只填写实际存在的文字字段；未提供译文时显示原文（英文标题也可沿用 `title.en`）。支持名称、摘要、全队教学提示、球员名称及跑法说明、配合与时机、条件选项文字、关键帧、区域名称、备注和来源说明。`notes.0` 与 `source.references.0.title` 使用从 0 开始的序号。内置 YAML 提供完整示例。
+只填写实际存在的文字字段；未提供译文时显示原文（英文标题也可沿用 `title.en`）。支持名称、摘要、全队教学提示、球员名称及跑法说明、配合与时机、条件选项文字、关键帧、区域名称、备注、来源说明，以及距离标注的 `note` 和各标注的 `label` / `note`。标注译文使用稳定的 `marks.<id>`；`notes.0` 与 `source.references.0.title` 使用从 0 开始的序号。内置 YAML 提供完整示例。
 
 章节及分组可填写 `titleEn`。路线坐标、球员 ID、时间、分支 ID 和来源网址由两种语言共用，不能写进翻译表。无效字段会在导入时指出。导出 YAML 和完整战术包均保留两种语言，切换界面语言不会改写原数据。

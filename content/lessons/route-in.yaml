@@ -1,4 +1,4 @@
-# UTF-8; standard teaching diagrams share geometry and timing across languages.
+# UTF-8; yard-scale teaching geometry and timing are shared across languages.
 format: flag-lesson
 version: 1
 id: route-in
@@ -6,15 +6,17 @@ kind: route
 title:
   zh: 补充 · 向内横切
   en: IN / SQUARE IN
-summary: IN / SQUARE IN · 先直跑，再转约 90° 向场地中间横跑；转向后与开球线大致平行。Slant 则是较早斜切约 45°，仍继续向前。
+summary: IN / SQUARE IN · 本图先直跑约 10 码，再转约 90° 向场地中间横跑，与开球线平行；Slant 则更早斜切并继续向前。
 teaching:
-  goal: 先直跑，再转约 90° 向场地中间横跑；转向后与开球线大致平行。Slant 则是较早斜切约 45°，仍继续向前。
+  goal: 本图先直跑约 10 码，再转约 90° 向场地中间横跑，与开球线平行；Slant 则更早斜切并继续向前。
   cooperation: 你从 QB 左前方横着进入中路，提供内侧接球方向。“向内”是靠近场地中间，不是向后跑回 QB。
   cue: 先直跑，转直角，横进中间。
   question: 看 Slant 和 In：哪一个斜着继续向前，哪一个转弯后横着跑？
 source:
   title: NFL FLAG 官网 · 补充路线
-  note: 补充条目，来自 NFL FLAG 官网的 Square In 介绍；不属于附件路线树的原有编号。图形依据定义重新绘制，全场轮廓不按真实比赛比例。坐标、转折距离和秒数仅为教学示意，不是比赛码数或官方用时。
+  note: >-
+    本条是官网 Square In 补充，保留在附件原有编号之外。图形重新绘制为码数比例：场地 30 × 70 码，含两端各 10 码端区；距离从开球线计。采用官方 Square In 约 10
+    码示例；同一说明也提到较浅的 5 码 In，实际深度与教练和 QB 约定。横切长度为本图设置。QB 站位和动画时长是教学设置，不是原 PDF 路线描摹、官方比赛用时或指定传球时刻。
   references:
     - title: NFL FLAG · 接球手训练：Square In
       url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
@@ -28,38 +30,44 @@ source:
       url: https://blogs.usafootball.com/blog/7334/coaching-the-wide-receiver-separation-techniques
       locator: Dig / Out 的直角变向
       note: 用于说明 Dig 的常见用法；与 NFL FLAG 的命名并不完全一致。
+    - title: NFL FLAG · 球场尺寸
+      url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
+      locator: Flag Football Field
+      note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
 field:
-  width: 60
-  height: 100
+  width: 30
+  height: 70
+  unit: yard
+  endZoneDepth: 10
   attackDirection: up
-  lineOfScrimmageY: 74
+  lineOfScrimmageY: 50
 players:
   - id: X
     team: offense
     at:
-      - 16
-      - 74
+      - 8
+      - 50
     color: '#80d4ff'
     name: 接球手 X
     label:
       zh: 向内横切
       en: IN / SQUARE IN
-      description: 先直跑，再转约 90° 向场地中间横跑；转向后与开球线大致平行。Slant 则是较早斜切约 45°，仍继续向前。
+      description: 本图先直跑约 10 码，再转约 90° 向场地中间横跑，与开球线平行；Slant 则更早斜切并继续向前。
       basis: source
-      note: 路线名称和动作含义依据 NFL FLAG 官网；起点、线段长度和动画节奏为本应用的教学设置。
+      note: 路线形状依据 NFL FLAG 官网。采用官方 Square In 约 10 码示例；同一说明也提到较浅的 5 码 In，实际深度与教练和 QB 约定。横切长度为本图设置。具体深度应与教练和 QB 约定。
     motion:
       type: path
       startAt: 0
       steps:
         - type: line
           to:
-            - 16
-            - 56
+            - 8
+            - 40
           seconds: 5
         - type: line
           to:
-            - 38
-            - 56
+            - 21
+            - 40
           seconds: 5
     coaching:
       cooperation: 你从 QB 左前方横着进入中路，提供内侧接球方向。“向内”是靠近场地中间，不是向后跑回 QB。
@@ -67,14 +75,14 @@ players:
   - id: QB
     team: offense
     at:
-      - 30
-      - 83
+      - 15
+      - 55
     color: '#ff9690'
     name: 四分卫 QB
     label:
       zh: 四分卫位置参照
       en: QB
-      description: 站在开球线后方中间，帮助辨认接球手相对 QB 的跑动方向；静止图标不代表比赛中 QB 必须不动。
+      description: 本图 QB 位于开球线后方 5 码、场地横向中间，帮助辨认接球手相对 QB 的方向；这是教学站位，不要求比赛中 QB 必须这样站或保持不动。
       basis: author
       note: 为比较基础路线新增的教学站位，不是原 PDF 规定的 QB 位置。
     motion:
@@ -86,36 +94,39 @@ players:
 timeline:
   duration: 10
   basis: illustration
-  note: 动画总长 10 秒，只把动作先后拆开供教学；秒数、速度和转折距离不是官方规定。QB 静止为位置参照。
+  note: 动画总长 10 秒，仅展示动作先后；图形和距离刻度按码数绘制，播放秒数不是实跑用时，不能用秒数换算码数。QB 静止只是位置参照。
 keyframes:
   - id: start
     at: 0
     label: 起始站位
-    cue: 找到开球线、左侧的 X 和后方的 QB。上方是进攻方向，场地中间是“内”。
+    cue: 从开球线的 0 码开始看：X 在左侧，QB 在后方 5 码的中间。上方是进攻方向，“内”指场地中间。
   - id: cut
     at: 5
-    label: 向内直角转弯
-    cue: 到这里转约 90° 向内横跑；对照 Slant 的斜线。
+    label: 约 10 码向内横切
+    cue: 从开球线直跑约 10 码后转约 90° 向内横跑；对照 Slant 较早的斜切。
   - id: end
     at: 10
     label: 动作完成
     cue: 说出 IN / SQUARE IN，按「先直跑，转直角，横进中间。」用手指画一遍。
 notes:
-  - 全场示意：X 固定从左侧开球线起跑，QB 位于开球线后方中间。这样可比较每条路线的“内、外、深、回身”；不是完整的五人阵型。
-  - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。真实路线深度和传接球时机应按球队教练安排。
+  - 全场按码数比例绘制：30 码宽、70 码长，含两端各 10 码端区。X 从左侧开球线起跑，QB 在后方 5 码作参照；这不是完整五人阵型。
+  - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。距离标签标明官方示例或教学设置；真实路线深度、传球时机和练习距离由教练与 QB 约定。
   - Slant（斜内切）与 In / Square In（向内横切）不是同一条路线：都往中间，但斜切与直角横切不同。球队也可能把向内横切称为 Dig，具体深度和叫法以队内定义为准。
   - 附件的路线树只列出十条示例，没列 In 并不等于没有这种跑法；本条独立补充，不新增或替换原书编号。
 translations:
   en:
     summary: >-
-      IN / SQUARE IN · Run straight, then cut about 90° toward the middle, roughly parallel to the line of
-      scrimmage. Slant cuts diagonally about 45° earlier and keeps gaining depth.
+      IN / SQUARE IN · In this example, run about 10 yards, then cut about 90° toward the middle, parallel to
+      the line. Slant cuts diagonally earlier and keeps gaining depth.
     title.zh: Supplement · IN / SQUARE IN
     source.title: NFL FLAG official guide · supplementary route
     source.note: >-
-      Supplementary lesson based on NFL FLAG’s Square In description, outside the PDF’s numbered route tree.
-      The diagram is newly drawn from the definition; the full-field outline is not to regulation scale.
-      Coordinates, cut depths and seconds are illustrative, not game yardage or official timing.
+      This supplementary Square In lesson stays outside the PDF’s original numbering. The diagram is redrawn
+      in yards on a 30 × 70-yard field, including two 10-yard end zones; depths are measured from the line of
+      scrimmage. This uses the official roughly 10-yard Square In example. The same guide mentions a shallower
+      5-yard In; agree on depth with your coach and QB. The sideways length is a drawing choice. QB placement
+      and animation duration are teaching choices, not a PDF tracing, official game timing or prescribed throw
+      time.
     source.references.0.title: 'NFL FLAG · Wide receiver drills: Square In'
     source.references.0.locator: Square In
     source.references.0.note: >-
@@ -130,12 +141,13 @@ translations:
     source.references.2.locator: Square cuts in Dig / Out
     source.references.2.note: Documents a common use of Dig; terminology is not identical across the NFL FLAG and USA Football guides.
     notes.0: >-
-      Full-field teaching view: X starts on the left of the line of scrimmage, with QB behind the line near
-      the middle. The shared setup makes inside, outside, deep and return movements comparable; it is not a
-      full five-player formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
+      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
+      formation.
     notes.1: >-
-      The stationary QB is a teaching reference. Snapping, passing, dropbacks and defense are not animated.
-      Your coach sets actual route depths and passing timing.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
+      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
+      passing timing and practice distances with your coach and QB.
     notes.2: >-
       Slant and In / Square In are different routes: both go inside, but one angles diagonally and the other
       makes a square cut. Teams may also use Dig for an in-breaking route; agree on depth and terminology with
@@ -144,8 +156,8 @@ translations:
       The PDF route tree lists ten examples. Omitting In does not mean the route does not exist; this separate
       supplement does not add or replace an original number.
     teaching.goal: >-
-      Run straight, then cut about 90° toward the middle, roughly parallel to the line of scrimmage. Slant
-      cuts diagonally about 45° earlier and keeps gaining depth.
+      In this example, run about 10 yards, then cut about 90° toward the middle, parallel to the line. Slant
+      cuts diagonally earlier and keeps gaining depth.
     teaching.cooperation: >-
       From ahead and left of the QB, cross toward the middle to offer an inside target. Inside means toward
       the field center, not backward toward the QB.
@@ -154,11 +166,12 @@ translations:
     players.X.name: Receiver X
     players.X.label.zh: IN / SQUARE IN
     players.X.label.description: >-
-      Run straight, then cut about 90° toward the middle, roughly parallel to the line of scrimmage. Slant
-      cuts diagonally about 45° earlier and keeps gaining depth.
+      In this example, run about 10 yards, then cut about 90° toward the middle, parallel to the line. Slant
+      cuts diagonally earlier and keeps gaining depth.
     players.X.label.note: >-
-      The route name and movement follow the NFL FLAG guide; starting positions, segment lengths and animation
-      timing are teaching choices.
+      The route shape follows NFL FLAG. This uses the official roughly 10-yard Square In example. The same
+      guide mentions a shallower 5-yard In; agree on depth with your coach and QB. The sideways length is a
+      drawing choice. Agree on actual depths with your coach and QB.
     players.X.coaching.cooperation: >-
       From ahead and left of the QB, cross toward the middle to offer an inside target. Inside means toward
       the field center, not backward toward the QB.
@@ -168,8 +181,8 @@ translations:
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      Shown behind the line near the middle to clarify the receiver’s movement relative to QB. The stationary
-      marker does not require a real QB to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
+      a teaching position, not a required game stance or instruction to stand still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
@@ -177,13 +190,42 @@ translations:
       are not specified.
     players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
     timeline.note: >-
-      The ten-second animation separates movement stages for teaching. Seconds, speed and cut depths are not
-      official requirements. QB stays fixed as a positional reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
+      are not real running time and cannot be converted into yardage. QB stays still as a positional
+      reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Find the line of scrimmage, X on the left and QB behind. The attack goes upward; inside means toward the
-      middle.
-    keyframes.cut.label: Square cut inside
-    keyframes.cut.cue: Turn about 90° inside here and run sideways; compare this with Slant’s diagonal.
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
+      upward; inside means toward the field center.
+    keyframes.cut.label: Inside at about 10 yd
+    keyframes.cut.cue: >-
+      After about 10 yards from the line, make a square inside cut; compare this with Slant’s earlier diagonal
+      cut.
     keyframes.end.label: Route complete
     keyframes.end.cue: 'Say IN / SQUARE IN, then trace the route: “Straight, square turn, across the middle.”'
+    source.references.3.title: NFL FLAG · Field dimensions
+    source.references.3.locator: Flag Football Field
+    source.references.3.note: >-
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
+      scrimmage and QB position are teaching choices.
+    routeGuide.note: >-
+      Depth is measured from the line of scrimmage. This uses the official roughly 10-yard Square In example.
+      The same guide mentions a shallower 5-yard In; agree on depth with your coach and QB. The sideways
+      length is a drawing choice. Other remaining lengths and QB’s position 5 yards behind the line are
+      teaching choices; agree on practice distances with your coach and QB.
+    routeGuide.marks.cut.label: Inside at about 10 yd
+    routeGuide.marks.cut.note: >-
+      The official Square In example cuts square inside at about 10 yards and also mentions a 5-yard In; not
+      every In requires 10 yards.
+routeGuide:
+  player: X
+  note: >-
+    距离从开球线计算。采用官方 Square In 约 10 码示例；同一说明也提到较浅的 5 码 In，实际深度与教练和 QB 约定。横切长度为本图设置。其余后段长度及 QB 在开球线后 5
+    码的站位是教学设置；具体练习距离与教练、QB 约定。
+  marks:
+    - id: cut
+      step: 0
+      label: 约 10 码内横切
+      basis: source-example
+      note: 官方 Square In 示例约 10 码后向内直角横切，也提到 5 码 In；不是每条 In 都必须跑 10 码。
+      sourceReference: 0

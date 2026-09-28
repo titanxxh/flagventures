@@ -1,5 +1,6 @@
 import { t, getLanguage, setLanguage, captureStaticTranslations } from './i18n.js';
 import { localizePack } from './localization.js';
+import { getRouteMeasurements } from './route-measurements.js';
 import { dump } from 'js-yaml';
 import { getScene, getRoutes, pathToSvg } from './scene.js';
 import { prepareImport, validatePack } from './validation.js';
@@ -144,6 +145,7 @@ function selectLesson(id, preserve = false) {
   lesson = pack.lessons.find(item => item.id === id);
   if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: lesson?.kind === 'route' ? lesson.players.find(player => ['path', 'choice'].includes(player.motion.type))?.id || null : null, choices: {} };
   hovered = focused = null; lastTick = undefined;
+  $('routeDistances').hidden = !lesson?.routeGuide;
   $('routeOrientation').hidden = lesson?.kind !== 'route';
   $('teamPlanHeading').textContent = t(lesson?.kind === 'route' ? '这条路线怎么跑' : '这套配合想做到什么');
   if (!lesson) {
@@ -189,7 +191,7 @@ function selectLesson(id, preserve = false) {
   text($('teachingCue'), lesson.teaching?.cue || '「你站在哪里？」');
   text($('teachingQuestion'), lesson.teaching?.question || '「你跑的时候，队友去哪儿？」');
   text($('direction'), `${lesson.field.attackDirection === 'up' ? '↑' : '↓'} ${t('进攻方向')}${lesson.kind === 'defense' ? t(' · 防守视角') : ''}`);
-  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? '全场示意 · 距离与时间用于教学' : '悬停球员看跑法 · 点击保留');
+  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? lesson.field.unit === 'yard' ? '全场按码绘制 · 秒数仅为演示时间' : '全场示意 · 距离与时间用于教学' : '悬停球员看跑法 · 点击保留');
   text($('timingNote'), lesson.timeline.note);
   text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? t`，第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}` : '这是一条独立编写的教学内容，没有附带原书来源。');
   $('notes').replaceChildren(...(lesson.notes || []).map(note => node('li', {}, note)));
@@ -209,7 +211,7 @@ function selectLesson(id, preserve = false) {
   const index = order.indexOf(id);
   text($('lessonIndex'), `${index + 1} / ${order.length}`);
   $('previous').disabled = index === 0; $('next').disabled = index === order.length - 1;
-  buildRoles(); buildChoices(); buildField(); buildFrames(); render();
+  buildRoles(); buildChoices(); buildField(); buildFrames(); buildDistanceGuide(); render();
 }
 function buildRoles() {
   const buttons = [node('button', { class: 'role', 'data-show-all': '', 'aria-pressed': 'true' }, '看全队')];
@@ -235,12 +237,30 @@ function buildFrames() {
     return button;
   }));
 }
+function numberLabel(value) { return Number(value.toFixed(1)).toString(); }
+function depthLabel(value) { return t`${numberLabel(value)} 码`; }
+function buildDistanceGuide() {
+  text($('distanceNote'), lesson.routeGuide?.note);
+  $('distanceMarks').replaceChildren(...getRouteMeasurements(lesson).map((mark, index) => {
+    const card = node('div', {class: 'distance-mark'});
+    const button = node('button', {class: 'distance-jump', 'data-distance-jump': mark.id});
+    button.append(node('strong', {}, t`${index + 1} · 深度 ${numberLabel(mark.depthYards)} 码（约 ${numberLabel(mark.depthYards * .9144)} 米）`), node('span', {}, mark.label));
+    button.addEventListener('click', () => seek(mark.at));
+    const basis = node('span', {class: 'distance-basis'}, mark.basis === 'source-example' ? '官方示例' : '本次演示设置');
+    card.append(button, basis, node('p', {}, mark.note));
+    const reference = lesson.source?.references?.[mark.sourceReference];
+    if (reference) card.append(node('a', {href: reference.url, target: '_blank', rel: 'noopener noreferrer'}, '查看距离出处 ↗'));
+    return card;
+  }));
+}
+
 function buildField() {
   const { width: w, height: h, lineOfScrimmageY } = lesson.field;
   const isRoute = lesson.kind === 'route';
+  const scaled = isRoute && lesson.field.unit === 'yard';
   const unit = isRoute ? Math.min(w / 48, h / 80) : Math.min(w / 100, h / 55);
   const field = $('field');
-  const viewport = { x: -3 * unit, y: -3 * unit, width: w + 6 * unit, height: h + 6 * unit };
+  const viewport = { x: -3 * unit, y: -3 * unit, width: w + (scaled ? 14 : 6) * unit, height: h + 6 * unit };
   field.classList.toggle('full-route-field', isRoute);
   field.setAttribute('viewBox', `${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}`);
   field.style.overflow = 'hidden';
@@ -254,15 +274,33 @@ function buildField() {
     marker.append(svg('path', { d: 'M0 0 L8 4 L0 8 L2 4 Z', fill: playerColor(player) })); defs.append(marker);
   }
   field.append(defs, svg('rect', { x: 0, y: 0, width: w, height: h, rx: unit, fill: '#214f40', stroke: '#ffffff3c', 'stroke-width': .18 * unit }));
-  for (let index = 1; index < 6; index++) field.append(svg('path', { d: `M0 ${h * index / 6}H${w}`, stroke: '#ffffff14', 'stroke-width': .15 * unit }));
-  for (let index = 1; index < 22; index++) {
-    const y = h * index / 22;
-    field.append(svg('path', { d: `M${w * .02} ${y}h${unit} M${w * .33} ${y}h${unit} M${w * .66} ${y}h${unit} M${w * .97} ${y}h${unit}`, stroke: '#ffffff24', 'stroke-width': .13 * unit }));
+  if (scaled) {
+    const endZone = lesson.field.endZoneDepth || 0;
+    // Keep authored fields with unusually large dimensions bounded to 200 ticks.
+    const yardInterval = Math.max(1, Math.ceil(h / 200));
+    const majorInterval = yardInterval * 5;
+    for (let y = endZone, count = 0; y <= h - endZone && count <= 200; y += majorInterval, count++) field.append(svg('path', {d: `M0 ${y}H${w}`, stroke: '#ffffff20', 'stroke-width': .15 * unit}));
+    for (let y = endZone, count = 0; y <= h - endZone && count <= 200; y += yardInterval, count++) field.append(svg('path', {d: `M${w * .02} ${y}h${unit} M${w * .96} ${y}h${unit}`, stroke: '#ffffff30', 'stroke-width': .13 * unit}));
+    if (lineOfScrimmageY !== undefined) {
+      const direction = lesson.field.attackDirection === 'up' ? -1 : 1;
+      const limit = direction < 0 ? lineOfScrimmageY - endZone : h - endZone - lineOfScrimmageY;
+      for (let distance = 0, count = 0; distance <= limit && count <= 200; distance += majorInterval, count++) {
+        const y = lineOfScrimmageY + direction * distance;
+        field.append(svg('path', {d: `M${w} ${y}h${unit}`, stroke: '#e8cf90', 'stroke-width': .2 * unit}));
+        field.append(svg('text', {x: w + 1.8 * unit, y, fill: '#e8cf90', 'font-size': 2.2 * unit, 'dominant-baseline': 'middle', 'data-yard-tick': distance}, depthLabel(distance)));
+      }
+    }
+  } else {
+    for (let index = 1; index < 6; index++) field.append(svg('path', { d: `M0 ${h * index / 6}H${w}`, stroke: '#ffffff14', 'stroke-width': .15 * unit }));
+    for (let index = 1; index < 22; index++) {
+      const y = h * index / 22;
+      field.append(svg('path', { d: `M${w * .02} ${y}h${unit} M${w * .33} ${y}h${unit} M${w * .66} ${y}h${unit} M${w * .97} ${y}h${unit}`, stroke: '#ffffff24', 'stroke-width': .13 * unit }));
+    }
   }
   if (isRoute) {
-    // These are orientation guides, not a measured competition-field layout.
-    const depth = h * .08;
+    const depth = lesson.field.endZoneDepth ?? (scaled ? 0 : h * .08);
     for (const [y, label] of [[0, lesson.field.attackDirection === 'up' ? '进攻端区' : '己方端区'], [h - depth, lesson.field.attackDirection === 'up' ? '己方端区' : '进攻端区']]) {
+      if (!depth) continue;
       field.append(svg('rect', {x: 0, y, width: w, height: depth, fill: '#cfdfbd', 'fill-opacity': .1, 'data-field-endzone': ''}));
       field.append(svg('text', {x: w / 2, y: y + depth / 2, 'dominant-baseline': 'middle', 'text-anchor': 'middle', fill: '#d2dfcd', 'font-size': 2 * unit}, label));
     }
@@ -294,6 +332,42 @@ function buildField() {
     const player = lesson.players.find(player => player.id === route.playerId);
     const path = svg('path', { class: 'route', 'data-player-route': player.id, d: pathToSvg(route.from, route.steps), fill: 'none', stroke: playerColor(player), 'stroke-width': .43 * unit, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'marker-end': `url(#arrow-${player.id})`, 'pointer-events': 'none' });
     field.append(path); fieldNodes.routes.push({ node: path, ...route });
+  }
+  const measurements = getRouteMeasurements(lesson);
+  const distanceLabels = [];
+  for (const [index, mark] of measurements.entries()) {
+    const [x, y] = mark.position;
+    const group = svg('g', {class: 'distance-marker', 'data-distance-mark': mark.id, 'data-depth-yards': mark.depthYards, 'data-marker-x': x, 'data-marker-y': y, role: 'button', tabindex: 0, 'aria-label': `${depthLabel(mark.depthYards)} · ${mark.label}`});
+    group.append(svg('circle', {class: 'distance-marker-focus', cx: x, cy: y, r: 3.3 * unit, fill: 'none', stroke: '#ffe8a7', 'stroke-width': .25 * unit}));
+    group.append(svg('circle', {cx: x, cy: y, r: .8 * unit, fill: '#e8cf90', stroke: '#173b30', 'stroke-width': .2 * unit}));
+    group.addEventListener('click', () => seek(mark.at));
+    group.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); seek(mark.at); } });
+    const label = `${index + 1} · ${depthLabel(mark.depthYards)}`;
+    const labelNode = svg('text', {x: x + 1.7 * unit, y: y - 1.8 * unit, fill: '#ffe8a7', stroke: '#214f40', 'stroke-width': .5 * unit, 'paint-order': 'stroke', 'font-size': 2.2 * unit, 'font-weight': 700}, label);
+    group.append(labelNode);
+    field.append(group);
+    // Cuts at the same depth still need separate readable labels (for example Chair).
+    let bounds = labelNode.getBBox();
+    for (let attempt = 0; attempt < measurements.length; attempt++) {
+      const overlap = distanceLabels.some(box => bounds.x < box.x + box.width + unit && bounds.x + bounds.width + unit > box.x && bounds.y < box.y + box.height + unit && bounds.y + bounds.height + unit > box.y);
+      if (!overlap) break;
+      labelNode.setAttribute('y', Number(labelNode.getAttribute('y')) - 3.5 * unit);
+      bounds = labelNode.getBBox();
+    }
+    if (Number(labelNode.getAttribute('y')) !== y - 1.8 * unit) {
+      group.insertBefore(svg('path', {d: `M${x} ${y}L${labelNode.getAttribute('x')} ${Number(labelNode.getAttribute('y')) + .6 * unit}`, stroke: '#e8cf90', 'stroke-width': .16 * unit, 'stroke-dasharray': `${.4 * unit} ${.4 * unit}`, 'pointer-events': 'none', fill: 'none'}), group.firstChild);
+    }
+    distanceLabels.push(bounds);
+  }
+  const firstMark = measurements[0];
+  if (firstMark) {
+    const runner = lesson.players.find(player => player.id === lesson.routeGuide.player);
+    // Mark the initial straight stem separately from the route's total travel.
+    if (firstMark.step === 0 && runner.at[0] === firstMark.position[0] && runner.at[1] === lineOfScrimmageY) {
+      const x = Math.max(unit, runner.at[0] - 4 * unit), top = firstMark.position[1], bottom = lineOfScrimmageY;
+      field.append(svg('path', {d: `M${x + unit} ${top}H${x}V${bottom}h${unit}`, stroke: '#e8cf90', 'stroke-width': .2 * unit, fill: 'none', 'data-stem-bracket': ''}));
+      field.append(svg('text', {x: x - unit, y: (top + bottom) / 2, fill: '#ffe8a7', 'font-size': 2.2 * unit, 'text-anchor': 'end', 'dominant-baseline': 'middle'}, depthLabel(firstMark.depthYards)));
+    }
   }
   for (const player of lesson.players) {
     const group = svg('g', { class: 'player', 'data-player': player.id, tabindex: 0, role: 'button', 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` });

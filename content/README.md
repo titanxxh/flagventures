@@ -36,7 +36,7 @@
 
 原手册条目的站位与职责以 NFL FLAG 2024 中英对照学习译本为基础；基础路线补充参考 [NFL FLAG 路线树](https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays)和[接球手教学](https://nflflag.com/coaches/default/football-drills/wide-receiver-drills)，加入 In / Square In，并重绘为统一的教学示意。30 套进攻战术的配合讲解、部分术语和启动关系补充参考 [NFL FLAG 官方介绍及视频](https://nflflag.com/coaches/flag-football-rules/5-on-5-flag-football-playbook)。中文为非官方学习译文及教学编写。各条目的 `source.references` 保留可核对的网页或视频出处；`teaching` 写全队讲解，`player.coaching` 写个人配合与时机。全部资料已保存在独立文本中，运行时不读取原始 PDF、原页图片或外部网页。格式仍支持为自行维护的内容包添加可选参考图片，详见[文本格式](../content-format/README.md)。
 
-进攻朝上，防守图对照的进攻方向朝下。11 条基础路线在完整球场示意中统一起点，并增加开球线后方的 QB 参照；这些坐标是本应用为解释路线重新绘制的教学布局，不是原页站位或实际码数。其他条目保留原页观看方向与相对站位。球员字母确定身份，颜色只作辅助。
+进攻朝上，防守图对照的进攻方向朝下。11 条基础路线在完整球场示意中统一起点，并增加开球线后方的 QB 参照；这些路线按码数比例重绘，并注明采用的官方距离示例或本图教学设置；它们不是原 PDF 站位描摹。其他条目保留原页观看方向与相对站位。球员字母确定身份，颜色只作辅助。
 
 基础路线的文字讲解常驻显示，`teaching` 说明怎么跑、与 QB 的关系、记忆口令及提问。向内指朝场地中间，不是跑回 QB。Slant 是短起步后斜向内切；In / Square In 是直跑后约 90° 横切向内，后段平行开球线。Dig 在不同教材中口径不一，因此补充条目采用 In / Square In 名称。QB 的位置与静止显示只用于参照，不指定真实传球时刻，也不构成完整五人阵型。
 
@@ -49,3 +49,5 @@
 基础 OPTION 按本书的连续假内切、再向外横切动作演示，不补写选择条件。HB OPTION 的 `PUMP FAKE + RUN`、QB OPTION 的 `RUN/PASS OPTION` 保留在说明中，不生成球权或交接动画。
 
 防守区域与职责线采用 `zones` / `assignments`，不驱动动态追逐。没有画出路线的球员标为 `unspecified`，表示后续动作未知，不等于比赛中必须站住。
+
+基础路线可用 `field.unit: yard` 和 `routeGuide` 描述距离，标注的深度、位置与时间直接由动作段计算；新增战术可沿用该格式，详见文本格式说明。

@@ -206,7 +206,11 @@ function lessonSemantics(lesson, filename) {
   for (const path of Object.keys(lesson.translations?.en || {})) {
     if (!translatable.has(path)) fail(filename, `translations.en.${path}`, '翻译只能引用已有的展示文字字段');
   }
-  const { width, height, lineOfScrimmageY } = lesson.field;
+  const { width, height, lineOfScrimmageY, unit, endZoneDepth } = lesson.field;
+  if (endZoneDepth !== undefined) {
+    if (unit !== 'yard') fail(filename, 'field.endZoneDepth', '端区深度需要 field.unit 为 yard');
+    if (2 * endZoneDepth >= height) fail(filename, 'field.endZoneDepth', '两个端区的深度之和必须小于场地高度');
+  }
   const point = (value, field) => {
     if (value[0] < 0 || value[0] > width || value[1] < 0 || value[1] > height) {
       fail(filename, field, t`坐标必须位于画布内（x: 0–${width}，y: 0–${height}）`);
@@ -223,6 +227,27 @@ function lessonSemantics(lesson, filename) {
   if (lesson.source && !lesson.source.title.trim()) fail(filename, 'source.title', '请填写可识别的来源');
   for (const [index, reference] of (lesson.source?.references || []).entries()) {
     validateReferenceUrl(reference.url, filename, `source.references[${index + 1}].url`);
+  }
+  if (lesson.routeGuide) {
+    const guide = lesson.routeGuide;
+    if (lesson.kind !== 'route') fail(filename, 'routeGuide', '距离标注仅适用于基础路线');
+    if (unit !== 'yard' || lineOfScrimmageY === undefined) {
+      fail(filename, 'routeGuide', '距离标注需要以码为单位的场地和开球线');
+    }
+    requireRef(players, guide.player, filename, 'routeGuide.player', '球员');
+    const player = lesson.players.find(item => item.id === guide.player);
+    if (player.motion.type !== 'path') fail(filename, 'routeGuide.player', '距离标注的球员必须使用单条 path 路线');
+    unique(guide.marks, filename, 'routeGuide.marks');
+    for (const mark of guide.marks) {
+      const field = `routeGuide.marks.${mark.id}`;
+      if (mark.step >= player.motion.steps.length) fail(filename, `${field}.step`, '标注引用的动作段不存在');
+      if (mark.basis === 'source-example' && mark.sourceReference === undefined) {
+        fail(filename, `${field}.sourceReference`, '来源示例必须注明参考资料编号');
+      }
+      if (mark.sourceReference !== undefined && !lesson.source?.references?.[mark.sourceReference]) {
+        fail(filename, `${field}.sourceReference`, '标注引用的参考资料不存在');
+      }
+    }
   }
 
   for (const player of lesson.players) {

@@ -90,6 +90,9 @@
         }
       },
       "additionalProperties": false
+    },
+    "routeGuide": {
+      "$ref": "#/$defs/routeGuide"
     }
   },
   "required": [
@@ -376,6 +379,12 @@
         },
         "lineOfScrimmageY": {
           "$ref": "#/$defs/nonnegative"
+        },
+        "unit": {
+          "const": "yard"
+        },
+        "endZoneDepth": {
+          "$ref": "#/$defs/positive"
         }
       },
       "required": [
@@ -992,6 +1001,66 @@
         "at",
         "label",
         "cue"
+      ],
+      "additionalProperties": false
+    },
+    "routeGuide": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "$ref": "#/$defs/identifier"
+        },
+        "note": {
+          "$ref": "#/$defs/shortText"
+        },
+        "marks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/routeMark"
+          }
+        }
+      },
+      "required": [
+        "player",
+        "note",
+        "marks"
+      ],
+      "additionalProperties": false
+    },
+    "routeMark": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "step": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "label": {
+          "$ref": "#/$defs/shortText"
+        },
+        "basis": {
+          "enum": [
+            "source-example",
+            "illustration"
+          ]
+        },
+        "note": {
+          "$ref": "#/$defs/shortText"
+        },
+        "sourceReference": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "step",
+        "label",
+        "basis",
+        "note"
       ],
       "additionalProperties": false
     }
