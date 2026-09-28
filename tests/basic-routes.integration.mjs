@@ -11,11 +11,16 @@ try {
  await page.locator('[data-lesson="route-hitch"]').evaluate(n=>n.click());
  const facing=page.locator('#field [data-player="X"] [data-facing]');
  assert.equal(await facing.count(),1,'Hitch needs a visible body-facing indicator');
+ const activeArrow=page.locator('#field [data-active-route="X"]');
+ assert.equal(await activeArrow.count(),1,'Hitch must show the current run segment, not the full-route endpoint arrow');
+ assert.equal(await page.locator('#field [data-player-route="X"]').getAttribute('marker-end'),'none');
  const seek=async time=>page.locator('#seek').evaluate((n,t)=>{n.value=t;n.dispatchEvent(new Event('input',{bubbles:true}));},time);
  for(const time of [0,6.99,7,8.5,10,0,7]){
   await seek(time);
   assert.equal(await facing.getAttribute('visibility'),'visible');
   const direction=JSON.parse(await facing.getAttribute('data-direction'));
+  assert.equal(await activeArrow.getAttribute('d'),time<7?'M 8 50 L 8 43':'M 8 43 L 8 45','blue arrow switches direction only at the turn');
+  assert.equal(await activeArrow.getAttribute('marker-end'),'url(#arrow-X)');
   if(time<7){
    assert.deepEqual(direction,[0,-1]);
    assert.equal(await facing.getAttribute('data-face-player'),'');
@@ -43,6 +48,8 @@ try {
    assert.ok((await page.locator('#teachingGoal').textContent()).length>15);
    assert.ok((await page.locator('#teamCooperation').textContent()).includes('QB'));
    assert.equal(await page.locator('#routePerson').textContent(),'X',`${lesson.id}: default route details`);
+   assert.equal(await page.locator('[data-player-route="X"]').getAttribute('marker-end'),'none');
+   assert.equal(await page.locator('[data-active-route="X"]').getAttribute('visibility'),'visible');
    assert.equal(lesson.field.unit,'yard');
    assert.deepEqual([lesson.field.width,lesson.field.height,lesson.field.endZoneDepth],[30,70,10]);
    assert.equal(await page.locator('#routeDistances').isVisible(),true);

@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {readFileSync} from 'node:fs';
-import {getScene, getRoutes, pathToSvg} from '../app/scene.js';
+import {load} from 'js-yaml';
+import {getScene, getRoutes, getActiveRoute, pathToSvg} from '../app/scene.js';
 
 const player = (id, at, motion) => ({
   id, team: 'offense', at,
@@ -27,6 +28,68 @@ const freeze = value => {
   }
   return value;
 };
+
+test('real Hitch shows its outgoing segment before 7 seconds and its return segment from the turn', () => {
+  const hitch = freeze(load(readFileSync(new URL('../content/lessons/route-hitch.yaml', import.meta.url), 'utf8')));
+  const receiver = hitch.players.find(p => p.id === 'X');
+  const [outgoing, returning] = receiver.motion.steps;
+  const fullRoutes = getRoutes(hitch);
+  for (const at of [0, 6.999, 7, 10, 0, 7]) {
+    const active = getActiveRoute(receiver, at);
+    assert.deepEqual(active.from, at < 7 ? receiver.at : outgoing.to);
+    assert.equal(active.steps.length, 1);
+    assert.equal(active.steps[0], at < 7 ? outgoing : returning);
+    assert.equal(Math.sign(active.steps[0].to[1] - active.from[1]), at < 7 ? -1 : 1);
+  }
+  assert.deepEqual(getRoutes(hitch), fullRoutes, 'full route geometry stays available unchanged');
+  assert.equal(getActiveRoute(hitch.players.find(p => p.id === 'QB'), 5), undefined);
+});
+
+test('active segment keeps the previous run through pauses and switches at exact step boundaries', () => {
+  const runner = freeze(player('X', [2, 3], {type: 'path', startAt: 2, steps: [
+    line([2, 8], 3), {type: 'pause', seconds: 2}, line([9, 8], 2), {type: 'pause', seconds: 1},
+  ]}));
+  for (const at of [0, 1.999, 2, 4.999, 5, 6.999]) {
+    assert.deepEqual(getActiveRoute(runner, at), {from: [2, 3], steps: [runner.motion.steps[0]]});
+  }
+  for (const at of [7, 9, 10, 100]) {
+    assert.deepEqual(getActiveRoute(runner, at), {from: [2, 8], steps: [runner.motion.steps[2]]});
+  }
+  assert.equal(getActiveRoute(runner, 4).steps[0], runner.motion.steps[0], 'reverse seeking is independent of previous calls');
+  const waiting = freeze(player('Y', [2, 3], {type: 'path', startAt: 2, steps: [
+    {type: 'pause', seconds: 3}, line([2, 8], 2),
+  ]}));
+  for (const at of [0, 2, 4.999]) assert.equal(getActiveRoute(waiting, at), undefined);
+  assert.deepEqual(getActiveRoute(waiting, 5), {from: [2, 3], steps: [waiting.motion.steps[1]]});
+  const allWait = player('Z', [2, 3], {type: 'path', startAt: 0, steps: [{type: 'pause', seconds: 5}]});
+  assert.equal(getActiveRoute(allWait, 100), undefined);
+});
+
+test('active segment requires a selected choice and preserves curve objects and control points', () => {
+  const quadratic = {type: 'quadratic', control: [3, 7], to: [8, 9], seconds: 2};
+  const cubic = {type: 'cubic', control1: [9, 10], control2: [12, 11], to: [15, 13], seconds: 3};
+  const runner = freeze(player('X', [1, 2], {type: 'choice', startAt: 1, options: [
+    {id: 'curves', title: 'Curves', steps: [quadratic, cubic]},
+    {id: 'straight', title: 'Straight', steps: [line([1, 10], 5)]},
+  ]}));
+  assert.equal(getActiveRoute(runner, 4), undefined);
+  assert.equal(getActiveRoute(runner, 4, {X: 'unknown'}), undefined);
+  const first = getActiveRoute(runner, 0, {X: 'curves'});
+  assert.deepEqual(first.from, [1, 2]);
+  assert.equal(first.steps[0], quadratic);
+  assert.equal(pathToSvg(first.from, first.steps), 'M 1 2 Q 3 7 8 9');
+  const second = getActiveRoute(runner, 3, {X: 'curves'});
+  assert.deepEqual(second.from, [8, 9]);
+  assert.equal(second.steps[0], cubic);
+  assert.equal(pathToSvg(second.from, second.steps), 'M 8 9 C 9 10 12 11 15 13');
+  assert.equal(getActiveRoute(runner, 9, {X: 'curves'}).steps[0], cubic);
+  assert.equal(getActiveRoute(runner, 4, {X: 'straight'}).steps[0], runner.motion.options[1].steps[0]);
+  first.from[0] = 100;
+  second.from[0] = 100;
+  assert.deepEqual(runner.at, [1, 2]);
+  assert.deepEqual(quadratic.to, [8, 9]);
+  assert.equal(getActiveRoute(player('Q', [1, 2], {type: 'unspecified', note: 'Unknown'}), 2), undefined);
+});
 
 test('Hitch faces the live QB from the turn boundary, independently of the return path', () => {
   const data = lesson([

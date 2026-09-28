@@ -2,7 +2,7 @@ import { t, getLanguage, setLanguage, captureStaticTranslations } from './i18n.j
 import { localizePack } from './localization.js';
 import { getRouteMeasurements } from './route-measurements.js';
 import { dump } from 'js-yaml';
-import { getScene, getRoutes, pathToSvg } from './scene.js';
+import { getScene, getRoutes, getActiveRoute, pathToSvg } from './scene.js';
 import { prepareImport, validatePack } from './validation.js';
 
 const $ = id => document.getElementById(id);
@@ -262,6 +262,7 @@ function buildField() {
   const field = $('field');
   const viewport = { x: -3 * unit, y: -3 * unit, width: w + (scaled ? 14 : 6) * unit, height: h + 6 * unit };
   field.classList.toggle('full-route-field', isRoute);
+  $('routeMotionHint').hidden = !isRoute;
   field.setAttribute('viewBox', `${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}`);
   field.style.overflow = 'hidden';
   field.replaceChildren();
@@ -330,8 +331,10 @@ function buildField() {
   }
   for (const route of getRoutes(lesson, state.choices)) {
     const player = lesson.players.find(player => player.id === route.playerId);
-    const path = svg('path', { class: 'route', 'data-player-route': player.id, d: pathToSvg(route.from, route.steps), fill: 'none', stroke: playerColor(player), 'stroke-width': .43 * unit, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'marker-end': `url(#arrow-${player.id})`, 'pointer-events': 'none' });
-    field.append(path); fieldNodes.routes.push({ node: path, ...route });
+    const shape = {fill: 'none', stroke: playerColor(player), 'stroke-width': .43 * unit, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'pointer-events': 'none'};
+    const path = svg('path', { ...shape, class: 'route', 'data-player-route': player.id, d: pathToSvg(route.from, route.steps), 'marker-end': isRoute ? 'none' : `url(#arrow-${player.id})` });
+    const activeNode = isRoute ? svg('path', {...shape, 'data-active-route': player.id, 'marker-end': `url(#arrow-${player.id})`, visibility: 'hidden'}) : undefined;
+    field.append(path); fieldNodes.routes.push({ node: path, activeNode, ...route });
   }
   const measurements = getRouteMeasurements(lesson);
   const distanceLabels = [];
@@ -369,6 +372,8 @@ function buildField() {
       field.append(svg('text', {x: x - unit, y: (top + bottom) / 2, fill: '#ffe8a7', 'font-size': 2.2 * unit, 'text-anchor': 'end', 'dominant-baseline': 'middle'}, depthLabel(firstMark.depthYards)));
     }
   }
+  // Current-step arrows sit above distance dots so a turn marker cannot hide the arrowhead.
+  for (const route of fieldNodes.routes) if (route.activeNode) field.append(route.activeNode);
   const facingPlayers = new Set(getRoutes(lesson).filter(route => route.steps.some(step => step.facePlayer)).map(route => route.playerId));
   $('facingHint').hidden = facingPlayers.size === 0;
   for (const id of facingPlayers) {
@@ -427,9 +432,17 @@ function render() {
     const option = state.choices[route.playerId];
     const otherOption = route.optionId && option && route.optionId !== option;
     route.node.style.display = otherOption ? 'none' : '';
-    route.node.setAttribute('opacity', inspected === null ? .66 : route.playerId === inspected ? 1 : .2);
+    route.node.setAttribute('opacity', route.activeNode ? (inspected === null || route.playerId === inspected ? .28 : .12) : inspected === null ? .66 : route.playerId === inspected ? 1 : .2);
     route.node.setAttribute('stroke-dasharray', route.optionId && !option ? `${fieldNodes.unit} ${fieldNodes.unit * .7}` : 'none');
     route.node.setAttribute('stroke-width', (route.playerId === inspected ? .58 : .4) * fieldNodes.unit);
+    if (route.activeNode) {
+      const player = scene.players.find(item => item.id === route.playerId);
+      const active = !otherOption && (!route.optionId || option === route.optionId) ? getActiveRoute(player, scene.time, state.choices) : undefined;
+      route.activeNode.setAttribute('visibility', active ? 'visible' : 'hidden');
+      route.activeNode.setAttribute('d', active ? pathToSvg(active.from, active.steps) : '');
+      route.activeNode.setAttribute('opacity', inspected === null || route.playerId === inspected ? 1 : .35);
+      route.activeNode.setAttribute('stroke-width', .58 * fieldNodes.unit);
+    }
   }
   const zoneIds = new Set(scene.zones.map(zone => zone.id));
   for (const [id, group] of fieldNodes.zones) {

@@ -272,5 +272,6 @@
   "面向目标不能是球员自己": "The facing target cannot be the player themself",
   "小三角：面朝方向 · 虚线：看向队友": "Triangle: body direction · Dotted line: looking toward a teammate",
   "{0}：面向 {1}，点击保留": "{0}: facing {1}; click to pin",
-  "{0}：面朝跑动方向，点击保留": "{0}: facing the running direction; click to pin"
+  "{0}：面朝跑动方向，点击保留": "{0}: facing the running direction; click to pin",
+  "淡线：完整路线 · 实线箭头：当前跑动方向": "Faint line: full route · Solid arrow: current running direction"
 }

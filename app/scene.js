@@ -187,6 +187,28 @@ export function getRoutes(lesson, choices = {}) {
   });
 }
 
+/**
+ * Returns the current moving segment for a directional overlay. Pauses retain
+ * the preceding run; an initial pause has none. No playback history is needed.
+ */
+export function getActiveRoute(player, time, choices = {}) {
+  const motion = player.motion;
+  const steps = motion.type === 'path' ? motion.steps
+    : motion.type === 'choice' ? chosenOption(player, choices)?.steps : undefined;
+  if (!steps) return undefined;
+  const at = Number.isFinite(time) ? time : 0;
+  let from = player.at;
+  let end = motion.startAt;
+  let active;
+  for (const step of steps) {
+    if (step.type !== 'pause') active = {from: copyPoint(from), steps: [step]};
+    end += step.seconds;
+    if (at < end) return active;
+    if (step.type !== 'pause') from = step.to;
+  }
+  return active;
+}
+
 /** Also accepts a guide's geometric segments; pauses add no visible path. */
 export function pathToSvg(from, steps) {
   const commands = [`M ${from[0]} ${from[1]}`];
