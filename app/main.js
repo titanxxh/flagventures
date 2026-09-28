@@ -142,8 +142,10 @@ function buildCatalog() {
 }
 function selectLesson(id, preserve = false) {
   lesson = pack.lessons.find(item => item.id === id);
-  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: null, choices: {} };
+  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: lesson?.kind === 'route' ? lesson.players.find(player => ['path', 'choice'].includes(player.motion.type))?.id || null : null, choices: {} };
   hovered = focused = null; lastTick = undefined;
+  $('routeOrientation').hidden = lesson?.kind !== 'route';
+  $('teamPlanHeading').textContent = t(lesson?.kind === 'route' ? '这条路线怎么跑' : '这套配合想做到什么');
   if (!lesson) {
     text($('lessonTitle'), '内容包暂无教学条目');
     text($('summary'), '可以导入 YAML 添加战术，或从“我的战术文件”恢复内置手册。');
@@ -187,7 +189,7 @@ function selectLesson(id, preserve = false) {
   text($('teachingCue'), lesson.teaching?.cue || '「你站在哪里？」');
   text($('teachingQuestion'), lesson.teaching?.question || '「你跑的时候，队友去哪儿？」');
   text($('direction'), `${lesson.field.attackDirection === 'up' ? '↑' : '↓'} ${t('进攻方向')}${lesson.kind === 'defense' ? t(' · 防守视角') : ''}`);
-  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? '单路线放大 · 保留原图方向' : '悬停球员看跑法 · 点击保留');
+  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? '全场示意 · 距离与时间用于教学' : '悬停球员看跑法 · 点击保留');
   text($('timingNote'), lesson.timeline.note);
   text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? t`，第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}` : '这是一条独立编写的教学内容，没有附带原书来源。');
   $('notes').replaceChildren(...(lesson.notes || []).map(note => node('li', {}, note)));
@@ -235,20 +237,11 @@ function buildFrames() {
 }
 function buildField() {
   const { width: w, height: h, lineOfScrimmageY } = lesson.field;
-  const unit = Math.min(w / 100, h / 55);
+  const isRoute = lesson.kind === 'route';
+  const unit = isRoute ? Math.min(w / 48, h / 80) : Math.min(w / 100, h / 55);
   const field = $('field');
-  let viewport = { x: -3 * unit, y: -3 * unit, width: w + 6 * unit, height: h + 6 * unit };
-  if (lesson.kind === 'route') {
-    const points = lesson.players.map(p => p.at);
-    for (const route of getRoutes(lesson, state.choices)) for (const step of route.steps) {
-      for (const key of ['to', 'control', 'control1', 'control2']) if (step[key]) points.push(step[key]);
-    }
-    const xs = points.map(p => p[0]), ys = points.map(p => p[1]);
-    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
-    const height = Math.max(maxY - minY + 14 * unit, 28 * unit);
-    const width = Math.max(maxX - minX + 14 * unit, height * 1.8);
-    viewport = { x: (minX + maxX - width) / 2, y: (minY + maxY - height) / 2, width, height };
-  }
+  const viewport = { x: -3 * unit, y: -3 * unit, width: w + 6 * unit, height: h + 6 * unit };
+  field.classList.toggle('full-route-field', isRoute);
   field.setAttribute('viewBox', `${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}`);
   field.style.overflow = 'hidden';
   field.replaceChildren();
@@ -266,9 +259,24 @@ function buildField() {
     const y = h * index / 22;
     field.append(svg('path', { d: `M${w * .02} ${y}h${unit} M${w * .33} ${y}h${unit} M${w * .66} ${y}h${unit} M${w * .97} ${y}h${unit}`, stroke: '#ffffff24', 'stroke-width': .13 * unit }));
   }
+  if (isRoute) {
+    // These are orientation guides, not a measured competition-field layout.
+    const depth = h * .08;
+    for (const [y, label] of [[0, lesson.field.attackDirection === 'up' ? '进攻端区' : '己方端区'], [h - depth, lesson.field.attackDirection === 'up' ? '己方端区' : '进攻端区']]) {
+      field.append(svg('rect', {x: 0, y, width: w, height: depth, fill: '#cfdfbd', 'fill-opacity': .1, 'data-field-endzone': ''}));
+      field.append(svg('text', {x: w / 2, y: y + depth / 2, 'dominant-baseline': 'middle', 'text-anchor': 'middle', fill: '#d2dfcd', 'font-size': 2 * unit}, label));
+    }
+    field.append(svg('path', {d: `M${w / 2} ${depth}V${h - depth}`, stroke: '#ffffff40', 'stroke-width': .15 * unit, 'stroke-dasharray': `${unit} ${unit}`}));
+    field.append(svg('text', {x: w / 2, y: depth + 4 * unit, fill: '#d2dfcd', 'font-size': 1.7 * unit, 'text-anchor': 'middle'}, '场地中间'));
+    field.append(svg('path', {d: `M0 ${h / 2}H${w}`, stroke: '#ffffff45', 'stroke-width': .18 * unit}));
+    field.append(svg('text', {x: w - unit, y: h / 2 - unit, fill: '#b9d5d1', 'font-size': 1.5 * unit, 'text-anchor': 'end'}, '中线'));
+    for (const [x, angle] of [[1.8 * unit, -90], [w - 1.8 * unit, 90]]) {
+      field.append(svg('text', {transform: `translate(${x} ${h * .64}) rotate(${angle})`, 'text-anchor': 'middle', fill: '#b9d5d1', 'font-size': 1.6 * unit}, '边线'));
+    }
+  }
   if (lineOfScrimmageY !== undefined) {
     field.append(svg('path', { d: `M0 ${lineOfScrimmageY}H${w}`, stroke: '#9bd0db80', 'stroke-width': .25 * unit }));
-    field.append(svg('text', { x: 2 * unit, y: lineOfScrimmageY - 1.1 * unit, fill: '#b9d5d1', 'font-size': 1.35 * unit }, '开球线'));
+    field.append(svg('text', { x: isRoute ? w - 2 * unit : 2 * unit, y: lineOfScrimmageY - 1.1 * unit, fill: '#b9d5d1', 'font-size': (isRoute ? 1.6 : 1.35) * unit, 'text-anchor': isRoute ? 'end' : 'start' }, '开球线'));
   }
   for (const zone of lesson.zones || []) {
     const group = svg('g', { 'data-zone': zone.id });
@@ -295,6 +303,7 @@ function buildField() {
     else if (player.id === 'C') group.append(svg('rect', { ...common, x: -1.85 * unit, y: -1.85 * unit, width: 3.7 * unit, height: 3.7 * unit, rx: .45 * unit }));
     else group.append(svg('circle', { ...common, r: 1.95 * unit }));
     group.append(svg('text', { x: 0, y: (player.team === 'defense' ? .95 : .75) * unit, 'text-anchor': 'middle', 'font-size': (player.id.length > 2 ? 1.25 : player.id.length > 1 ? 1.7 : 2.2) * unit, 'font-weight': 750, fill: '#153b2f' }, player.id));
+    if (isRoute && player.id === 'QB') group.append(svg('text', {x: 0, y: 4.5 * unit, 'text-anchor': 'middle', fill: '#ffd3a2', 'font-size': 1.6 * unit}, '传球参照'));
     group.append(svg('circle', { r: 2.7 * unit, fill: 'transparent' }));
     field.append(group); fieldNodes.players.set(player.id, group);
   }
@@ -312,7 +321,7 @@ function render() {
   for (const player of scene.players) {
     const group = fieldNodes.players.get(player.id);
     group.setAttribute('transform', `translate(${player.position.join(' ')})`);
-    group.setAttribute('opacity', inspected === null || player.id === inspected ? 1 : .53);
+    group.setAttribute('opacity', inspected === null || player.id === inspected || (lesson.kind === 'route' && player.id === 'QB') ? 1 : .53);
     group.setAttribute('aria-pressed', String(player.id === state.role));
     group.querySelector('.focus-ring').setAttribute('opacity', player.id === inspected ? 1 : 0);
   }
@@ -362,7 +371,7 @@ function render() {
   $('routeDuties').hidden = !duties.length;
   text($('routeDuties'), duties.join(getLanguage() === 'en' ? '; ' : '；'));
   text($('routeBasis'), player ? `${t(bases[player.label.basis])}${player.label.note ? ` · ${player.label.note}` : ''}` : '');
-  fieldNodes.tooltip.style.display = player ? '' : 'none';
+  fieldNodes.tooltip.style.display = player && (lesson.kind !== 'route' || hovered || focused) ? '' : 'none';
   if (player) {
     const position = scene.players.find(p => p.id === player.id).position;
     const unit = fieldNodes.unit;

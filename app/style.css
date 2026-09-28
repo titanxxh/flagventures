@@ -15,3 +15,7 @@ html[lang="en"] .section-name, html[lang="en"] .catalog-group-title strong { ove
 .header-actions { flex-wrap: wrap; }
 select:focus-visible { outline: 3px solid #c9943a; outline-offset: 3px; }
 @media(max-width:650px) { .header-actions { width:100%; justify-content:flex-end; gap:8px; } }
+
+.route-orientation { margin:0 0 12px; padding:12px 15px; border-left:3px solid var(--gold); background:#eeeedf; font-size:12px; line-height:1.7; }
+#field.full-route-field { height:clamp(440px,60vh,620px); max-height:none; }
+@media(max-width:650px) { #field.full-route-field { height:490px; } .board-bottom { flex-wrap:wrap; } }

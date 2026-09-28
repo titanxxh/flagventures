@@ -1,4 +1,4 @@
-# UTF-8; display translations share the same routes and timing.
+# UTF-8; standard teaching diagrams share geometry and timing across languages.
 format: flag-lesson
 version: 1
 id: route-chair
@@ -6,113 +6,170 @@ kind: route
 title:
   zh: 9 · 椅形路线
   en: CHAIR
-summary: CHAIR · 先向前、向外横切，再继续向前，看起来像椅子的侧面。
+summary: CHAIR · 先直跑，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
+teaching:
+  goal: 先直跑，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
+  cooperation: 你先在 QB 前方提供向外的动作，再沿外侧跑深。QB 可观察你两次转向后的空间；本图不指定传球时刻。
+  cue: 直跑、横出去、再向前。
+  question: Chair 比 Out 多了最后哪一段？
 source:
-  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 4
-  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  note: >-
+    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。此图按定义重新绘制，统一 X 和 QB 起点，并非原 PDF
+    路线描摹。全场轮廓不按真实比赛比例；坐标、转折距离与动画秒数仅为教学示意，不是比赛码数、官方用时或传球时刻。
+  references:
+    - title: NFL FLAG · 路线树说明
+      url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
+      locator: CHAIR
+      note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
 field:
-  width: 100
-  height: 55
+  width: 60
+  height: 100
   attackDirection: up
-  lineOfScrimmageY: 31.513458
+  lineOfScrimmageY: 74
 players:
   - id: X
     team: offense
     at:
-      - 82.861393
-      - 33.644105
+      - 16
+      - 74
     color: '#80d4ff'
+    name: 接球手 X
     label:
       zh: 椅形路线
       en: CHAIR
-      description: 先向前、向外横切，再继续向前，看起来像椅子的侧面。
+      description: 先直跑，像 Out 一样向边线横切，再转约 90° 向前深跑；轮廓像一把椅子。
       basis: source
-      note: 英文名称由本页明确给出，中文为附件学习译文；X 是这里新增的示范球员编号。
+      note: 路线名称和动作含义依据 NFL FLAG 官网；起点、线段长度和动画节奏为本应用的教学设置。
     motion:
       type: path
       startAt: 0
       steps:
         - type: line
           to:
-            - 82.802382
-            - 32.592138
-          seconds: 0.307518
+            - 16
+            - 54
+          seconds: 4
         - type: line
           to:
-            - 82.802382
-            - 23.990878
-          seconds: 2.510416
+            - 7
+            - 54
+          seconds: 2
         - type: line
           to:
-            - 82.89605
-            - 23.897096
-          seconds: 0.038712
-        - type: line
-          to:
-            - 92.023387
-            - 23.898015
-          seconds: 2.667492
-        - type: line
-          to:
-            - 92.117054
-            - 23.804233
-          seconds: 0.038712
-        - type: line
-          to:
-            - 92.117054
-            - 10.190934
-          seconds: 3.973261
-        - type: line
-          to:
-            - 92.117054
-            - 8.601541
-          seconds: 0.463889
+            - 7
+            - 19
+          seconds: 4
+    coaching:
+      cooperation: 你先在 QB 前方提供向外的动作，再沿外侧跑深。QB 可观察你两次转向后的空间；本图不指定传球时刻。
+      timing: 演示从 0 秒开始，10 秒走完；转折关键帧帮助记忆动作，没有规定开球后必须等待几秒。
+  - id: QB
+    team: offense
+    at:
+      - 30
+      - 83
+    color: '#ff9690'
+    name: 四分卫 QB
+    label:
+      zh: 四分卫位置参照
+      en: QB
+      description: 站在开球线后方中间，帮助辨认接球手相对 QB 的跑动方向；静止图标不代表比赛中 QB 必须不动。
+      basis: author
+      note: 为比较基础路线新增的教学站位，不是原 PDF 规定的 QB 位置。
+    motion:
+      type: still
+      note: 教学参照：保持图标原位，不演示真实 QB 的后撤、传球或跑动。
+    coaching:
+      cooperation: 观察 X 是向中间、边线还是深处移动；传球路线与传球时刻未在此图规定。
+      timing: 图标全程静止仅为定位参照，不表示真实比赛中的启动顺序。
 timeline:
   duration: 10
   basis: illustration
-  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+  note: 动画总长 10 秒，只把动作先后拆开供教学；秒数、速度和转折距离不是官方规定。QB 静止为位置参照。
 keyframes:
   - id: start
     at: 0
     label: 起始站位
-    cue: 找到 X 的起点，用手指从起点沿路线慢慢往前画。
-  - id: early
-    at: 2.5
-    label: 观察前段
-    cue: 沿每个人已画出的路径看方向；没有路线的人后续动作未知。
-  - id: middle
-    at: 5.5
-    label: 观察中段
-    cue: 停住，比较你关注的人和队友分别在哪里。
+    cue: 找到开球线、左侧的 X 和后方的 QB。上方是进攻方向，场地中间是“内”。
+  - id: out
+    at: 4
+    label: 先向外横切
+    cue: 先像 Out 一样朝边线横跑。
+  - id: up
+    at: 6
+    label: 再向前深跑
+    cue: 从这里再转直角，向前跑深。
   - id: end
     at: 10
-    label: 路线终点
-    cue: 说出「CHAIR」，再不用动画，用手指画一遍这条路线。
+    label: 动作完成
+    cue: 说出 CHAIR，按「直跑、横出去、再向前。」用手指画一遍。
 notes:
-  - 这是原路线树中这一条路径的单独展示；保持原图方向和相对位置，没有按标准距离重画。
+  - 全场示意：X 固定从左侧开球线起跑，QB 位于开球线后方中间。这样可比较每条路线的“内、外、深、回身”；不是完整的五人阵型。
+  - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。真实路线深度和传接球时机应按球队教练安排。
 translations:
   en:
-    title.zh: CHAIR
-    summary: CHAIR · Run forward, cut outside, then run forward again, making a chair-like shape.
-    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    summary: >-
+      CHAIR · Run straight, cut outside like Out, then turn about 90° and go deep; the outline resembles a
+      chair.
+    title.zh: 9 · CHAIR
+    source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates are not
-      actual yards.
-    timeline.note: >-
-      Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
-      route and is illustrative, not official start order, equal player speeds or handoff timing.
+      Names and original numbering are retained from the PDF; explanations are supplemented from NFL FLAG.
+      This diagram is newly drawn from route definitions with shared X and QB starting positions, not traced
+      from the PDF. The full-field outline is not to regulation scale; coordinates, cut depths and animation
+      seconds are teaching choices, not game yardage, official timing or throw times.
+    source.references.0.title: NFL FLAG · Route tree guide
+    source.references.0.locator: CHAIR
+    source.references.0.note: >-
+      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
+      adaptations.
     notes.0: >-
-      This isolates one route from the route tree, preserving its direction and relative position without
-      imposing standard distances.
+      Full-field teaching view: X starts on the left of the line of scrimmage, with QB behind the line near
+      the middle. The shared setup makes inside, outside, deep and return movements comparable; it is not a
+      full five-player formation.
+    notes.1: >-
+      The stationary QB is a teaching reference. Snapping, passing, dropbacks and defense are not animated.
+      Your coach sets actual route depths and passing timing.
+    teaching.goal: Run straight, cut outside like Out, then turn about 90° and go deep; the outline resembles a chair.
+    teaching.cooperation: >-
+      Show an outside move ahead of the QB, then go deep along the outside. The QB can watch the space after
+      each cut; no throw timing is prescribed.
+    teaching.cue: Straight, sideways out, then upfield.
+    teaching.question: What final segment does Chair add to Out?
+    players.X.name: Receiver X
     players.X.label.zh: CHAIR
-    players.X.label.description: Run forward, cut outside, then run forward again, making a chair-like shape.
-    players.X.label.note: The English route name is printed in the source. X is an added demonstration-player ID.
+    players.X.label.description: Run straight, cut outside like Out, then turn about 90° and go deep; the outline resembles a chair.
+    players.X.label.note: >-
+      The route name and movement follow the NFL FLAG guide; starting positions, segment lengths and animation
+      timing are teaching choices.
+    players.X.coaching.cooperation: >-
+      Show an outside move ahead of the QB, then go deep along the outside. The QB can watch the space after
+      each cut; no throw timing is prescribed.
+    players.X.coaching.timing: >-
+      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
+      delay after the snap.
+    players.QB.name: Quarterback QB
+    players.QB.label.zh: Quarterback reference
+    players.QB.label.description: >-
+      Shown behind the line near the middle to clarify the receiver’s movement relative to QB. The stationary
+      marker does not require a real QB to stand still.
+    players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
+    players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
+    players.QB.coaching.cooperation: >-
+      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and release time
+      are not specified.
+    players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
+    timeline.note: >-
+      The ten-second animation separates movement stages for teaching. Seconds, speed and cut depths are not
+      official requirements. QB stays fixed as a positional reference.
     keyframes.start.label: Starting positions
-    keyframes.start.cue: Find X’s start and trace the route with a finger.
-    keyframes.early.label: Early movement
-    keyframes.early.cue: Follow the direction of the first part of the route.
-    keyframes.middle.label: Mid-route check
-    keyframes.middle.cue: Pause and point to the next part of the route.
-    keyframes.end.label: Route endpoints
-    keyframes.end.cue: Say “CHAIR”, then draw the route with your finger without watching the animation.
+    keyframes.start.cue: >-
+      Find the line of scrimmage, X on the left and QB behind. The attack goes upward; inside means toward the
+      middle.
+    keyframes.out.label: First cut outside
+    keyframes.out.cue: First run sideways toward the sideline like Out.
+    keyframes.up.label: Then go deep
+    keyframes.up.cue: Make another square turn here and continue deep.
+    keyframes.end.label: Route complete
+    keyframes.end.cue: 'Say CHAIR, then trace the route: “Straight, sideways out, then upfield.”'

@@ -90,12 +90,12 @@ try {
       order: pack.sections.flatMap(section => section.lessonIds), assets: pack.assets};
     });
     assert.deepEqual(await ids(), meta.order);
-    if (meta.entries.length === 64) {
+    if (meta.entries.length === 65) {
       const counts = Object.fromEntries(['route', 'formation', 'offense', 'run', 'defense']
         .map(kind => [kind, meta.entries.filter(entry => entry.kind === kind).length]));
-      assert.deepEqual(counts, {route: 10, formation: 10, offense: 30, run: 9, defense: 5});
+      assert.deepEqual(counts, {route: 11, formation: 10, offense: 30, run: 9, defense: 5});
       assert.deepEqual(meta.assets, [], 'the default catalog contains no original images');
-      assert.equal(new Set(meta.entries.map(item => item.sourcePage)).size, 56);
+      assert.equal(new Set(meta.entries.filter(item => item.id !== 'route-in').map(item => item.sourcePage)).size, 56);
     }
     const checkedSources = new Set();
     for (const item of meta.entries) {
@@ -111,8 +111,9 @@ try {
         const marker = await page.locator(`#field [data-assignment="${guide.id}"] path`).getAttribute('marker-end');
         assert.equal(marker, guide.type === 'matchup' ? null : 'url(#guide-arrow)', `${item.id}: ${guide.type}`);
       }
-      if (meta.entries.length === 64) {
-        assert.ok(Number.isInteger(item.sourcePage) && item.sourcePage > 0, `${item.id}: source page remains available`);
+      if (meta.entries.length === 65) {
+        if (item.id === 'route-in') assert.equal(item.sourcePage, undefined, 'supplemental In has no invented PDF page');
+        else assert.ok(Number.isInteger(item.sourcePage) && item.sourcePage > 0, `${item.id}: source page remains available`);
         assert.equal(item.source, undefined, `${item.id}: no original image reference`);
         assert.equal(await page.locator('#source').isVisible(), false, `${item.id}: original image button is hidden`);
       } else if (item.source) {
@@ -133,8 +134,8 @@ try {
     await select(meta.order[0]);
     await page.screenshot({path: join(output, 'desktop-initial.png'), fullPage: true});
     results.push({name: 'catalog size', count: meta.entries.length, passed: true});
-    if (meta.entries.length === 64) {
-      results.push({name: 'built-in entries keep page references and hide original images', count: meta.entries.length, passed: true});
+    if (meta.entries.length === 65) {
+      results.push({name: 'source entries keep page references; supplemental In and all entries omit original images', count: meta.entries.length, passed: true});
     } else if (checkedSources.size) {
       results.push({name: 'optional reference image loads', count: checkedSources.size, passed: true});
     }
@@ -144,7 +145,7 @@ try {
     await open();
     const sections = await page.locator('#builtInData').evaluate(node => JSON.parse(node.textContent).sections);
     assert.deepEqual(sections.map(section => [section.id, section.lessonIds.length]), [
-      ['routes', 10], ['offensive-formations', 40], ['run-plays', 9], ['defense', 5],
+      ['routes', 11], ['offensive-formations', 40], ['run-plays', 9], ['defense', 5],
     ]);
     const sectionNode = id => page.locator(`#catalog details.catalog-section[data-catalog-section="${id}"]`);
     assert.equal(await page.locator('#catalog > details.catalog-section').count(), 4);
@@ -296,6 +297,9 @@ try {
     assert.equal(iEarly.Z, iStart.Z);
     assert.notEqual(iEarly.X, iStart.X);
     await select('route-post');
+    assert.equal(await page.locator('#teamPlan').isVisible(), true, 'basic route instructions are always visible');
+    assert.ok((await page.locator('#teamCooperation').textContent()).trim().length > 10);
+    await select('single-back-formation');
     assert.equal(await page.locator('#teamPlan').isVisible(), false, 'legacy lessons need no new fields');
     assert.equal(await page.locator('#playerCoaching').isVisible(), false);
     assert.equal(await page.locator('#sourceReferences').isVisible(), false);

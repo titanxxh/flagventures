@@ -1,126 +1,200 @@
-# UTF-8; display translations share the same routes and timing.
+# UTF-8; standard teaching diagrams share geometry and timing across languages.
 format: flag-lesson
 version: 1
 id: route-option
 kind: route
 title:
-  zh: 6 · 选择路线
+  zh: 6 · 内切回转向外
   en: OPTION
-summary: OPTION · 沿原图看前跑、斜切和回折。原书没有写明选择条件，要按教练说明练习。
+summary: OPTION · 本教材的 Option 指先像 Slant 那样内切，再停稳转身，横着跑向外侧；官网也称它为 Whip。
+teaching:
+  goal: 本教材的 Option 指先像 Slant 那样内切，再停稳转身，横着跑向外侧；官网也称它为 Whip。
+  cooperation: 你先向 QB 前方的中路移动，再向外侧接应。这里演示确定好的双变向，不会自动读防守、临时选一条路。
+  cue: 先斜进，停稳转，往外走。
+  question: 内切之后，你接下来去中间还是边线？
 source:
-  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 4
-  note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  note: >-
+    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。此图按定义重新绘制，统一 X 和 QB 起点，并非原 PDF
+    路线描摹。全场轮廓不按真实比赛比例；坐标、转折距离与动画秒数仅为教学示意，不是比赛码数、官方用时或传球时刻。
+  references:
+    - title: NFL FLAG · 路线树说明
+      url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
+      locator: OPTION
+      note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+    - title: NFL FLAG · 接球手训练
+      url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
+      locator: Whip / Option
+      note: 用于比较路线与核对名称，不把示例距离作为儿童训练标准。
 field:
-  width: 100
-  height: 55
+  width: 60
+  height: 100
   attackDirection: up
-  lineOfScrimmageY: 31.513458
+  lineOfScrimmageY: 74
 players:
   - id: X
     team: offense
     at:
-      - 15.153549
-      - 33.644105
+      - 16
+      - 74
     color: '#80d4ff'
+    name: 接球手 X
     label:
-      zh: 选择路线
+      zh: 内切回转向外
       en: OPTION
-      description: 沿原图看前跑、斜切和回折。原书没有写明选择条件，要按教练说明练习。
+      description: 本教材的 Option 指先像 Slant 那样内切，再停稳转身，横着跑向外侧；官网也称它为 Whip。
       basis: source
-      note: 英文名称由本页明确给出，中文为附件学习译文；X 是这里新增的示范球员编号。
+      note: 路线名称和动作含义依据 NFL FLAG 官网；起点、线段长度和动画节奏为本应用的教学设置。
     motion:
       type: path
       startAt: 0
       steps:
         - type: line
           to:
-            - 15.153455
-            - 32.574692
-          seconds: 0.337358
+            - 16
+            - 67
+          seconds: 2
         - type: line
           to:
-            - 15.192818
-            - 28.282718
-          seconds: 1.354006
+            - 24
+            - 59
+          seconds: 3
+        - type: pause
+          seconds: 1
         - type: line
           to:
-            - 23.154791
-            - 23.326932
-          seconds: 2.961317
-        - type: line
-          to:
-            - 22.948842
-            - 25.11095
-          seconds: 0.566535
-        - type: line
-          to:
-            - 22.704157
-            - 25.335887
-          seconds: 0.104924
-        - type: line
-          to:
-            - 9.244253
-            - 25.193663
-          seconds: 4.251935
-        - type: line
-          to:
-            - 7.902279
-            - 25.179406
-          seconds: 0.423925
+            - 8
+            - 59
+          seconds: 4
+    coaching:
+      cooperation: 你先向 QB 前方的中路移动，再向外侧接应。这里演示确定好的双变向，不会自动读防守、临时选一条路。
+      timing: 演示从 0 秒开始，10 秒走完；转折关键帧帮助记忆动作，没有规定开球后必须等待几秒。
+  - id: QB
+    team: offense
+    at:
+      - 30
+      - 83
+    color: '#ff9690'
+    name: 四分卫 QB
+    label:
+      zh: 四分卫位置参照
+      en: QB
+      description: 站在开球线后方中间，帮助辨认接球手相对 QB 的跑动方向；静止图标不代表比赛中 QB 必须不动。
+      basis: author
+      note: 为比较基础路线新增的教学站位，不是原 PDF 规定的 QB 位置。
+    motion:
+      type: still
+      note: 教学参照：保持图标原位，不演示真实 QB 的后撤、传球或跑动。
+    coaching:
+      cooperation: 观察 X 是向中间、边线还是深处移动；传球路线与传球时刻未在此图规定。
+      timing: 图标全程静止仅为定位参照，不表示真实比赛中的启动顺序。
 timeline:
   duration: 10
   basis: illustration
-  note: 已画出路线的球员在 0 秒同时开始、各用 10 秒走完。这只是读图教学节奏，不是原书规定的启动先后、跑速或交接球时序。
+  note: 动画总长 10 秒，只把动作先后拆开供教学；秒数、速度和转折距离不是官方规定。QB 静止为位置参照。
 keyframes:
   - id: start
     at: 0
     label: 起始站位
-    cue: 找到 X 的起点，用手指从起点沿路线慢慢往前画。
-  - id: early
-    at: 2.5
-    label: 观察前段
-    cue: 沿每个人已画出的路径看方向；没有路线的人后续动作未知。
-  - id: middle
-    at: 5.5
-    label: 观察中段
-    cue: 停住，比较你关注的人和队友分别在哪里。
+    cue: 找到开球线、左侧的 X 和后方的 QB。上方是进攻方向，场地中间是“内”。
+  - id: cut-in
+    at: 2
+    label: 先斜向内切
+    cue: 先按 Slant 的方向斜着进入中间。
+  - id: pivot
+    at: 5
+    label: 停稳并转身
+    cue: 这一秒停顿只为看清回转动作，不是规则规定的等待时间。
+  - id: cut-out
+    at: 6
+    label: 转向外侧
+    cue: 现在向外侧横跑，第二次变向开始。
   - id: end
     at: 10
-    label: 路线终点
-    cue: 说出「OPTION」，再不用动画，用手指画一遍这条路线。
+    label: 动作完成
+    cue: 说出 OPTION，按「先斜进，停稳转，往外走。」用手指画一遍。
 notes:
-  - 这是原路线树中这一条路径的单独展示；保持原图方向和相对位置，没有按标准距离重画。
-  - OPTION 原图没有说明选择条件；这里只沿已画出的线路读图，不增加比赛分支或正确答案。
+  - 全场示意：X 固定从左侧开球线起跑，QB 位于开球线后方中间。这样可比较每条路线的“内、外、深、回身”；不是完整的五人阵型。
+  - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。真实路线深度和传接球时机应按球队教练安排。
+  - Option 这个名字在不同球队可能指按防守作选择的路线；本条只演示 NFL FLAG 这份教材中称为 Option / Whip 的回转跑法，不推断额外分支。
 translations:
   en:
-    title.zh: OPTION
     summary: >-
-      OPTION · Follow the forward run, diagonal cut and return in the diagram. It does not specify a decision
-      condition; follow your coach in practice.
-    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+      OPTION · In this playbook, Option starts with a slant inside, then stops and pivots to run outside; the
+      official guide also calls it Whip.
+    title.zh: 6 · OPTION
+    source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates are not
-      actual yards.
-    timeline.note: >-
-      Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
-      route and is illustrative, not official start order, equal player speeds or handoff timing.
+      Names and original numbering are retained from the PDF; explanations are supplemented from NFL FLAG.
+      This diagram is newly drawn from route definitions with shared X and QB starting positions, not traced
+      from the PDF. The full-field outline is not to regulation scale; coordinates, cut depths and animation
+      seconds are teaching choices, not game yardage, official timing or throw times.
+    source.references.0.title: NFL FLAG · Route tree guide
+    source.references.0.locator: OPTION
+    source.references.0.note: >-
+      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
+      adaptations.
+    source.references.1.title: NFL FLAG · Wide receiver drills
+    source.references.1.locator: Whip / Option
+    source.references.1.note: >-
+      Used to compare routes and check terminology, without treating example distances as requirements for
+      children.
     notes.0: >-
-      This isolates one route from the route tree, preserving its direction and relative position without
-      imposing standard distances.
+      Full-field teaching view: X starts on the left of the line of scrimmage, with QB behind the line near
+      the middle. The shared setup makes inside, outside, deep and return movements comparable; it is not a
+      full five-player formation.
     notes.1: >-
-      The OPTION diagram gives no decision condition. This follows its drawn path without adding game branches
-      or a correct answer.
+      The stationary QB is a teaching reference. Snapping, passing, dropbacks and defense are not animated.
+      Your coach sets actual route depths and passing timing.
+    notes.2: >-
+      Option can mean a coverage-based choice in other playbooks. This lesson only shows the Option / Whip
+      movement described in this NFL FLAG guide; it does not infer extra branches.
+    teaching.goal: >-
+      In this playbook, Option starts with a slant inside, then stops and pivots to run outside; the official
+      guide also calls it Whip.
+    teaching.cooperation: >-
+      Move toward the middle ahead of the QB, then offer an outside target. This demonstrates a planned double
+      move, not an automatic choice based on coverage.
+    teaching.cue: Slant in, plant and pivot, go out.
+    teaching.question: After the inside cut, do you continue to the middle or turn toward the sideline?
+    players.X.name: Receiver X
     players.X.label.zh: OPTION
     players.X.label.description: >-
-      Follow the forward run, diagonal cut and return in the diagram. It does not specify a decision
-      condition; follow your coach in practice.
-    players.X.label.note: The English route name is printed in the source. X is an added demonstration-player ID.
+      In this playbook, Option starts with a slant inside, then stops and pivots to run outside; the official
+      guide also calls it Whip.
+    players.X.label.note: >-
+      The route name and movement follow the NFL FLAG guide; starting positions, segment lengths and animation
+      timing are teaching choices.
+    players.X.coaching.cooperation: >-
+      Move toward the middle ahead of the QB, then offer an outside target. This demonstrates a planned double
+      move, not an automatic choice based on coverage.
+    players.X.coaching.timing: >-
+      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
+      delay after the snap.
+    players.QB.name: Quarterback QB
+    players.QB.label.zh: Quarterback reference
+    players.QB.label.description: >-
+      Shown behind the line near the middle to clarify the receiver’s movement relative to QB. The stationary
+      marker does not require a real QB to stand still.
+    players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
+    players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
+    players.QB.coaching.cooperation: >-
+      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and release time
+      are not specified.
+    players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
+    timeline.note: >-
+      The ten-second animation separates movement stages for teaching. Seconds, speed and cut depths are not
+      official requirements. QB stays fixed as a positional reference.
     keyframes.start.label: Starting positions
-    keyframes.start.cue: Find X’s start and trace the route with a finger.
-    keyframes.early.label: Early movement
-    keyframes.early.cue: Follow the direction of the first part of the route.
-    keyframes.middle.label: Mid-route check
-    keyframes.middle.cue: Pause and point to the next part of the route.
-    keyframes.end.label: Route endpoints
-    keyframes.end.cue: Say “OPTION”, then draw the route with your finger without watching the animation.
+    keyframes.start.cue: >-
+      Find the line of scrimmage, X on the left and QB behind. The attack goes upward; inside means toward the
+      middle.
+    keyframes.cut-in.label: First cut inside
+    keyframes.cut-in.cue: Begin with a diagonal inside cut like Slant.
+    keyframes.pivot.label: Plant and pivot
+    keyframes.pivot.cue: This one-second pause makes the pivot visible; it is not a required waiting time.
+    keyframes.cut-out.label: Break outside
+    keyframes.cut-out.cue: Now break sideways toward the outside.
+    keyframes.end.label: Route complete
+    keyframes.end.cue: 'Say OPTION, then trace the route: “Slant in, plant and pivot, go out.”'

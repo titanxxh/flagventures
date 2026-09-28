@@ -1,31 +1,28 @@
 # UTF-8; standard teaching diagrams share geometry and timing across languages.
 format: flag-lesson
 version: 1
-id: route-slant
+id: route-in
 kind: route
 title:
-  zh: 1 · 短斜内切
-  en: SLANT
-summary: SLANT · 先短直跑，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
+  zh: 补充 · 向内横切
+  en: IN / SQUARE IN
+summary: IN / SQUARE IN · 先直跑，再转约 90° 向场地中间横跑；转向后与开球线大致平行。Slant 则是较早斜切约 45°，仍继续向前。
 teaching:
-  goal: 先短直跑，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
-  cooperation: 你从 QB 左前方朝中路斜跑，为 QB 提供内侧接球方向。“向内”指向场地中间，不是跑回 QB 脚下。
-  cue: 短短直跑，斜着进中间。
-  question: Slant 转弯以后还在往前跑吗？In 转弯后又是什么方向？
+  goal: 先直跑，再转约 90° 向场地中间横跑；转向后与开球线大致平行。Slant 则是较早斜切约 45°，仍继续向前。
+  cooperation: 你从 QB 左前方横着进入中路，提供内侧接球方向。“向内”是靠近场地中间，不是向后跑回 QB。
+  cue: 先直跑，转直角，横进中间。
+  question: 看 Slant 和 In：哪一个斜着继续向前，哪一个转弯后横着跑？
 source:
-  title: NFL FLAG 路线教学 · 附件名称与官网说明
-  page: 3
-  note: >-
-    名称和原书编号保留自附件；跑法补充自 NFL FLAG 官网。此图按定义重新绘制，统一 X 和 QB 起点，并非原 PDF
-    路线描摹。全场轮廓不按真实比赛比例；坐标、转折距离与动画秒数仅为教学示意，不是比赛码数、官方用时或传球时刻。
+  title: NFL FLAG 官网 · 补充路线
+  note: 补充条目，来自 NFL FLAG 官网的 Square In 介绍；不属于附件路线树的原有编号。图形依据定义重新绘制，全场轮廓不按真实比赛比例。坐标、转折距离和秒数仅为教学示意，不是比赛码数或官方用时。
   references:
-    - title: NFL FLAG · 路线树说明
-      url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
-      locator: SLANT
-      note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
-    - title: NFL FLAG · 接球手训练
+    - title: NFL FLAG · 接球手训练：Square In
       url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
-      locator: Slant / Square In
+      locator: Square In
+      note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+    - title: NFL FLAG · 路线树与战术
+      url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
+      locator: 基础路线树与 In 战术示例
       note: 用于比较路线与核对名称，不把示例距离作为儿童训练标准。
     - title: USA Football · 接球手摆脱技术
       url: https://blogs.usafootball.com/blog/7334/coaching-the-wide-receiver-separation-techniques
@@ -45,9 +42,9 @@ players:
     color: '#80d4ff'
     name: 接球手 X
     label:
-      zh: 短斜内切
-      en: SLANT
-      description: 先短直跑，再以约 45° 斜向场地中间；斜跑时仍持续向前推进。
+      zh: 向内横切
+      en: IN / SQUARE IN
+      description: 先直跑，再转约 90° 向场地中间横跑；转向后与开球线大致平行。Slant 则是较早斜切约 45°，仍继续向前。
       basis: source
       note: 路线名称和动作含义依据 NFL FLAG 官网；起点、线段长度和动画节奏为本应用的教学设置。
     motion:
@@ -57,15 +54,15 @@ players:
         - type: line
           to:
             - 16
-            - 66
-          seconds: 2
+            - 56
+          seconds: 5
         - type: line
           to:
-            - 34
-            - 48
-          seconds: 8
+            - 38
+            - 56
+          seconds: 5
     coaching:
-      cooperation: 你从 QB 左前方朝中路斜跑，为 QB 提供内侧接球方向。“向内”指向场地中间，不是跑回 QB 脚下。
+      cooperation: 你从 QB 左前方横着进入中路，提供内侧接球方向。“向内”是靠近场地中间，不是向后跑回 QB。
       timing: 演示从 0 秒开始，10 秒走完；转折关键帧帮助记忆动作，没有规定开球后必须等待几秒。
   - id: QB
     team: offense
@@ -96,34 +93,36 @@ keyframes:
     label: 起始站位
     cue: 找到开球线、左侧的 X 和后方的 QB。上方是进攻方向，场地中间是“内”。
   - id: cut
-    at: 2
-    label: 斜向内切
-    cue: 到这里斜切约 45°；与 In 的直角横切作比较。
+    at: 5
+    label: 向内直角转弯
+    cue: 到这里转约 90° 向内横跑；对照 Slant 的斜线。
   - id: end
     at: 10
     label: 动作完成
-    cue: 说出 SLANT，按「短短直跑，斜着进中间。」用手指画一遍。
+    cue: 说出 IN / SQUARE IN，按「先直跑，转直角，横进中间。」用手指画一遍。
 notes:
   - 全场示意：X 固定从左侧开球线起跑，QB 位于开球线后方中间。这样可比较每条路线的“内、外、深、回身”；不是完整的五人阵型。
   - QB 的静止站位只是教学参照；这里不演示开球、传球、后撤步或防守。真实路线深度和传接球时机应按球队教练安排。
   - Slant（斜内切）与 In / Square In（向内横切）不是同一条路线：都往中间，但斜切与直角横切不同。球队也可能把向内横切称为 Dig，具体深度和叫法以队内定义为准。
+  - 附件的路线树只列出十条示例，没列 In 并不等于没有这种跑法；本条独立补充，不新增或替换原书编号。
 translations:
   en:
-    summary: SLANT · Take a short straight stem, then cut roughly 45° toward the middle while continuing upfield.
-    title.zh: 1 · SLANT
-    source.title: NFL FLAG route lesson · PDF names and official explanations
+    summary: >-
+      IN / SQUARE IN · Run straight, then cut about 90° toward the middle, roughly parallel to the line of
+      scrimmage. Slant cuts diagonally about 45° earlier and keeps gaining depth.
+    title.zh: Supplement · IN / SQUARE IN
+    source.title: NFL FLAG official guide · supplementary route
     source.note: >-
-      Names and original numbering are retained from the PDF; explanations are supplemented from NFL FLAG.
-      This diagram is newly drawn from route definitions with shared X and QB starting positions, not traced
-      from the PDF. The full-field outline is not to regulation scale; coordinates, cut depths and animation
-      seconds are teaching choices, not game yardage, official timing or throw times.
-    source.references.0.title: NFL FLAG · Route tree guide
-    source.references.0.locator: SLANT
+      Supplementary lesson based on NFL FLAG’s Square In description, outside the PDF’s numbered route tree.
+      The diagram is newly drawn from the definition; the full-field outline is not to regulation scale.
+      Coordinates, cut depths and seconds are illustrative, not game yardage or official timing.
+    source.references.0.title: 'NFL FLAG · Wide receiver drills: Square In'
+    source.references.0.locator: Square In
     source.references.0.note: >-
       Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
       adaptations.
-    source.references.1.title: NFL FLAG · Wide receiver drills
-    source.references.1.locator: Slant / Square In
+    source.references.1.title: NFL FLAG · Route tree and plays
+    source.references.1.locator: Route tree and In play examples
     source.references.1.note: >-
       Used to compare routes and check terminology, without treating example distances as requirements for
       children.
@@ -141,21 +140,28 @@ translations:
       Slant and In / Square In are different routes: both go inside, but one angles diagonally and the other
       makes a square cut. Teams may also use Dig for an in-breaking route; agree on depth and terminology with
       your coach.
-    teaching.goal: Take a short straight stem, then cut roughly 45° toward the middle while continuing upfield.
+    notes.3: >-
+      The PDF route tree lists ten examples. Omitting In does not mean the route does not exist; this separate
+      supplement does not add or replace an original number.
+    teaching.goal: >-
+      Run straight, then cut about 90° toward the middle, roughly parallel to the line of scrimmage. Slant
+      cuts diagonally about 45° earlier and keeps gaining depth.
     teaching.cooperation: >-
-      From ahead and left of the QB, angle toward the middle to offer an inside target. Inside means toward
-      the field center, not back to the QB’s feet.
-    teaching.cue: Short stem, diagonal to the middle.
-    teaching.question: Does Slant keep moving upfield after the cut? Which way does In go after its cut?
+      From ahead and left of the QB, cross toward the middle to offer an inside target. Inside means toward
+      the field center, not backward toward the QB.
+    teaching.cue: Straight, square turn, across the middle.
+    teaching.question: 'Compare Slant and In: which keeps moving diagonally upfield, and which runs sideways after the cut?'
     players.X.name: Receiver X
-    players.X.label.zh: SLANT
-    players.X.label.description: Take a short straight stem, then cut roughly 45° toward the middle while continuing upfield.
+    players.X.label.zh: IN / SQUARE IN
+    players.X.label.description: >-
+      Run straight, then cut about 90° toward the middle, roughly parallel to the line of scrimmage. Slant
+      cuts diagonally about 45° earlier and keeps gaining depth.
     players.X.label.note: >-
       The route name and movement follow the NFL FLAG guide; starting positions, segment lengths and animation
       timing are teaching choices.
     players.X.coaching.cooperation: >-
-      From ahead and left of the QB, angle toward the middle to offer an inside target. Inside means toward
-      the field center, not back to the QB’s feet.
+      From ahead and left of the QB, cross toward the middle to offer an inside target. Inside means toward
+      the field center, not backward toward the QB.
     players.X.coaching.timing: >-
       The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
       delay after the snap.
@@ -177,7 +183,7 @@ translations:
     keyframes.start.cue: >-
       Find the line of scrimmage, X on the left and QB behind. The attack goes upward; inside means toward the
       middle.
-    keyframes.cut.label: Diagonal cut
-    keyframes.cut.cue: Cut about 45° here. Compare this with In’s square turn.
+    keyframes.cut.label: Square cut inside
+    keyframes.cut.cue: Turn about 90° inside here and run sideways; compare this with Slant’s diagonal.
     keyframes.end.label: Route complete
-    keyframes.end.cue: 'Say SLANT, then trace the route: “Short stem, diagonal to the middle.”'
+    keyframes.end.cue: 'Say IN / SQUARE IN, then trace the route: “Straight, square turn, across the middle.”'

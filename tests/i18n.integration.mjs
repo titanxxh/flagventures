@@ -52,5 +52,5 @@ try {
  // Storage restrictions must not prevent using the app.
  const blocked=await context.newPage();await blocked.addInitScript(()=>{Object.defineProperty(Storage.prototype,'getItem',{value(){throw new Error('blocked');}});Object.defineProperty(Storage.prototype,'setItem',{value(){throw new Error('blocked');}});});
  await blocked.goto(url);await blocked.selectOption('#language','en');assert.equal(await blocked.locator('html').getAttribute('lang'),'en');
- console.log('PASS English coverage for all 64 lessons; language/state persistence; bilingual export; import errors; narrow layout; blocked storage; offline runtime');
+ console.log('PASS English coverage for all 65 lessons; language/state persistence; bilingual export; import errors; narrow layout; blocked storage; offline runtime');
 } finally {await browser.close();}

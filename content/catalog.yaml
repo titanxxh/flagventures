@@ -25,6 +25,8 @@ sections:
         file: lessons/route-post-corner.yaml
       - id: route-chair
         file: lessons/route-chair.yaml
+      - id: route-in
+        file: lessons/route-in.yaml
     titleEn: Basic routes
   - id: offensive-formations
     title: 进攻阵型与战术

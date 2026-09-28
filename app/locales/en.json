@@ -242,5 +242,15 @@
   "章节 {0}.lessonIds": "section {0}.lessonIds",
   "{0}.{1}.第 {2} 段": "{0}.{1}.segment {2}",
   "{0}.边界": "{0}.boundary",
-  "路线": "route"
+  "路线": "route",
+  "这条路线怎么跑": "How to run this route",
+  "全场示意 · 距离与时间用于教学": "Full field · Distance and timing are illustrative",
+  "进攻端区": "Attacking end zone",
+  "己方端区": "Own end zone",
+  "场地中间": "Field middle",
+  "中线": "Midfield",
+  "边线": "Sideline",
+  "传球参照": "Passing reference",
+  "恢复内置教学内容，包括原手册与补充路线。": "Restore the built-in playbook and supplemental routes.",
+  "向内＝朝场地中间；向外＝朝边线。QB 是传球参照，“向内”不是跑回 QB 所在的位置。": "In means toward the middle; out means toward the sideline. QB is the passing reference, not the destination of an inward route."
 }

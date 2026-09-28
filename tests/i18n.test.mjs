@@ -6,7 +6,7 @@ import {setLanguage,t} from '../app/i18n.js';
 import {validateLesson} from '../app/validation.js';
 import {getScene,getRoutes} from '../app/scene.js';
 const pack=JSON.parse(readFileSync('content/default.flagbook.json','utf8'));
-test('all 64 lessons translate every display field without changing routes, timing or canonical data',()=>{
+test('all 65 lessons translate every display field without changing routes, timing or canonical data',()=>{
  const before=JSON.stringify(pack);
  for(const lesson of pack.lessons){
   const en=localizeLesson(lesson,'en');
@@ -33,9 +33,9 @@ test('custom lessons can omit English; only presentation fields accept translati
 });
 test('UI interpolation and import validation use selected language',()=>{
  setLanguage('en');
- try{assert.equal(t`${64} 个教学条目 · 本地可用`,'64 lessons · Available offline');
+ try{assert.equal(t`${65} 个教学条目 · 本地可用`,'65 lessons · Available offline');
  const lesson=structuredClone(pack.lessons[0]);delete lesson.title;
  assert.throws(()=>validateLesson(lesson,'bad.yaml'),/Required field is missing/);
  }finally{setLanguage('zh');}
- assert.equal(t`${64} 个教学条目 · 本地可用`,'64 个教学条目 · 本地可用');
+ assert.equal(t`${65} 个教学条目 · 本地可用`,'65 个教学条目 · 本地可用');
 });
