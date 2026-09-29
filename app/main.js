@@ -497,14 +497,16 @@ function buildBallActions(field, unit) {
     const group = svg('g', {class: 'ball-action', 'data-ball-action': event.id, 'data-action-type': event.type,
       'data-phase': 'preview', 'data-event-at': event.at, 'data-event-position': JSON.stringify([x, y]), role: 'button', tabindex: 0});
     const leader = svg('path', {class: 'ball-action-leader', fill: 'none', 'stroke-width': .2 * unit, 'pointer-events': 'none'});
-    // A true exchange gets an open circle at the meeting point. Fake actions have
-    // only a location dot and a FAKE label: neither creates a ball-flight arrow.
-    const pin = svg('circle', {class: 'ball-action-pin', cx: x, cy: y, r: (event.type === 'handoff' ? 3.2 : .55) * unit,
-      fill: event.type === 'handoff' ? 'none' : '#ffce92', stroke: '#ffce92', 'stroke-width': .35 * unit, 'pointer-events': 'none'});
+    // Only a true exchange gets an open circle. A fake uses a label and leader;
+    // leave its meeting point clear so no location dot covers a player's letter.
+    const pin = event.type === 'handoff' ? svg('circle', {class: 'ball-action-pin', cx: x, cy: y, r: 3.2 * unit,
+      fill: 'none', stroke: '#ffce92', 'stroke-width': .35 * unit, 'pointer-events': 'none'}) : undefined;
     const card = svg('rect', {class: 'ball-action-card', rx: 1.1 * unit, 'stroke-width': .22 * unit});
     const title = svg('text', {class: 'ball-action-title', 'font-size': 2.25 * unit, 'font-weight': 700}, label);
     const status = svg('text', {class: 'ball-action-status', 'font-size': 1.7 * unit});
-    group.append(leader, pin, card, title, status); field.append(group);
+    group.append(leader);
+    if (pin) group.append(pin);
+    group.append(card, title, status); field.append(group);
     let measuredWidth = title.getBBox().width;
     for (const value of ['待演示', '此刻', '已发生']) {
       text(status, `${event.at.toFixed(1)} s · ${t(value)}`);
