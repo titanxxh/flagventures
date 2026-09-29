@@ -428,6 +428,7 @@ function buildField() {
     group.append(svg('circle', { r: 2.7 * unit, fill: 'transparent' }));
     field.append(group); fieldNodes.players.set(player.id, group);
   }
+  buildBallActions(field, unit);
   if (ballScenario) {
     const ball = svg('g', {'data-ball': '', role: 'img', 'pointer-events': 'none'});
     // The same small offset is used for held balls and both flight endpoints.
@@ -473,11 +474,87 @@ function buildBallPaths(field, unit) {
   });
 }
 
+function buildBallActions(field, unit) {
+  if (!ballScenario) return;
+  const types = {'handoff': '交递', 'fake-handoff': '假交', 'pump-fake': '假传'};
+  const actions = ballScenario.events.filter(event => types[event.type]).map(event => {
+    const position = id => positionAt(lesson.players.find(player => player.id === id), event.at, state.choices);
+    const from = position(event.from);
+    const point = event.type === 'pump-fake' ? from : from.map((value, axis) => (value + position(event.to)[axis]) / 2);
+    const next = ballScenario.events.find(item => item.at > event.at);
+    const endAt = Math.min(event.endAt ?? event.at + .6, next?.at ?? lesson.timeline.duration);
+    return {event, point, endAt};
+  });
+  const placed = [];
+  const {width, height} = lesson.field;
+  const overlap = (a, b) => Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x))
+    * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
+  const obstacles = actions.map(({point: [x, y]}) => ({x: x - 4 * unit, y: y - 4 * unit, width: 8 * unit, height: 8 * unit}));
+  for (const player of lesson.players) obstacles.push({x: player.at[0] - 3 * unit, y: player.at[1] - 3 * unit, width: 6 * unit, height: 6 * unit});
+  fieldNodes.ballActions = actions.map(({event, point: [x, y], endAt}, index) => {
+    const participants = event.type === 'handoff' ? `${event.from} → ${event.to}` : event.to ? `${event.from} / ${event.to}` : event.from;
+    const label = `${index + 1} · ${t(types[event.type])} ${participants}`;
+    const group = svg('g', {class: 'ball-action', 'data-ball-action': event.id, 'data-action-type': event.type,
+      'data-phase': 'preview', 'data-event-at': event.at, 'data-event-position': JSON.stringify([x, y]), role: 'button', tabindex: 0});
+    const leader = svg('path', {class: 'ball-action-leader', fill: 'none', 'stroke-width': .2 * unit, 'pointer-events': 'none'});
+    // A true exchange gets an open circle at the meeting point. Fake actions have
+    // only a location dot and a FAKE label: neither creates a ball-flight arrow.
+    const pin = svg('circle', {class: 'ball-action-pin', cx: x, cy: y, r: (event.type === 'handoff' ? 3.2 : .55) * unit,
+      fill: event.type === 'handoff' ? 'none' : '#ffce92', stroke: '#ffce92', 'stroke-width': .35 * unit, 'pointer-events': 'none'});
+    const card = svg('rect', {class: 'ball-action-card', rx: 1.1 * unit, 'stroke-width': .22 * unit});
+    const title = svg('text', {class: 'ball-action-title', 'font-size': 2.25 * unit, 'font-weight': 700}, label);
+    const status = svg('text', {class: 'ball-action-status', 'font-size': 1.7 * unit});
+    group.append(leader, pin, card, title, status); field.append(group);
+    let measuredWidth = title.getBBox().width;
+    for (const value of ['待演示', '此刻', '已发生']) {
+      text(status, `${event.at.toFixed(1)} s · ${t(value)}`);
+      measuredWidth = Math.max(measuredWidth, status.getBBox().width);
+    }
+    const box = {width: Math.min(measuredWidth + 2.8 * unit, width * .48), height: 7.7 * unit};
+    // Imported player IDs may be long. Keep the full identifier accessible while
+    // fitting the printed label within its callout instead of covering the field.
+    const textWidth = box.width - 2.8 * unit;
+    if (title.getBBox().width > textWidth) {
+      title.setAttribute('textLength', textWidth); title.setAttribute('lengthAdjust', 'spacingAndGlyphs');
+    }
+    // Keep callouts away from the meeting points and from one another. Their
+    // leaders stay anchored while players move; layout is stable during seeking.
+    const candidates = [];
+    for (const offset of [0, -9, 9, -18, 18, -27, 27]) {
+      candidates.push([x - box.width - 5.2 * unit, y - box.height / 2 + offset * unit]);
+      candidates.push([x + 5.2 * unit, y - box.height / 2 + offset * unit]);
+    }
+    candidates.push([x - box.width / 2, y - box.height - 5.2 * unit], [x - box.width / 2, y + 5.2 * unit]);
+    const scored = candidates.map(([cx, cy]) => {
+      const candidate = {...box, x: Math.max(unit, Math.min(width - box.width - unit, cx)), y: Math.max(unit, Math.min(height - box.height - unit, cy))};
+      const padded = {...candidate, x: candidate.x - unit, y: candidate.y - unit, width: box.width + 2 * unit, height: box.height + 2 * unit};
+      const distance = Math.hypot(candidate.x + box.width / 2 - x, candidate.y + box.height / 2 - y) / unit;
+      const score = distance + placed.reduce((sum, other) => sum + overlap(padded, other) / unit ** 2 * 100, 0)
+        + obstacles.reduce((sum, other) => sum + overlap(padded, other) / unit ** 2 * 5, 0);
+      return {candidate, score};
+    }).sort((a, b) => a.score - b.score);
+    const position = scored[0].candidate;
+    placed.push(position);
+    for (const [key, value] of Object.entries(position)) card.setAttribute(key, value);
+    title.setAttribute('x', position.x + 1.4 * unit); title.setAttribute('y', position.y + 3.05 * unit);
+    status.setAttribute('x', position.x + 1.4 * unit); status.setAttribute('y', position.y + 5.95 * unit);
+    const end = [Math.max(position.x, Math.min(position.x + box.width, x)), Math.max(position.y, Math.min(position.y + box.height, y))];
+    const length = Math.hypot(end[0] - x, end[1] - y);
+    const ratio = length > 0 ? Math.min(3.2 * unit / length, 1) : 0;
+    leader.setAttribute('d', `M${x + (end[0] - x) * ratio} ${y + (end[1] - y) * ratio}L${end.join(' ')}`);
+    group.addEventListener('click', () => seek(event.at));
+    group.addEventListener('keydown', input => {
+      if (input.key === 'Enter' || input.key === ' ') { input.preventDefault(); seek(event.at); }
+    });
+    return {event, endAt, label, node: group, status};
+  });
+}
+
 function renderBall(time) {
   if (!ballScenario) return;
   const ball = getBallState(lesson, time, state.choices, ballScenario);
   const event = ball.event;
-  const fake = event && ['fake-handoff', 'pump-fake'].includes(event.type) && time <= (event.endAt ?? event.at + .6);
+  const fake = event && ['fake-handoff', 'pump-fake'].includes(event.type) && time < (event.endAt ?? event.at + .6);
   const status = ball.state === 'flight'
     ? (event.type === 'snap' ? t`开球：${event.from} → ${event.to}` : t`传球：${event.from} → ${event.to}`)
     : fake ? t`假动作 · 球仍在 ${ball.owner} 手里` : t`球在 ${ball.owner} 手里`;
@@ -501,6 +578,13 @@ function renderBall(time) {
     const points = carry.points.filter(item => item.time < end).map(item => item.point);
     if (time > carry.at) points.push(positionAt(carry.player, end, state.choices));
     carry.node.setAttribute('d', points.length > 1 ? points.map((point, index) => `${index ? 'L' : 'M'}${point.join(' ')}`).join(' ') : '');
+  }
+  for (const action of fieldNodes.ballActions) {
+    const phase = time < action.event.at ? 'preview' : time < action.endAt ? 'active' : 'complete';
+    action.node.dataset.phase = phase;
+    const status = phase === 'preview' ? '待演示' : phase === 'active' ? '此刻' : '已发生';
+    text(action.status, `${action.event.at.toFixed(1)} s · ${t(status)}`);
+    action.node.setAttribute('aria-label', t`${action.label}，${status}，点击暂停到 ${action.event.at} 秒`);
   }
 }
 function render() {
