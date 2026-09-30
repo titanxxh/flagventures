@@ -1,0 +1,427 @@
+# Editable bilingual five-player teaching adaptation. See source for its exact scope.
+format: flag-lesson
+version: 1
+id: concept-stack-90
+kind: offense
+title:
+  en: Stack 90 Degrees
+  zh: Stack 90 Degrees · 叠列直角展开
+teaching:
+  goal: 从前后叠列展开成不同方向。
+  cooperation: 右侧叠列的 Y、Z 分别向内和向外横切，左侧 X 跑 Corner，C 短斜接应。
+  cue: 先分开，再找 QB。
+  question: 叠列两人怎样避免转向后跑到一起？
+source:
+  references:
+    - url: >-
+        https://assets.usafootball.com/documents/rookietackle/resources/ADM-Playbook-Flip-Charts-Flag-Spread-Trips-Stack_Flag.pdf#page=23
+      role: primary
+      kind: diagram
+      title: USA Football · Stack 90 Degrees
+      publisher: USA Football
+      locator: PDF 第 23 页／印刷第 22 页 · 下方 Stack 90 Degrees
+      scope: 五人站位与线路方向；不是完整时序或传球选择规定。
+  title: USA Football · Stack 90 Degrees
+  note: 已核对第 23 页下方五人图；叠列的具体前后角色指派仍有连线遮挡歧义。
+  adaptation: 本课将来源配合整理为完整五人教学：叠列 Y 向内、Z 向外及其错位由本项目安排。示意码数、配速、启动先后、QB 原地传球、四种传球结局与停点均为教学安排，不是官方固定读球顺序。
+field:
+  width: 30
+  height: 36
+  unit: yard
+  attackDirection: up
+  lineOfScrimmageY: 28
+players:
+  - id: Q
+    team: offense
+    at:
+      - 15
+      - 33
+    color: '#ff9690'
+    label:
+      en: QB
+      basis: author
+      zh: 四分卫
+      description: 接到开球后留在线后，按当前选择传给队友；原地传球是本课教学安排。
+    motion:
+      type: still
+      note: 本例安排 QB 留在原地传球，方便比较队友接应；不是来源规定。
+    coaching:
+      cooperation: 观察队友提供的不同空间，四个选项用于分别讲解，不代表固定阅读顺序。
+      timing: 0–0.35 秒接开球，传球时刻随所选目标变化；秒数不是比赛规定。
+  - id: C
+    team: offense
+    at:
+      - 15
+      - 28
+    color: '#fff1d5'
+    label:
+      en: Short diagonal
+      basis: author
+      zh: 短斜接应
+      description: 开球后向右前方短斜跑，深约 2 码。
+      note: 核心路线关系来自本课原始资料；角色、精确坐标与配速为教学整理。
+    motion:
+      type: path
+      startAt: 0.55
+      steps:
+        - type: line
+          to:
+            - 19
+            - 26
+          seconds: 5
+        - type: pause
+          seconds: 4.45
+          facePlayer: Q
+    coaching:
+      cooperation: 留在叠列横切下方，给 QB 一个近距离选择。
+      timing: 示范从 0.55 秒启动；回放秒数、终点停留仅方便讲解，不能当作固定比赛节奏。
+  - id: X
+    team: offense
+    at:
+      - 9
+      - 28
+    color: '#80d4ff'
+    label:
+      en: Corner
+      basis: author
+      zh: 深斜外切
+      description: 先直跑约 5 码，再斜向左边线的前方；这是向外的 Corner，不是向中间的 Post。
+      note: 核心路线关系来自本课原始资料；角色、精确坐标与配速为教学整理。
+    motion:
+      type: path
+      startAt: 0.55
+      steps:
+        - type: line
+          to:
+            - 9
+            - 23
+          seconds: 3
+        - type: line
+          to:
+            - 3
+            - 17
+          seconds: 5
+        - type: pause
+          seconds: 1.45
+          facePlayer: Q
+    coaching:
+      cooperation: 独占左侧外切通道，与右侧叠列分开。
+      timing: 示范从 0.55 秒启动；回放秒数、终点停留仅方便讲解，不能当作固定比赛节奏。
+  - id: 'Y'
+    team: offense
+    at:
+      - 23
+      - 28
+    color: '#c7e8a2'
+    label:
+      en: In
+      basis: author
+      zh: 向内横切
+      description: 先跑到开球线前 5 码，再直角向左横切；本例安排前排 Y 向内。
+      note: 核心路线关系来自本课原始资料；角色、精确坐标与配速为教学整理。
+    motion:
+      type: path
+      startAt: 0.55
+      steps:
+        - type: line
+          to:
+            - 23
+            - 23
+          seconds: 3
+        - type: line
+          to:
+            - 16
+            - 23
+          seconds: 4
+        - type: pause
+          seconds: 2.45
+          facePlayer: Q
+    coaching:
+      cooperation: 先转向内侧，让身后的 Z 稍后向外展开。
+      timing: 示范从 0.55 秒启动；回放秒数、终点停留仅方便讲解，不能当作固定比赛节奏。
+  - id: Z
+    team: offense
+    at:
+      - 23
+      - 31
+    color: '#ffc078'
+    label:
+      en: Out
+      basis: author
+      zh: 向外横切
+      description: 从后排出发，略向右错开，到开球线前约 5 码再直角向右；角色与错位是教学设定。
+      note: 核心路线关系来自本课原始资料；角色、精确坐标与配速为教学整理。
+    motion:
+      type: path
+      startAt: 0.55
+      steps:
+        - type: line
+          to:
+            - 24
+            - 23
+          seconds: 4.5
+        - type: line
+          to:
+            - 29
+            - 23
+          seconds: 3
+        - type: pause
+          seconds: 1.95
+          facePlayer: Q
+    coaching:
+      cooperation: 观察 Y 向内转后，留出间距向外跑，不挡住队友。
+      timing: 示范从 0.55 秒启动；回放秒数、终点停留仅方便讲解，不能当作固定比赛节奏。
+timeline:
+  duration: 10
+  basis: illustration
+  note: 10 秒展示完整路线。先开球，再启动；角色说明中的启动先后与间距均属教学安排。切换目标可比较不同传球窗口，没有规定 QB 必须按按钮顺序读球。
+keyframes:
+  - id: start
+    at: 0
+    label: 看站位
+    cue: 先找到 QB 和自己，再指出关键队友。
+  - id: separate
+    at: 2.55
+    label: 开始分开
+    cue: 先分开，再找 QB。
+  - id: cooperate
+    at: 4.7
+    label: 看配合空间
+    cue: 右侧叠列的 Y、Z 分别向内和向外横切，左侧 X 跑 Corner，C 短斜接应。
+  - id: end
+    at: 10
+    label: 回想全队
+    cue: 叠列两人怎样避免转向后跑到一起？
+notes:
+  - 按码绘制 30 × 36 码教学区域，不是整片比赛场地。约 5 码转向对应原图标线；其余码数为教学选择，实际练习与教练约定。
+  - 向内是向场地中间，向外是向边线；QB 是传球参照，不是每条内切路线必须跑到的位置。
+translations:
+  en:
+    title.zh: Stack 90 Degrees · Passing concept
+    summary: Stacked Y and Z break in and out on the right, X runs a left-side Corner, and C provides a short diagonal outlet.
+    teaching.goal: Separate a stacked alignment into different directions.
+    teaching.cooperation: Stacked Y and Z break in and out on the right, X runs a left-side Corner, and C provides a short diagonal outlet.
+    teaching.cue: Separate first, then find QB.
+    teaching.question: How do the stacked receivers keep their breaks apart?
+    source.title: USA Football · Stack 90 Degrees
+    source.note: >-
+      The five-player lower diagram on PDF page 23 was checked. Overlapping lines leave the exact front/back stack role
+      assignment ambiguous.
+    source.adaptation: >-
+      This lesson develops the source into a complete five-player teaching example. Assigning Y inside and Z outside,
+      with an offset, is an authored choice. Distances, pace, starts, a stationary QB, four passing outcomes and pauses
+      are teaching choices, not an official read order.
+    source.references.0.title: USA Football · Stack 90 Degrees
+    source.references.0.publisher: USA Football
+    source.references.0.locator: PDF page 23 / printed page 22 · lower Stack 90 Degrees diagram
+    source.references.0.scope: Five-player alignment and route directions, not complete timing or passing choices.
+    players.Q.label.zh: Quarterback
+    players.Q.label.description: Receive the snap and stay behind the line, passing to the selected teammate. Staying still is a teaching choice.
+    players.Q.coaching.cooperation: >-
+      Observe the different spaces receivers offer. The four examples are separate demonstrations, not a fixed read
+      order.
+    players.Q.coaching.timing: >-
+      Receive the snap at 0–0.35 seconds; throw timing varies with the selected target. Seconds are not game
+      requirements.
+    players.Q.motion.note: QB stays still in this example to help compare receivers; the source does not require this.
+    players.C.label.zh: Short diagonal
+    players.C.label.description: After snapping, run a short diagonal to the right, about 2 yards deep.
+    players.C.label.note: >-
+      The core route relationship follows this lesson’s source; roles, exact coordinates and pacing are teaching
+      adaptations.
+    players.C.coaching.cooperation: Stay underneath the stacked breaks and offer QB a close outlet.
+    players.C.coaching.timing: The example starts at 0.55 seconds; playback timing and the final pause aid explanation, not a fixed game cadence.
+    players.X.label.zh: Corner
+    players.X.label.description: >-
+      Run about 5 yards upfield, then break diagonally toward the left sideline. This is an outward Corner, not an
+      inward Post.
+    players.X.label.note: >-
+      The core route relationship follows this lesson’s source; roles, exact coordinates and pacing are teaching
+      adaptations.
+    players.X.coaching.cooperation: Use the left outside lane, separate from the right-side stack.
+    players.X.coaching.timing: The example starts at 0.55 seconds; playback timing and the final pause aid explanation, not a fixed game cadence.
+    players.Y.label.zh: In
+    players.Y.label.description: >-
+      Reach 5 yards beyond the line, then cut square left. This example assigns the front receiver Y to the inside
+      route.
+    players.Y.label.note: >-
+      The core route relationship follows this lesson’s source; roles, exact coordinates and pacing are teaching
+      adaptations.
+    players.Y.coaching.cooperation: Break inside first, leaving Z behind you to break outside later.
+    players.Y.coaching.timing: The example starts at 0.55 seconds; playback timing and the final pause aid explanation, not a fixed game cadence.
+    players.Z.label.zh: Out
+    players.Z.label.description: >-
+      Start behind Y, offset slightly right, then break square right about 5 yards beyond the line. Role assignment and
+      offset are teaching choices.
+    players.Z.label.note: >-
+      The core route relationship follows this lesson’s source; roles, exact coordinates and pacing are teaching
+      adaptations.
+    players.Z.coaching.cooperation: Keep space as Y turns in, then run outside without obstructing your teammate.
+    players.Z.coaching.timing: The example starts at 0.55 seconds; playback timing and the final pause aid explanation, not a fixed game cadence.
+    timeline.note: >-
+      The full routes run over a 10-second demonstration: snap first, then release. The starts and spacing identified in
+      the player notes are teaching choices. Switch targets to compare passing windows; button order is not a QB read
+      order.
+    keyframes.start.label: Alignment
+    keyframes.start.cue: Find QB and yourself, then identify the key teammate.
+    keyframes.separate.label: Start separating
+    keyframes.separate.cue: Separate first, then find QB.
+    keyframes.cooperate.label: See the passing spaces
+    keyframes.cooperate.cue: Stacked Y and Z break in and out on the right, X runs a left-side Corner, and C provides a short diagonal outlet.
+    keyframes.end.label: Recall the whole team
+    keyframes.end.cue: How do the stacked receivers keep their breaks apart?
+    ball.note: >-
+      All four passes are teaching examples, not an official target or QB read order. Only successful catches are
+      illustrated; seconds are not game timing.
+    ball.scenarios.pass-c.title: Pass to C
+    ball.scenarios.pass-c.note: Show C’s catch window while teammates retain their complete routes.
+    ball.scenarios.pass-c.events.snap.label: C snaps
+    ball.scenarios.pass-c.events.snap.endLabel: QB receives snap
+    ball.scenarios.pass-c.events.snap.cue: The ball travels from center to QB before receivers release.
+    ball.scenarios.pass-c.events.snap.endCue: QB now holds the ball; watch the teammates next.
+    ball.scenarios.pass-c.events.throw.label: QB throws to C
+    ball.scenarios.pass-c.events.throw.endLabel: C catches
+    ball.scenarios.pass-c.events.throw.cue: Watch the ball travel to where C will arrive.
+    ball.scenarios.pass-c.events.throw.endCue: C catches; the ball then follows the carrier.
+    ball.scenarios.pass-x.title: Pass to X
+    ball.scenarios.pass-x.note: Show X’s catch window while teammates retain their complete routes.
+    ball.scenarios.pass-x.events.snap.label: C snaps
+    ball.scenarios.pass-x.events.snap.endLabel: QB receives snap
+    ball.scenarios.pass-x.events.snap.cue: The ball travels from center to QB before receivers release.
+    ball.scenarios.pass-x.events.snap.endCue: QB now holds the ball; watch the teammates next.
+    ball.scenarios.pass-x.events.throw.label: QB throws to X
+    ball.scenarios.pass-x.events.throw.endLabel: X catches
+    ball.scenarios.pass-x.events.throw.cue: Watch the ball travel to where X will arrive.
+    ball.scenarios.pass-x.events.throw.endCue: X catches; the ball then follows the carrier.
+    ball.scenarios.pass-y.title: Pass to Y
+    ball.scenarios.pass-y.note: Show Y’s catch window while teammates retain their complete routes.
+    ball.scenarios.pass-y.events.snap.label: C snaps
+    ball.scenarios.pass-y.events.snap.endLabel: QB receives snap
+    ball.scenarios.pass-y.events.snap.cue: The ball travels from center to QB before receivers release.
+    ball.scenarios.pass-y.events.snap.endCue: QB now holds the ball; watch the teammates next.
+    ball.scenarios.pass-y.events.throw.label: QB throws to Y
+    ball.scenarios.pass-y.events.throw.endLabel: Y catches
+    ball.scenarios.pass-y.events.throw.cue: Watch the ball travel to where Y will arrive.
+    ball.scenarios.pass-y.events.throw.endCue: Y catches; the ball then follows the carrier.
+    ball.scenarios.pass-z.title: Pass to Z
+    ball.scenarios.pass-z.note: Show Z’s catch window while teammates retain their complete routes.
+    ball.scenarios.pass-z.events.snap.label: C snaps
+    ball.scenarios.pass-z.events.snap.endLabel: QB receives snap
+    ball.scenarios.pass-z.events.snap.cue: The ball travels from center to QB before receivers release.
+    ball.scenarios.pass-z.events.snap.endCue: QB now holds the ball; watch the teammates next.
+    ball.scenarios.pass-z.events.throw.label: QB throws to Z
+    ball.scenarios.pass-z.events.throw.endLabel: Z catches
+    ball.scenarios.pass-z.events.throw.cue: Watch the ball travel to where Z will arrive.
+    ball.scenarios.pass-z.events.throw.endCue: Z catches; the ball then follows the carrier.
+    notes.0: >-
+      A 30 × 36 yard teaching area, not the entire game field. The approximate 5-yard breaks follow the diagram
+      markings; other distances are teaching choices to agree with your coach.
+    notes.1: >-
+      Inside means toward the field middle; outside means toward a sideline. QB is a passing reference, not the
+      destination of every inward route.
+summary: 右侧叠列的 Y、Z 分别向内和向外横切，左侧 X 跑 Corner，C 短斜接应。
+ball:
+  initialOwner: C
+  defaultScenario: pass-x
+  scenarios:
+    - id: pass-c
+      basis: illustration
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球
+          endLabel: QB 接到开球
+          cue: 球从中锋来到 QB，接手随后展开。
+          endCue: QB 已持球；接下来观察队友。
+        - id: throw
+          type: pass
+          from: Q
+          to: C
+          at: 4.1
+          endAt: 4.8
+          label: QB 传给 C
+          endLabel: C 接球
+          cue: 看球飞向 C 将到达的位置。
+          endCue: C 接到球，球随后跟着持球者移动。
+      title: 传给 C
+      note: 选择 C 的接球窗口，其他队友仍跑完整路线。
+    - id: pass-x
+      basis: illustration
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球
+          endLabel: QB 接到开球
+          cue: 球从中锋来到 QB，接手随后展开。
+          endCue: QB 已持球；接下来观察队友。
+        - id: throw
+          type: pass
+          from: Q
+          to: X
+          at: 5.8
+          endAt: 6.5
+          label: QB 传给 X
+          endLabel: X 接球
+          cue: 看球飞向 X 将到达的位置。
+          endCue: X 接到球，球随后跟着持球者移动。
+      title: 传给 X
+      note: 选择 X 的接球窗口，其他队友仍跑完整路线。
+    - id: pass-y
+      basis: illustration
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球
+          endLabel: QB 接到开球
+          cue: 球从中锋来到 QB，接手随后展开。
+          endCue: QB 已持球；接下来观察队友。
+        - id: throw
+          type: pass
+          from: Q
+          to: 'Y'
+          at: 5.1
+          endAt: 5.8
+          label: QB 传给 Y
+          endLabel: Y 接球
+          cue: 看球飞向 Y 将到达的位置。
+          endCue: Y 接到球，球随后跟着持球者移动。
+      title: 传给 Y
+      note: 选择 Y 的接球窗口，其他队友仍跑完整路线。
+    - id: pass-z
+      basis: illustration
+      events:
+        - id: snap
+          type: snap
+          from: C
+          to: Q
+          at: 0
+          endAt: 0.35
+          label: C 开球
+          endLabel: QB 接到开球
+          cue: 球从中锋来到 QB，接手随后展开。
+          endCue: QB 已持球；接下来观察队友。
+        - id: throw
+          type: pass
+          from: Q
+          to: Z
+          at: 5.7
+          endAt: 6.4
+          label: QB 传给 Z
+          endLabel: Z 接球
+          cue: 看球飞向 Z 将到达的位置。
+          endCue: Z 接到球，球随后跟着持球者移动。
+      title: 传给 Z
+      note: 选择 Z 的接球窗口，其他队友仍跑完整路线。
+  note: 四种传球都是教学示例，不代表官网规定唯一目标或 QB 阅读顺序；只演示成功接球，秒数不是比赛用时。

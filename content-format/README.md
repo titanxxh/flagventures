@@ -2,7 +2,7 @@
 
 目标：**每个教学条目是一份 YAML 文本，同一套网页读取这些数据，画出站位、路线和职责，并按同一规则播放。** PDF 是可选的资料来源；条目没有 PDF、页码或原图时也能完整运行。
 
-内置的 64 个教学条目与导入内容均使用这套格式，经过相同的校验与渲染入口。[在线应用](https://titanxxh.github.io/flagventures/)和本地网页均保留全部条目；公开仓库与默认应用不包含原页图片，也不依赖 PDF。下文的来源图片字段供自行维护的内容包按需使用。
+内置的 71 个教学条目与导入内容均使用这套格式，经过相同的校验与渲染入口。[在线应用](https://titanxxh.github.io/flagventures/)和本地网页均保留全部条目；公开仓库与默认应用不包含原页图片，也不依赖 PDF。下文的来源图片字段供自行维护的内容包按需使用。
 
 ## 可直接查看的文件
 
@@ -45,7 +45,7 @@ YAML 便于加中文注释和逐行编辑；JSON 内容包便于可靠导出。�
 | `title.zh` / `title.en` | 中文标题与英文标题；英文可省略，自编内容不强求英文名 |
 | `summary` | 一两句中文讲解目标 |
 | `teaching` | 可省略的全队讲解：目标 `goal`、配合 `cooperation`、记忆口令 `cue`、提问 `question` |
-| `source` | 可省略的出处：`title`、可选 `page`、`note`、`references`、`referenceAsset`；`referenceAsset` 是内容包内的图片编号，不是磁盘路径 |
+| `source` | 可省略的出处、自编声明和教学改编：`title`、可选 `page`、`note`、`references`、`referenceAsset`；`referenceAsset` 是内容包内的图片编号，不是磁盘路径 |
 | `field` | 画布尺寸、进攻方向和可选开球线位置；可显式声明以码为单位 |
 | `routeGuide` | 基础路线的可选距离标注，引用球员动作段及距离依据 |
 | `players` | 稳定身份、起点、悬停说明与各自的动作 |
@@ -77,6 +77,49 @@ source:
 
 新增的讲解文字、参考标题、定位和说明均须为非空白短文本，每项最多 500 字符，URL 最多 2048 字符。字段内容按普通文字显示。参考链接、讲解与可选原页图片相互独立；有官网或视频说明也可以保留原 PDF 页码，说明不同资料各自支持的事实。
 
+### 原始出处、教学改编与旧文件
+
+这些是 v1 的可选扩展；未填写的旧文件继续有效。`source` 一旦填写仍需 `title`。
+
+- `source.authorship: self-authored`：作者明确声明自编，可不附链接。没有这个声明时，不能把缺出处自动当作自编。
+- `source.adaptation`：教学补充的具体说明；可与原始来源、自编声明同时存在。
+- 每条 `references` 可填 `role: primary | supporting`。`primary` 表示支持本条具体内容的原始资料，必须同时填写 `publisher`（作者／发布方）、`locator`（小节／PDF 文件页／视频时间）、`scope`（实际支持范围）及 `kind: diagram | explanation | concept`。
+- `supporting` 可使用上述类别或 `training | rules`，表示术语、训练或规则参考，不能代替战术原图出处。不填 `role` 的旧参考列入「未分类资料」，不会自动升级为原始依据。
+- 可选 `availability: unknown | unavailable` 记录已知情况；省略不表示已实时检查。已知失效仍保留引用并允许演示。
+- 没有原始资料且未声明自编时，显示「来源待补」。默认内置库要求有具体原始资料及教学改编说明；导入自编／旧文件不受这项内置发布门槛限制。
+
+```yaml
+source:
+  title: NFL FLAG Training Resources
+  adaptation: 补齐五人、示意码数及四种成功传球；不是官方固定阅读顺序。
+  references:
+    - title: NFL FLAG Training Resources
+      url: https://static.www.nfl.com/image/upload/league/w7jrxyki5ffvoncw3ckg.pdf#page=6
+      role: primary
+      kind: concept
+      publisher: NFL FLAG
+      locator: PDF 第 6 页 · Flood
+      scope: Flat、Deep Out、Go 的同侧层次；不提供完整五人或秒数。
+```
+
+PDF 文件页序与印刷页码不同应分别注明。`source.page` 是既有条目保留的来源页信息，不能替代每条参考自己的定位。链接只在主动打开时访问；单文件应用不请求这些资料。
+
+### 相近配合
+
+可选 `relatedLessons` 保存跳转和比较说明，每项必填：
+
+```yaml
+relatedLessons:
+  - id: single-set-play-2
+    title: 单后场阵型 · 第 2 号战术
+    sourceUrl: https://nflstatic.s3.amazonaws.com/attachments/ckmqis77f02hv0jo0uvaxh5qq-nfl-flag-play-book-formations-prd-2.pdf#page=44
+    note: 同样有深浅层次；原书 C 跑 Corner，本课用 Deep Out，不是相同路线。
+```
+
+目标必须在当前包内，并有与 `sourceUrl` 完全相同的原始资料链接，才启用跳转。这避免导入包复用同一个编号时跳到无关战术。目标缺失或出处不匹配时保留比较说明、禁用跳转，不阻止导入；同条自引用及重复关联编号会报错。链接按与出处相同的安全规则校验。
+
+所有字段随 YAML / 完整包导出保留。翻译使用 `source.adaptation`、`source.references.0.publisher/scope`、`relatedLessons.<id>.title/note` 等展示路径；网址、分类与身份保持共用。调整参考数组顺序时，必须同时调整 `routeGuide.marks[].sourceReference` 和对应翻译序号。
+
 ## 4. 坐标与可选码数标注
 
 例子使用宽 `100`、高 `55` 的画布：`[0, 0]` 在左上，x 越大越向右，y 越大越向下。`attackDirection: up` 表示向上进攻，`down` 表示向下进攻；方向用于箭头与讲解，**不会自动镜像数据**。
@@ -87,11 +130,11 @@ source:
 
 `field` 必填 `width`、`height`、`attackDirection`；`lineOfScrimmageY` 可省略，表示开球线的 y 坐标。只有存在此字段时才画开球线。
 
-### 按码绘制基础路线
+### 按码绘制场地与基础路线
 
 可选 `unit: yard` 明确表示 **x、y 每个坐标单位都是 1 码**，包括宽高、球员起点、路线终点及曲线控制点。只有按真实比例重新填写坐标时才能加这个字段，不能只给原有示意图换上单位。可选 `endZoneDepth` 是两端各自的端区深度，必须为正数，且两个端区深度之和小于 `height`；填写时必须同时声明 `unit: yard`。`height` 包含两端端区。
 
-基础路线可增加 `routeGuide`，例如：
+基础路线和进攻条目均可用 `unit: yard` 显示按码网格与开球线深度。裁切的教学区域应在说明中写清，不声称为完整场地。基础路线还可增加 `routeGuide`，例如：
 
 ```yaml
 field:

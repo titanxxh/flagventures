@@ -1,4 +1,4 @@
-# UTF-8; route and ball-flow teaching examples share timing across languages.
+# Editable bilingual lesson; source links and teaching adaptations travel with the data.
 format: flag-lesson
 version: 1
 id: spread-play-1
@@ -13,7 +13,7 @@ teaching:
   cue: 有人跑远，有人跑近，我们分开接应。
   question: 右侧哪两个人的路线比 Z 更浅？
 source:
-  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  title: NFL FLAG Play Book · 英文原书（封面 2020）
   page: 11
   note: 跑位坐标来自用户附件，归一化后重绘，非实际码数；路线称呼与配合讲解补充自 NFL FLAG 官网和视频。儿童口令、提问与播放节奏为教学改写。
   references:
@@ -21,10 +21,28 @@ source:
       url: https://nflflag.com/coaches/flag-football-rules/5-on-5-flag-football-playbook
       locator: Spread · Play 1
       note: 官网的战术意图和相对先后建议；不作为精确秒表。
+      role: primary
+      kind: explanation
+      publisher: NFL FLAG
+      scope: 对应战术的原作者讲解；不包含完整传球结局或精确秒数。
     - title: NFL FLAG · Spread 视频
       url: https://www.youtube.com/watch?v=QyMRYsCiXOs&t=21s
       locator: 0:21–0:43
       note: 时间用于定位解说；逐人讲述不表示逐人启动。
+      role: primary
+      kind: explanation
+      publisher: NFL FLAG
+      scope: 对应战术的原作者讲解；不包含完整传球结局或精确秒数。
+    - url: >-
+        https://nflstatic.s3.amazonaws.com/attachments/ckmqis77f02hv0jo0uvaxh5qq-nfl-flag-play-book-formations-prd-2.pdf#page=11
+      role: primary
+      kind: diagram
+      title: NFL FLAG · 原始战术图
+      publisher: NFL FLAG
+      locator: PDF 第 11 页 · SPREAD PLAY 1
+      scope: 原始站位与路线图；图中未注明的球权、先后与秒数不由此推断。
+      note: 封面标 2020、文件制作元数据为 2021；已逐图对照用户双语附件的同页站位与线路。两文件的翻译、颜色和版面不同，不称为相同的 2024 版本。
+  adaptation: 球路选择、传接时刻、配速与亲子讲解为教学改编；不代表原作者规定的唯一目标或固定 QB 阅读顺序。
 field:
   width: 100
   height: 55
@@ -247,19 +265,19 @@ translations:
   en:
     title.zh: SPREAD PLAY 1
     summary: >-
-      Z stretches the right side deep; Y and C work shorter routes on that side. X offers a Post on the other
-      side.
+      Z stretches the right side deep; Y and C work shorter routes on that side. X offers a Post on
+      the other side.
     teaching.goal: Combine right-side options with an opposite-side outlet.
     teaching.cooperation: >-
-      Z stretches the right side deep; Y and C work shorter routes on that side. X offers a Post on the other
-      side.
+      Z stretches the right side deep; Y and C work shorter routes on that side. X offers a Post on
+      the other side.
     teaching.cue: We spread out at different depths.
     teaching.question: Who runs deep on the right, and who offers a shorter option?
-    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.title: NFL FLAG Play Book · English source (2020 cover)
     source.note: >-
-      Route geometry follows the supplied PDF, not measured yards. Route names and teamwork explanations also
-      use NFL FLAG’s official article and videos. Child-friendly cues, questions and animation timing are
-      teaching adaptations.
+      Route geometry follows the supplied PDF, not measured yards. Route names and teamwork
+      explanations also use NFL FLAG’s official article and videos. Child-friendly cues, questions
+      and animation timing are teaching adaptations.
     source.references.0.title: NFL FLAG · Spread play explanations
     source.references.0.locator: Spread · Play 1
     source.references.0.note: Supports the play’s intent and relative timing, not an exact stopwatch.
@@ -267,25 +285,30 @@ translations:
     source.references.1.locator: 0:21–0:43
     source.references.1.note: Timestamps locate the narration; its order does not define player start order.
     timeline.note: >-
-      Shown routes start together and finish in ten demonstration seconds. Timing follows each individual
-      route and is illustrative, not official start order, equal player speeds or handoff timing.
+      Shown routes start together and finish in ten demonstration seconds. Timing follows each
+      individual route and is illustrative, not official start order, equal player speeds or handoff
+      timing.
     notes.0: >-
-      Routes and selectable ball-flow scenarios are teaching demonstrations without simulated defenders.
-      Creating space is the play’s intent, not a guaranteed outcome.
-    notes.1: The cues and questions are teaching adaptations. Agree on crossing order before practicing on the field.
+      Routes and selectable ball-flow scenarios are teaching demonstrations without simulated
+      defenders. Creating space is the play’s intent, not a guaranteed outcome.
+    notes.1: >-
+      The cues and questions are teaching adaptations. Agree on crossing order before practicing on
+      the field.
     notes.2: >-
-      Relative positions follow source page 11. Short connections approximate parts hidden beneath markers;
-      they are not extra actions or measured yards.
+      Relative positions follow source page 11. Short connections approximate parts hidden beneath
+      markers; they are not extra actions or measured yards.
     notes.3: >-
-      No complete QB read order, mandatory target or pass timing is specified. Crossing routes do not imply a
-      handoff.
+      No complete QB read order, mandatory target or pass timing is specified. Crossing routes do
+      not imply a handoff.
     players.Q.label.zh: Movement not specified
     players.Q.label.description: Only Q’s starting position is shown. Later movement is not specified.
-    players.Q.coaching.cooperation: Observe the receiving areas offered by teammates. No fixed read order or mandatory target is specified.
+    players.Q.coaching.cooperation: >-
+      Observe the receiving areas offered by teammates. No fixed read order or mandatory target is
+      specified.
     players.Q.coaching.timing: The diagram does not specify Q’s later movement or when to pass.
     players.Q.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.C.label.zh: Move diagonally forward-right, then across to the right
     players.C.label.description: Move diagonally forward-right, then across to the right. Left and right refer to the diagram.
     players.C.label.note: Based on the diagram on page 11; later movement is not implied.
@@ -294,138 +317,159 @@ translations:
     players.X.label.zh: Post
     players.X.label.description: Move forward, then diagonally forward-right. Left and right refer to the diagram.
     players.X.label.note: >-
-      Name follows the official NFL FLAG explanation (0:21–0:43); direction and geometry retain the supplied
-      diagram on page 11.
+      Name follows the official NFL FLAG explanation (0:21–0:43); direction and geometry retain the
+      supplied diagram on page 11.
     players.X.coaching.cooperation: Run a Post as an option away from the right-side routes.
     players.X.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
     players.Y.label.zh: Option
     players.Y.label.description: >-
-      Move forward, then diagonally forward-left, then diagonally forward-right, then across to the right.
-      Left and right refer to the diagram.
+      Move forward, then diagonally forward-left, then diagonally forward-right, then across to the
+      right. Left and right refer to the diagram.
     players.Y.label.note: >-
-      Name follows the official NFL FLAG explanation (0:21–0:43); direction and geometry retain the supplied
-      diagram on page 11.
+      Name follows the official NFL FLAG explanation (0:21–0:43); direction and geometry retain the
+      supplied diagram on page 11.
     players.Y.coaching.cooperation: Run an Option to the right, working underneath Z.
     players.Y.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
     players.Z.label.zh: Fly
     players.Z.label.description: Move diagonally forward-right, then forward. Left and right refer to the diagram.
     players.Z.label.note: >-
-      Name follows the official NFL FLAG explanation (0:21–0:43); direction and geometry retain the supplied
-      diagram on page 11.
+      Name follows the official NFL FLAG explanation (0:21–0:43); direction and geometry retain the
+      supplied diagram on page 11.
     players.Z.coaching.cooperation: Juke and run a deep Fly to stretch the right side.
     players.Z.coaching.timing: No exact start order is specified for this player. Starting at zero is a teaching setting.
     keyframes.start.label: Line up · Find teammates
     keyframes.start.cue: >-
-      Find Q, C, X, Y and Z. Z stretches the right side deep; Y and C work shorter routes on that side. X
-      offers a Post on the other side.
+      Find Q, C, X, Y and Z. Z stretches the right side deep; Y and C work shorter routes on that
+      side. X offers a Post on the other side.
     keyframes.spread.label: Watch the routes
-    keyframes.spread.cue: Pause and compare teammates’ routes. Who runs deep on the right, and who offers a shorter option?
+    keyframes.spread.cue: >-
+      Pause and compare teammates’ routes. Who runs deep on the right, and who offers a shorter
+      option?
     keyframes.middle.label: Pause · See the teamwork
-    keyframes.middle.cue: Pause and compare teammates’ routes. Who runs deep on the right, and who offers a shorter option?
+    keyframes.middle.cue: >-
+      Pause and compare teammates’ routes. Who runs deep on the right, and who offers a shorter
+      option?
     keyframes.end.label: Recall · Explain it
     keyframes.end.cue: Who runs deep on the right, and who offers a shorter option?
     ball.note: >-
-      These added teaching scenarios let you pass to C, X, Y or Z; they do not prescribe a unique official
-      target or QB read order. The ball leaves C at zero and reaches QB at 0.35 seconds; C may run after
-      releasing it. QB stays at the drawn position in this example. Release, flight and catch times are
-      animation settings, not game time. After catching, the receiver follows the existing route without an
-      invented continuation.
+      These added teaching scenarios let you pass to C, X, Y or Z; they do not prescribe a unique
+      official target or QB read order. The ball leaves C at zero and reaches QB at 0.35 seconds; C
+      may run after releasing it. QB stays at the drawn position in this example. Release, flight
+      and catch times are animation settings, not game time. After catching, the receiver follows
+      the existing route without an invented continuation.
     ball.scenarios.pass-c.title: Pass to C
     ball.scenarios.pass-c.note: >-
-      This example selects C to catch while continuing after the break; it does not evaluate defenders or
-      guarantee an opening. Release at 4.62 seconds and catch at 5.32 seconds are teaching timings. The
-      receiver then continues the existing route.
+      This example selects C to catch while continuing after the break; it does not evaluate
+      defenders or guarantee an opening. Release at 4.62 seconds and catch at 5.32 seconds are
+      teaching timings. The receiver then continues the existing route.
     ball.scenarios.pass-c.motions.Q.motion.note: >-
-      For this ball-flow example, QB holds and throws from the drawn position. The source does not prescribe
-      dropback steps; a real QB need not stand still.
+      For this ball-flow example, QB holds and throws from the drawn position. The source does not
+      prescribe dropback steps; a real QB need not stand still.
     ball.scenarios.pass-c.events.snap.label: C snaps to QB
     ball.scenarios.pass-c.events.snap.cue: >-
-      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The 0.35-second
-      exchange is an animation setting.
+      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The
+      0.35-second exchange is an animation setting.
     ball.scenarios.pass-c.events.pass.label: QB passes to C
     ball.scenarios.pass-c.events.pass.cue: >-
-      QB leads C to the future catch position. C catches while continuing after the break, then continues the
-      existing route. Passing to C is this teaching choice, not the only answer.
+      QB leads C to the future catch position. C catches while continuing after the break, then
+      continues the existing route. Passing to C is this teaching choice, not the only answer.
     ball.scenarios.pass-x.title: Pass to X
     ball.scenarios.pass-x.note: >-
-      This example selects X to catch while continuing after the break; it does not evaluate defenders or
-      guarantee an opening. Release at 6.08 seconds and catch at 6.78 seconds are teaching timings. The
-      receiver then continues the existing route.
+      This example selects X to catch while continuing after the break; it does not evaluate
+      defenders or guarantee an opening. Release at 6.08 seconds and catch at 6.78 seconds are
+      teaching timings. The receiver then continues the existing route.
     ball.scenarios.pass-x.motions.Q.motion.note: >-
-      For this ball-flow example, QB holds and throws from the drawn position. The source does not prescribe
-      dropback steps; a real QB need not stand still.
+      For this ball-flow example, QB holds and throws from the drawn position. The source does not
+      prescribe dropback steps; a real QB need not stand still.
     ball.scenarios.pass-x.events.snap.label: C snaps to QB
     ball.scenarios.pass-x.events.snap.cue: >-
-      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The 0.35-second
-      exchange is an animation setting.
+      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The
+      0.35-second exchange is an animation setting.
     ball.scenarios.pass-x.events.pass.label: QB passes to X
     ball.scenarios.pass-x.events.pass.cue: >-
-      QB leads X to the future catch position. X catches while continuing after the break, then continues the
-      existing route. Passing to X is this teaching choice, not the only answer.
+      QB leads X to the future catch position. X catches while continuing after the break, then
+      continues the existing route. Passing to X is this teaching choice, not the only answer.
     ball.scenarios.pass-y.title: Pass to Y
     ball.scenarios.pass-y.note: >-
-      This example selects Y to catch on the outward leg after the pivot; it does not evaluate defenders or
-      guarantee an opening. Release at 8.15 seconds and catch at 8.85 seconds are teaching timings. The
-      receiver then continues the existing route.
+      This example selects Y to catch on the outward leg after the pivot; it does not evaluate
+      defenders or guarantee an opening. Release at 8.15 seconds and catch at 8.85 seconds are
+      teaching timings. The receiver then continues the existing route.
     ball.scenarios.pass-y.motions.Q.motion.note: >-
-      For this ball-flow example, QB holds and throws from the drawn position. The source does not prescribe
-      dropback steps; a real QB need not stand still.
+      For this ball-flow example, QB holds and throws from the drawn position. The source does not
+      prescribe dropback steps; a real QB need not stand still.
     ball.scenarios.pass-y.events.snap.label: C snaps to QB
     ball.scenarios.pass-y.events.snap.cue: >-
-      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The 0.35-second
-      exchange is an animation setting.
+      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The
+      0.35-second exchange is an animation setting.
     ball.scenarios.pass-y.events.pass.label: QB passes to Y
     ball.scenarios.pass-y.events.pass.cue: >-
-      QB leads Y to the future catch position. Y catches on the outward leg after the pivot, then continues
-      the existing route. Passing to Y is this teaching choice, not the only answer.
+      QB leads Y to the future catch position. Y catches on the outward leg after the pivot, then
+      continues the existing route. Passing to Y is this teaching choice, not the only answer.
     ball.scenarios.pass-z.title: Pass to Z
     ball.scenarios.pass-z.note: >-
-      This example selects Z to catch while continuing after the break; it does not evaluate defenders or
-      guarantee an opening. Release at 4.5 seconds and catch at 5.2 seconds are teaching timings. The receiver
-      then continues the existing route.
+      This example selects Z to catch while continuing after the break; it does not evaluate
+      defenders or guarantee an opening. Release at 4.5 seconds and catch at 5.2 seconds are
+      teaching timings. The receiver then continues the existing route.
     ball.scenarios.pass-z.motions.Q.motion.note: >-
-      For this ball-flow example, QB holds and throws from the drawn position. The source does not prescribe
-      dropback steps; a real QB need not stand still.
+      For this ball-flow example, QB holds and throws from the drawn position. The source does not
+      prescribe dropback steps; a real QB need not stand still.
     ball.scenarios.pass-z.events.snap.label: C snaps to QB
     ball.scenarios.pass-z.events.snap.cue: >-
-      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The 0.35-second
-      exchange is an animation setting.
+      Follow the ball from C to QB. It leaves C at zero, so C may run after the release. The
+      0.35-second exchange is an animation setting.
     ball.scenarios.pass-z.events.pass.label: QB passes to Z
     ball.scenarios.pass-z.events.pass.cue: >-
-      QB leads Z to the future catch position. Z catches while continuing after the break, then continues the
-      existing route. Passing to Z is this teaching choice, not the only answer.
+      QB leads Z to the future catch position. Z catches while continuing after the break, then
+      continues the existing route. Passing to Z is this teaching choice, not the only answer.
     ball.scenarios.pass-c.events.snap.endLabel: QB receives the snap
     ball.scenarios.pass-c.events.snap.endCue: >-
-      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow this play’s
-      movement timing.
+      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow
+      this play’s movement timing.
     ball.scenarios.pass-c.events.pass.endLabel: C catches the ball
     ball.scenarios.pass-c.events.pass.endCue: >-
-      C catches while continuing after the break and continues carrying the ball along the existing route. No
-      extra after-catch route is added in this example.
+      C catches while continuing after the break and continues carrying the ball along the existing
+      route. No extra after-catch route is added in this example.
     ball.scenarios.pass-x.events.snap.endLabel: QB receives the snap
     ball.scenarios.pass-x.events.snap.endCue: >-
-      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow this play’s
-      movement timing.
+      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow
+      this play’s movement timing.
     ball.scenarios.pass-x.events.pass.endLabel: X catches the ball
     ball.scenarios.pass-x.events.pass.endCue: >-
-      X catches while continuing after the break and continues carrying the ball along the existing route. No
-      extra after-catch route is added in this example.
+      X catches while continuing after the break and continues carrying the ball along the existing
+      route. No extra after-catch route is added in this example.
     ball.scenarios.pass-y.events.snap.endLabel: QB receives the snap
     ball.scenarios.pass-y.events.snap.endCue: >-
-      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow this play’s
-      movement timing.
+      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow
+      this play’s movement timing.
     ball.scenarios.pass-y.events.pass.endLabel: Y catches the ball
     ball.scenarios.pass-y.events.pass.endCue: >-
-      Y catches on the outward leg after the pivot and continues carrying the ball along the existing route.
-      No extra after-catch route is added in this example.
+      Y catches on the outward leg after the pivot and continues carrying the ball along the
+      existing route. No extra after-catch route is added in this example.
     ball.scenarios.pass-z.events.snap.endLabel: QB receives the snap
     ball.scenarios.pass-z.events.snap.endCue: >-
-      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow this play’s
-      movement timing.
+      QB now has the ball and looks for a receiver. Once the snap left C, the center could follow
+      this play’s movement timing.
     ball.scenarios.pass-z.events.pass.endLabel: Z catches the ball
     ball.scenarios.pass-z.events.pass.endCue: >-
-      Z catches while continuing after the break and continues carrying the ball along the existing route. No
-      extra after-catch route is added in this example.
+      Z catches while continuing after the break and continues carrying the ball along the existing
+      route. No extra after-catch route is added in this example.
+    source.references.0.publisher: NFL FLAG
+    source.references.0.scope: The author’s explanation of this play, not every passing outcome or exact timing.
+    source.references.1.publisher: NFL FLAG
+    source.references.1.scope: The author’s explanation of this play, not every passing outcome or exact timing.
+    source.references.2.title: NFL FLAG · Original play diagram
+    source.references.2.publisher: NFL FLAG
+    source.references.2.locator: PDF page 11 · SPREAD PLAY 1
+    source.references.2.scope: >-
+      Original positions and route diagram; unspecified possession, sequencing and seconds are not
+      inferred.
+    source.references.2.note: >-
+      Cover dated 2020; file creation metadata dated 2021. Positions and routes were visually
+      compared with the same page in the supplied bilingual edition. Translation, colors and layout
+      differ; these are not claimed to be the same 2024 edition.
+    source.adaptation: >-
+      Ball choices, throw and catch times, pacing and family teaching cues are adaptations, not the
+      author’s only target or a fixed QB read order.
 ball:
   initialOwner: C
   defaultScenario: pass-x

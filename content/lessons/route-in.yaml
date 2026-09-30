@@ -1,4 +1,4 @@
-# UTF-8; yard-scale teaching geometry and timing are shared across languages.
+# Editable bilingual lesson; source links and teaching adaptations travel with the data.
 format: flag-lesson
 version: 1
 id: route-in
@@ -22,18 +22,35 @@ source:
       url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
       locator: Square In
       note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+      role: primary
+      kind: explanation
+      publisher: NFL FLAG
+      scope: 本条跑法的方向、名称或图示；具体示意距离另见距离说明。
     - title: NFL FLAG · 路线树与战术
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: 基础路线树与 In 战术示例
       note: 用于比较路线与核对名称，不把示例距离作为儿童训练标准。
+      role: supporting
+      kind: training
+      publisher: NFL FLAG
+      scope: 支持个别动作或术语对照，不支持整套战术的跑位与球权链。
     - title: USA Football · 接球手摆脱技术
       url: https://blogs.usafootball.com/blog/7334/coaching-the-wide-receiver-separation-techniques
       locator: Dig / Out 的直角变向
       note: 用于说明 Dig 的常见用法；与 NFL FLAG 的命名并不完全一致。
+      role: supporting
+      kind: training
+      publisher: USA Football
+      scope: 支持个别动作或术语对照，不支持整套战术的跑位与球权链。
     - title: NFL FLAG · 球场尺寸
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+      role: supporting
+      kind: rules
+      publisher: NFL FLAG
+      scope: 辅助理解规则或场地，不作为本条战术的原图出处。
+  adaptation: 路线按码重绘；未由来源规定的距离、回接点与播放秒数为教学示例，具体区别见距离说明。
 field:
   width: 30
   height: 70
@@ -54,7 +71,9 @@ players:
       en: IN / SQUARE IN
       description: 本图先直跑约 10 码，再转约 90° 向场地中间横跑，与开球线平行；Slant 则更早斜切并继续向前。
       basis: source
-      note: 路线形状依据 NFL FLAG 官网。采用官方 Square In 约 10 码示例；同一说明也提到较浅的 5 码 In，实际深度与教练和 QB 约定。横切长度为本图设置。具体深度应与教练和 QB 约定。
+      note: >-
+        路线形状依据 NFL FLAG 官网。采用官方 Square In 约 10 码示例；同一说明也提到较浅的 5 码 In，实际深度与教练和 QB
+        约定。横切长度为本图设置。具体深度应与教练和 QB 约定。
     motion:
       type: path
       startAt: 0
@@ -116,107 +135,125 @@ notes:
 translations:
   en:
     summary: >-
-      IN / SQUARE IN · In this example, run about 10 yards, then cut about 90° toward the middle, parallel to
-      the line. Slant cuts diagonally earlier and keeps gaining depth.
+      IN / SQUARE IN · In this example, run about 10 yards, then cut about 90° toward the middle,
+      parallel to the line. Slant cuts diagonally earlier and keeps gaining depth.
     title.zh: Supplement · IN / SQUARE IN
     source.title: NFL FLAG official guide · supplementary route
     source.note: >-
-      This supplementary Square In lesson stays outside the PDF’s original numbering. The diagram is redrawn
-      in yards on a 30 × 70-yard field, including two 10-yard end zones; depths are measured from the line of
-      scrimmage. This uses the official roughly 10-yard Square In example. The same guide mentions a shallower
-      5-yard In; agree on depth with your coach and QB. The sideways length is a drawing choice. QB placement
-      and animation duration are teaching choices, not a PDF tracing, official game timing or prescribed throw
-      time.
+      This supplementary Square In lesson stays outside the PDF’s original numbering. The diagram is
+      redrawn in yards on a 30 × 70-yard field, including two 10-yard end zones; depths are measured
+      from the line of scrimmage. This uses the official roughly 10-yard Square In example. The same
+      guide mentions a shallower 5-yard In; agree on depth with your coach and QB. The sideways
+      length is a drawing choice. QB placement and animation duration are teaching choices, not a
+      PDF tracing, official game timing or prescribed throw time.
     source.references.0.title: 'NFL FLAG · Wide receiver drills: Square In'
     source.references.0.locator: Square In
     source.references.0.note: >-
-      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
-      adaptations.
+      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams
+      are teaching adaptations.
     source.references.1.title: NFL FLAG · Route tree and plays
     source.references.1.locator: Route tree and In play examples
     source.references.1.note: >-
-      Used to compare routes and check terminology, without treating example distances as requirements for
-      children.
+      Used to compare routes and check terminology, without treating example distances as
+      requirements for children.
     source.references.2.title: USA Football · Receiver separation techniques
     source.references.2.locator: Square cuts in Dig / Out
-    source.references.2.note: Documents a common use of Dig; terminology is not identical across the NFL FLAG and USA Football guides.
+    source.references.2.note: >-
+      Documents a common use of Dig; terminology is not identical across the NFL FLAG and USA
+      Football guides.
     notes.0: >-
-      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
-      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
-      formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones.
+      X starts on the left of the line, with QB 5 yards behind as a reference; this is not a full
+      five-player formation.
     notes.1: >-
-      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
-      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
-      passing timing and practice distances with your coach and QB.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not
+      animated. Distance labels distinguish official examples from teaching choices. Agree on actual
+      route depths, passing timing and practice distances with your coach and QB.
     notes.2: >-
-      Slant and In / Square In are different routes: both go inside, but one angles diagonally and the other
-      makes a square cut. Teams may also use Dig for an in-breaking route; agree on depth and terminology with
-      your coach.
+      Slant and In / Square In are different routes: both go inside, but one angles diagonally and
+      the other makes a square cut. Teams may also use Dig for an in-breaking route; agree on depth
+      and terminology with your coach.
     notes.3: >-
-      The PDF route tree lists ten examples. Omitting In does not mean the route does not exist; this separate
-      supplement does not add or replace an original number.
+      The PDF route tree lists ten examples. Omitting In does not mean the route does not exist;
+      this separate supplement does not add or replace an original number.
     teaching.goal: >-
-      In this example, run about 10 yards, then cut about 90° toward the middle, parallel to the line. Slant
-      cuts diagonally earlier and keeps gaining depth.
+      In this example, run about 10 yards, then cut about 90° toward the middle, parallel to the
+      line. Slant cuts diagonally earlier and keeps gaining depth.
     teaching.cooperation: >-
-      From ahead and left of the QB, cross toward the middle to offer an inside target. Inside means toward
-      the field center, not backward toward the QB.
+      From ahead and left of the QB, cross toward the middle to offer an inside target. Inside means
+      toward the field center, not backward toward the QB.
     teaching.cue: Straight, square turn, across the middle.
-    teaching.question: 'Compare Slant and In: which keeps moving diagonally upfield, and which runs sideways after the cut?'
+    teaching.question: >-
+      Compare Slant and In: which keeps moving diagonally upfield, and which runs sideways after the
+      cut?
     players.X.name: Receiver X
     players.X.label.zh: IN / SQUARE IN
     players.X.label.description: >-
-      In this example, run about 10 yards, then cut about 90° toward the middle, parallel to the line. Slant
-      cuts diagonally earlier and keeps gaining depth.
+      In this example, run about 10 yards, then cut about 90° toward the middle, parallel to the
+      line. Slant cuts diagonally earlier and keeps gaining depth.
     players.X.label.note: >-
-      The route shape follows NFL FLAG. This uses the official roughly 10-yard Square In example. The same
-      guide mentions a shallower 5-yard In; agree on depth with your coach and QB. The sideways length is a
-      drawing choice. Agree on actual depths with your coach and QB.
+      The route shape follows NFL FLAG. This uses the official roughly 10-yard Square In example.
+      The same guide mentions a shallower 5-yard In; agree on depth with your coach and QB. The
+      sideways length is a drawing choice. Agree on actual depths with your coach and QB.
     players.X.coaching.cooperation: >-
-      From ahead and left of the QB, cross toward the middle to offer an inside target. Inside means toward
-      the field center, not backward toward the QB.
+      From ahead and left of the QB, cross toward the middle to offer an inside target. Inside means
+      toward the field center, not backward toward the QB.
     players.X.coaching.timing: >-
-      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
-      delay after the snap.
+      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not
+      prescribe a delay after the snap.
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
-      a teaching position, not a required game stance or instruction to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative
+      direction. This is a teaching position, not a required game stance or instruction to stand
+      still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
-      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and release time
-      are not specified.
-    players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
+      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and
+      release time are not specified.
+    players.QB.coaching.timing: >-
+      The marker stays fixed only as a positional reference, not to specify real-game movement
+      order.
     timeline.note: >-
-      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
-      are not real running time and cannot be converted into yardage. QB stays still as a positional
-      reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards;
+      playback seconds are not real running time and cannot be converted into yardage. QB stays
+      still as a positional reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
-      upward; inside means toward the field center.
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind.
+      Attack goes upward; inside means toward the field center.
     keyframes.cut.label: Inside at about 10 yd
     keyframes.cut.cue: >-
-      After about 10 yards from the line, make a square inside cut; compare this with Slant’s earlier diagonal
-      cut.
+      After about 10 yards from the line, make a square inside cut; compare this with Slant’s
+      earlier diagonal cut.
     keyframes.end.label: Route complete
     keyframes.end.cue: 'Say IN / SQUARE IN, then trace the route: “Straight, square turn, across the middle.”'
     source.references.3.title: NFL FLAG · Field dimensions
     source.references.3.locator: Flag Football Field
     source.references.3.note: >-
-      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
-      scrimmage and QB position are teaching choices.
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated
+      line of scrimmage and QB position are teaching choices.
     routeGuide.note: >-
-      Depth is measured from the line of scrimmage. This uses the official roughly 10-yard Square In example.
-      The same guide mentions a shallower 5-yard In; agree on depth with your coach and QB. The sideways
-      length is a drawing choice. Other remaining lengths and QB’s position 5 yards behind the line are
-      teaching choices; agree on practice distances with your coach and QB.
+      Depth is measured from the line of scrimmage. This uses the official roughly 10-yard Square In
+      example. The same guide mentions a shallower 5-yard In; agree on depth with your coach and QB.
+      The sideways length is a drawing choice. Other remaining lengths and QB’s position 5 yards
+      behind the line are teaching choices; agree on practice distances with your coach and QB.
     routeGuide.marks.cut.label: Inside at about 10 yd
     routeGuide.marks.cut.note: >-
-      The official Square In example cuts square inside at about 10 yards and also mentions a 5-yard In; not
-      every In requires 10 yards.
+      The official Square In example cuts square inside at about 10 yards and also mentions a 5-yard
+      In; not every In requires 10 yards.
+    source.references.0.publisher: NFL FLAG
+    source.references.0.scope: The route’s name, direction or diagram; distance choices are identified separately.
+    source.references.1.publisher: NFL FLAG
+    source.references.1.scope: Supports individual movements or terminology, not the whole play or possession sequence.
+    source.references.2.publisher: USA Football
+    source.references.2.scope: Supports individual movements or terminology, not the whole play or possession sequence.
+    source.references.3.publisher: NFL FLAG
+    source.references.3.scope: Rules or field context only, not the source of this play diagram.
+    source.adaptation: >-
+      Routes are redrawn in yards. Distances, return points and playback seconds not specified by
+      the source are teaching choices, identified in the distance notes.
 routeGuide:
   player: X
   note: >-

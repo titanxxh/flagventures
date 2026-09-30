@@ -229,3 +229,38 @@ sections:
       - id: cover-4
         file: lessons/cover-4.yaml
     titleEn: Defense
+  - id: passing-concepts
+    title: 组合配合
+    titleEn: Passing concepts
+    groups:
+      - id: direction-spacing
+        title: 内外与间距
+        titleEn: Direction & spacing
+        lessonIds:
+          - concept-slant-flat
+          - concept-spacing
+          - concept-stack-90
+      - id: depth-layers
+        title: 深浅分层
+        titleEn: Depth layers
+        lessonIds:
+          - concept-flood
+          - concept-levels
+      - id: crossing-routes
+        title: 相向交叉
+        titleEn: Crossing routes
+        lessonIds:
+          - concept-mesh
+    entries:
+      - id: concept-slant-flat
+        file: lessons/concept-slant-flat.yaml
+      - id: concept-spacing
+        file: lessons/concept-spacing.yaml
+      - id: concept-stack-90
+        file: lessons/concept-stack-90.yaml
+      - id: concept-flood
+        file: lessons/concept-flood.yaml
+      - id: concept-levels
+        file: lessons/concept-levels.yaml
+      - id: concept-mesh
+        file: lessons/concept-mesh.yaml

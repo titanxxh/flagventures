@@ -12,6 +12,10 @@ teaching:
   cooperation: "请结合实际训练填写：X 内切时，哪位队友帮他腾出接球空间？其余队员动作目前未知。"
   cue: "先向前，再向中间。"
   question: "X 转向后朝哪里跑？哪位队友的任务还需要我们补上？"
+source:
+  title: "自编教学示例"
+  authorship: self-authored
+  adaptation: "站位、路线与时间由作者安排，请根据实际练习填写。"
 field:
   width: 100
   height: 55
@@ -102,10 +106,12 @@ keyframes:
     at: 6
     label: "示例路线结束"
     cue: "这里仅表示示例路径走完；完善其他人的动作后再安排全队讲解。"
-notes: ["本模板没有 source，也能完整表达自编内容；所有站位和 X 路线都是作者填写的示例。", "修改 id 为你的永久编号；修改标题不会自动改编号。", "填写动作后核对每人的 startAt 与动作时长总和，不能超过 timeline.duration。"]
+notes: ["本模板明确声明自编，不需要外部来源；所有站位和 X 路线都是作者填写的示例。", "修改 id 为你的永久编号；修改标题不会自动改编号。", "填写动作后核对每人的 startAt 与动作时长总和，不能超过 timeline.duration。"]
 
 # 可选英文；只翻译已有文字，不复制坐标和时间。未填写的英文保留原文。
 translations:
   en:
+    source.title: Self-authored teaching example
+    source.adaptation: Positions, routes and timing are authored examples. Adjust them for your practice.
     title.zh: My first play
     summary: A template with a Slant route for X. Complete the other players’ roles.

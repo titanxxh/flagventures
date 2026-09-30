@@ -5,8 +5,9 @@ export function translationFields(lesson) {
   const texts = (prefix, value, keys) => keys.forEach(key => add(`${prefix}.${key}`, value?.[key]));
   add('title.zh', lesson.title.zh); add('summary', lesson.summary);
   texts('teaching', lesson.teaching, ['goal', 'cooperation', 'cue', 'question']);
-  texts('source', lesson.source, ['title', 'note']);
-  lesson.source?.references?.forEach((ref, i) => texts(`source.references.${i}`, ref, ['title', 'locator', 'note']));
+  texts('source', lesson.source, ['title', 'note', 'adaptation']);
+  lesson.source?.references?.forEach((ref, i) => texts(`source.references.${i}`, ref, ['title', 'locator', 'note', 'publisher', 'scope']));
+  lesson.relatedLessons?.forEach(ref => texts(`relatedLessons.${ref.id}`, ref, ['title', 'note']));
   texts('timeline', lesson.timeline, ['note']);
   texts('routeGuide', lesson.routeGuide, ['note']);
   lesson.routeGuide?.marks.forEach(mark => texts(`routeGuide.marks.${mark.id}`, mark, ['label', 'note']));

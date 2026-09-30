@@ -1,4 +1,4 @@
-# UTF-8; yard-scale teaching geometry and timing are shared across languages.
+# Editable bilingual lesson; source links and teaching adaptations travel with the data.
 format: flag-lesson
 version: 1
 id: route-option
@@ -24,19 +24,36 @@ source:
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: OPTION
       note: 文字说明先像 Slant 一样向中路，再向边线横跑；附图另外画出内切顶点后的短回钩。
+      role: primary
+      kind: explanation
+      publisher: NFL FLAG
+      scope: 本条跑法的方向、名称或图示；具体示意距离另见距离说明。
     - title: NFL FLAG · 接球手训练
       url: https://nflflag.com/coaches/default/football-drills/wide-receiver-drills
       locator: Whip / Option
       note: Whip / Option 小节补充回身后向相反方向横出的动作；没有指定起步、回钩或横跑距离。
+      role: primary
+      kind: explanation
+      publisher: NFL FLAG
+      scope: 本条跑法的方向、名称或图示；具体示意距离另见距离说明。
     - title: NFL FLAG · 球场尺寸
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+      role: supporting
+      kind: rules
+      publisher: NFL FLAG
+      scope: 辅助理解规则或场地，不作为本条战术的原图出处。
     - title: NFL FLAG · 官方路线图（6–9）
       url: >-
         https://nflstatic.s3.amazonaws.com/attachments/ckhmre5uq232e0jlg1wnfqwlr-screen-shot-2020-11-17-at-8-00-34-pm.max.png
       locator: 6 · OPTION
       note: 图中内斜切到顶点后短回钩，再水平向外；图片不提供本应用采用的精确距离。
+      role: primary
+      kind: diagram
+      publisher: NFL FLAG
+      scope: 本条跑法的方向、名称或图示；具体示意距离另见距离说明。
+  adaptation: 路线按码重绘；未由来源规定的距离、回接点与播放秒数为教学示例，具体区别见距离说明。
 field:
   width: 30
   height: 70
@@ -270,6 +287,17 @@ translations:
     source.references.3.note: >-
       Shows the short hook back after the inside peak, followed by a horizontal outside run; it does
       not provide the exact distances used here.
+    source.references.0.publisher: NFL FLAG
+    source.references.0.scope: The route’s name, direction or diagram; distance choices are identified separately.
+    source.references.1.publisher: NFL FLAG
+    source.references.1.scope: The route’s name, direction or diagram; distance choices are identified separately.
+    source.references.2.publisher: NFL FLAG
+    source.references.2.scope: Rules or field context only, not the source of this play diagram.
+    source.references.3.publisher: NFL FLAG
+    source.references.3.scope: The route’s name, direction or diagram; distance choices are identified separately.
+    source.adaptation: >-
+      Routes are redrawn in yards. Distances, return points and playback seconds not specified by
+      the source are teaching choices, identified in the distance notes.
 routeGuide:
   player: X
   note: 码数是从开球线计算的深度。2 码起步、5 码最深点、回钩后 4 码横出及所有后段长度均为教学设置；官方图文支持回钩动作，没有给这些距离。

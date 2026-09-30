@@ -5,6 +5,7 @@ import { dump } from 'js-yaml';
 import { getScene, getRoutes, getActiveRoute, pathToSvg, positionAt } from './scene.js';
 import { resolveBallScenario, getBallState } from './ball.js';
 import { prepareImport, validatePack } from './validation.js';
+import { getProvenance, resolveRelatedLesson } from './provenance.js';
 
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
@@ -166,6 +167,11 @@ function rebuildLesson(id, preserve = false) {
     state.scenarioId = ballScenario.id;
   }
   hovered = focused = null; lastTick = undefined;
+  $('provenanceBar').replaceChildren();
+  $('relatedPlays').replaceChildren();
+  $('relatedPlays').hidden = true;
+  $('sourceAdaptation').hidden = true;
+  $('sourceDetails').open = false;
   $('routeDistances').hidden = !lesson?.routeGuide;
   $('routeOrientation').hidden = lesson?.kind !== 'route';
   $('teamPlanHeading').textContent = t(lesson?.kind === 'route' ? '这条路线怎么跑' : '这套配合想做到什么');
@@ -214,18 +220,11 @@ function rebuildLesson(id, preserve = false) {
   text($('teachingCue'), lesson.teaching?.cue || '「你站在哪里？」');
   text($('teachingQuestion'), lesson.teaching?.question || '「你跑的时候，队友去哪儿？」');
   text($('direction'), `${lesson.field.attackDirection === 'up' ? '↑' : '↓'} ${t('进攻方向')}${lesson.kind === 'defense' ? t(' · 防守视角') : ''}`);
-  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? lesson.field.unit === 'yard' ? '全场按码绘制 · 秒数仅为演示时间' : '全场示意 · 距离与时间用于教学' : '悬停球员看跑法 · 点击保留');
+  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? lesson.field.unit === 'yard' ? '全场按码绘制 · 秒数仅为演示时间' : '全场示意 · 距离与时间用于教学' : lesson.field.unit === 'yard' ? '按码绘制的教学区域 · 秒数为演示时间' : '悬停球员看跑法 · 点击保留');
   text($('timingNote'), lesson.timeline.note);
-  text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? t`，第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}` : '这是一条独立编写的教学内容，没有附带原书来源。');
+  text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? t`，第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}` : '来源待补：没有附带可识别的出处，也未声明自编。');
   $('notes').replaceChildren(...(lesson.notes || []).map(note => node('li', {}, note)));
-  const references = lesson.source?.references || [];
-  $('sourceReferences').hidden = !references.length;
-  $('sourceReferences').replaceChildren(...references.map(reference => {
-    const item = node('li');
-    item.append(node('a', { href: reference.url, target: '_blank', rel: 'noopener noreferrer' }, `${reference.title}${reference.locator ? ` · ${reference.locator}` : ''} ↗`));
-    if (reference.note) item.append(node('span', {}, reference.note));
-    return item;
-  }));
+  buildProvenance();
   const asset = assetMap.get(lesson.source?.referenceAsset);
   $('source').hidden = !asset;
   $('sourceImage').removeAttribute('src');
@@ -235,6 +234,69 @@ function rebuildLesson(id, preserve = false) {
   text($('lessonIndex'), `${index + 1} / ${order.length}`);
   $('previous').disabled = index === 0; $('next').disabled = index === order.length - 1;
   buildRoles(); buildChoices(); buildBallControls(); buildField(); buildFrames(); buildDistanceGuide();
+}
+
+function buildProvenance() {
+  const data = getProvenance(lesson);
+  const bar = $('provenanceBar');
+  const label = reference => `${reference.title}${reference.locator ? ` · ${reference.locator}` : ''}`;
+  const link = (reference, title) => node('a', {
+    href: reference.url, target: '_blank', rel: 'noopener noreferrer',
+    title: label(reference), 'data-primary-source': '',
+  }, `${title || label(reference)} ↗${reference.availability === 'unavailable' ? ` · ${t('链接已知失效')}` : ''}`);
+  if (data.primary.length === 1) bar.append(link(data.primary[0], t('原始出处')));
+  else if (data.primary.length > 1) {
+    const menu = node('details', {class: 'source-menu'});
+    const entries = node('div', {class: 'source-menu-links'});
+    data.primary.forEach(reference => entries.append(link(reference)));
+    menu.append(node('summary', {}, t`原始出处（${data.primary.length}）`), entries);
+    bar.append(menu);
+  }
+  if (data.authored || data.pending) bar.append(node('span', {class: 'source-status', 'data-source-status': data.authored ? 'authored' : 'pending'}, data.authored ? '自编' : '来源待补'));
+  if (data.adaptation) {
+    const button = node('button', {class: 'source-chip', 'aria-controls': 'sourceDetails'}, '含教学改编');
+    button.addEventListener('click', () => {
+      $('sourceDetails').open = true;
+      $('sourceDetails').querySelector('summary').focus();
+      $('sourceDetails').scrollIntoView({block: 'nearest'});
+    });
+    bar.append(button);
+    $('sourceAdaptation').hidden = false;
+    text($('sourceAdaptation'), `${t('教学改编')} · ${data.adaptation}`);
+  }
+  const kinds = {diagram: '原始图示', explanation: '原作者说明', concept: '配合概念', training: '训练参考', rules: '规则参考'};
+  const groups = [['原始资料', data.primary], ['补充参考', data.supporting], ['未分类资料', data.unclassified]];
+  $('sourceReferences').replaceChildren();
+  $('sourceReferences').hidden = !groups.some(([, references]) => references.length);
+  for (const [title, references] of groups) {
+    if (!references.length) continue;
+    const list = node('ul');
+    for (const reference of references) {
+      const item = node('li');
+      item.append(node('a', {href: reference.url, target: '_blank', rel: 'noopener noreferrer'}, `${label(reference)} ↗`));
+      const meta = [reference.publisher, t(kinds[reference.kind] || '')].filter(Boolean).join(' · ');
+      if (meta) item.append(node('span', {class: 'reference-meta'}, meta));
+      if (reference.scope) item.append(node('span', {}, `${t('资料支持')} · ${reference.scope}`));
+      if (reference.note) item.append(node('span', {}, reference.note));
+      if (reference.availability === 'unavailable') item.append(node('strong', {class: 'source-status'}, '链接已知失效；本地演示仍可使用。'));
+      list.append(item);
+    }
+    $('sourceReferences').append(node('h3', {}, title), list);
+  }
+  if (lesson.relatedLessons?.length) {
+    $('relatedPlays').hidden = false;
+    $('relatedPlays').append(node('h2', {}, '相近配合'));
+    for (const reference of lesson.relatedLessons) {
+      const target = resolveRelatedLesson(pack, reference);
+      const item = node('div', {class: 'related-play'});
+      const button = node('button', {class: 'text-button', 'data-related-lesson': reference.id}, target?.title.zh || reference.title);
+      button.disabled = !target;
+      button.addEventListener('click', () => selectLesson(target.id));
+      item.append(button, node('p', {}, reference.note));
+      if (!target) item.append(node('small', {}, '对应条目不在当前战术包中。'));
+      $('relatedPlays').append(item);
+    }
+  }
 }
 function buildRoles() {
   const buttons = [node('button', { class: 'role', 'data-show-all': '', 'aria-pressed': 'true' }, '看全队')];
@@ -289,11 +351,12 @@ function buildDistanceGuide() {
 function buildField() {
   const { width: w, height: h, lineOfScrimmageY } = lesson.field;
   const isRoute = lesson.kind === 'route';
-  const scaled = isRoute && lesson.field.unit === 'yard';
-  const unit = isRoute ? Math.min(w / 48, h / 80) : Math.min(w / 100, h / 55);
+  const scaled = lesson.field.unit === 'yard';
+  const unit = isRoute ? Math.min(w / 48, h / 80) : scaled ? Math.min(w / 60, h / 60) : Math.min(w / 100, h / 55);
   const field = $('field');
   const viewport = { x: -3 * unit, y: -3 * unit, width: w + (scaled ? 14 : 6) * unit, height: h + 6 * unit };
   field.classList.toggle('full-route-field', isRoute);
+  field.classList.toggle('yard-play-field', scaled && !isRoute);
   $('routeMotionHint').hidden = !isRoute;
   field.setAttribute('viewBox', `${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}`);
   field.style.overflow = 'hidden';
@@ -314,7 +377,8 @@ function buildField() {
     // Keep authored fields with unusually large dimensions bounded to 200 ticks.
     const yardInterval = Math.max(1, Math.ceil(h / 200));
     const majorInterval = yardInterval * 5;
-    for (let y = endZone, count = 0; y <= h - endZone && count <= 200; y += majorInterval, count++) field.append(svg('path', {d: `M0 ${y}H${w}`, stroke: '#ffffff20', 'stroke-width': .15 * unit}));
+    const gridStart = lineOfScrimmageY === undefined ? endZone : endZone + ((lineOfScrimmageY - endZone) % majorInterval);
+    for (let y = gridStart, count = 0; y <= h - endZone && count <= 200; y += majorInterval, count++) field.append(svg('path', {d: `M0 ${y}H${w}`, stroke: '#ffffff20', 'stroke-width': .15 * unit}));
     for (let y = endZone, count = 0; y <= h - endZone && count <= 200; y += yardInterval, count++) field.append(svg('path', {d: `M${w * .02} ${y}h${unit} M${w * .96} ${y}h${unit}`, stroke: '#ffffff30', 'stroke-width': .13 * unit}));
     if (lineOfScrimmageY !== undefined) {
       const direction = lesson.field.attackDirection === 'up' ? -1 : 1;

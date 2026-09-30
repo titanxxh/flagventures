@@ -6,7 +6,7 @@ import {setLanguage,t} from '../app/i18n.js';
 import {validateLesson} from '../app/validation.js';
 import {getScene,getRoutes} from '../app/scene.js';
 const pack=JSON.parse(readFileSync('content/default.flagbook.json','utf8'));
-test('all 65 lessons translate every display field without changing routes, timing or canonical data',()=>{
+test('all 71 lessons translate every display field without changing routes, timing or canonical data',()=>{
  const before=JSON.stringify(pack);
  for(const lesson of pack.lessons){
   const en=localizeLesson(lesson,'en');

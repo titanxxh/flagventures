@@ -299,6 +299,11 @@ function lessonSemantics(lesson, filename) {
   for (const [index, reference] of (lesson.source?.references || []).entries()) {
     validateReferenceUrl(reference.url, filename, `source.references[${index + 1}].url`);
   }
+  unique(lesson.relatedLessons || [], filename, 'relatedLessons');
+  for (const related of lesson.relatedLessons || []) {
+    if (related.id === lesson.id) fail(filename, 'relatedLessons', '相近配合不能引用自己');
+    validateReferenceUrl(related.sourceUrl, filename, `relatedLessons.${related.id}.sourceUrl`);
+  }
   if (lesson.routeGuide) {
     const guide = lesson.routeGuide;
     if (lesson.kind !== 'route') fail(filename, 'routeGuide', '距离标注仅适用于基础路线');

@@ -1,4 +1,4 @@
-# UTF-8; display translations share the same routes and timing.
+# Editable bilingual lesson; source links and teaching adaptations travel with the data.
 format: flag-lesson
 version: 1
 id: cover-4
@@ -8,9 +8,20 @@ title:
   en: NFL FLAG COVER 4
 summary: 认识防守起点、原图对位或覆盖区域，以及图中明确画出的冲传方向。
 source:
-  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  title: NFL FLAG Play Book · 英文原书（封面 2020）
   page: 61
   note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。
+  references:
+    - url: >-
+        https://nflstatic.s3.amazonaws.com/attachments/ckmqis77f02hv0jo0uvaxh5qq-nfl-flag-play-book-formations-prd-2.pdf#page=61
+      role: primary
+      kind: diagram
+      title: NFL FLAG · 原始战术图
+      publisher: NFL FLAG
+      locator: PDF 第 61 页 · NFL FLAG COVER 4
+      scope: 原始站位、覆盖区域与职责连线；不是动态跟防脚本。
+      note: 封面标 2020、文件制作元数据为 2021；已逐图对照用户双语附件的同页站位与线路。两文件的翻译、颜色和版面不同，不称为相同的 2024 版本。
+  adaptation: 覆盖区域与职责按原图重绘，中文讲解为教学整理；本条展示分工，不模拟实际跟防反应。
 field:
   width: 100.694
   height: 55
@@ -328,88 +339,90 @@ notes:
 translations:
   en:
     title.zh: NFL FLAG COVER 4
-    summary: Explore defensive starting positions, matchups, coverage zones and any rush direction explicitly shown.
-    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    summary: >-
+      Explore defensive starting positions, matchups, coverage zones and any rush direction
+      explicitly shown.
+    source.title: NFL FLAG Play Book · English source (2020 cover)
     source.note: >-
-      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates are not
-      actual yards.
+      Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates
+      are not actual yards.
     timeline.note: >-
-      The timeline reveals teaching layers only; it does not represent defender start order or simulate
-      pursuit.
+      The timeline reveals teaching layers only; it does not represent defender start order or
+      simulate pursuit.
     notes.0: >-
-      D numbers are teaching IDs. The diagram keeps its original orientation. Zones and dashed lines show
-      assignments, not continuous movement.
+      D numbers are teaching IDs. The diagram keeps its original orientation. Zones and dashed lines
+      show assignments, not continuous movement.
     notes.1: >-
-      Guides keep their original endpoints rather than snapping to player centers. No ball, passes, pursuit or
-      handoffs are added.
+      Guides keep their original endpoints rather than snapping to player centers. No ball, passes,
+      pursuit or handoffs are added.
     notes.2: >-
-      The field canvas extends slightly to preserve all original control points and coverage zones without
-      clipping or moving them.
+      The field canvas extends slightly to preserve all original control points and coverage zones
+      without clipping or moving them.
     players.Q.label.zh: Movement not specified
     players.Q.label.description: Only Q’s starting position is shown. Later movement is not specified.
     players.Q.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.C.label.zh: Movement not specified
     players.C.label.description: Only C’s starting position is shown. Later movement is not specified.
     players.C.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.X.label.zh: Movement not specified
     players.X.label.description: Only X’s starting position is shown. Later movement is not specified.
     players.X.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.Y.label.zh: Movement not specified
     players.Y.label.description: Only Y’s starting position is shown. Later movement is not specified.
     players.Y.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.Z.label.zh: Movement not specified
     players.Z.label.description: Only Z’s starting position is shown. Later movement is not specified.
     players.Z.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.D1.label.zh: Coverage or matchup
     players.D1.label.description: >-
-      Follow the static guides to understand assignments. Defenders do not automatically pursue offensive
-      players.
+      Follow the static guides to understand assignments. Defenders do not automatically pursue
+      offensive players.
     players.D1.label.note: D1 is a teaching ID. Position and assignment follow source page 61.
     players.D1.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.D2.label.zh: Coverage or matchup
     players.D2.label.description: >-
-      Follow the static guides to understand assignments. Defenders do not automatically pursue offensive
-      players.
+      Follow the static guides to understand assignments. Defenders do not automatically pursue
+      offensive players.
     players.D2.label.note: D2 is a teaching ID. Position and assignment follow source page 61.
     players.D2.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.D3.label.zh: Coverage or matchup
     players.D3.label.description: >-
-      Follow the static guides to understand assignments. Defenders do not automatically pursue offensive
-      players.
+      Follow the static guides to understand assignments. Defenders do not automatically pursue
+      offensive players.
     players.D3.label.note: D3 is a teaching ID. Position and assignment follow source page 61.
     players.D3.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.D4.label.zh: Coverage or matchup
     players.D4.label.description: >-
-      Follow the static guides to understand assignments. Defenders do not automatically pursue offensive
-      players.
+      Follow the static guides to understand assignments. Defenders do not automatically pursue
+      offensive players.
     players.D4.label.note: D4 is a teaching ID. Position and assignment follow source page 61.
     players.D4.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     players.R.label.zh: Rusher
     players.R.label.description: >-
-      Follow the static guides to understand assignments. Defenders do not automatically pursue offensive
-      players.
+      Follow the static guides to understand assignments. Defenders do not automatically pursue
+      offensive players.
     players.R.label.note: R and its rush guide come from source page 61; no extra route to Q is inferred.
     players.R.motion.note: >-
-      Only the known starting position is shown. Later movement is unspecified; this does not require standing
-      still.
+      Only the known starting position is shown. Later movement is unspecified; this does not
+      require standing still.
     keyframes.frame-1.label: Starting positions
     keyframes.frame-1.cue: Find the five players on each team.
     keyframes.frame-2.label: One group of assignments
@@ -422,3 +435,14 @@ translations:
     zones.zone-2.label: Source coverage zone 2
     zones.zone-3.label: Source coverage zone 3
     zones.zone-4.label: Source coverage zone 4
+    source.references.0.title: NFL FLAG · Original play diagram
+    source.references.0.publisher: NFL FLAG
+    source.references.0.locator: PDF page 61 · NFL FLAG COVER 4
+    source.references.0.scope: Original positions, coverage areas and assignments, not animated defensive reactions.
+    source.references.0.note: >-
+      Cover dated 2020; file creation metadata dated 2021. Positions and routes were visually
+      compared with the same page in the supplied bilingual edition. Translation, colors and layout
+      differ; these are not claimed to be the same 2024 edition.
+    source.adaptation: >-
+      Coverage and assignments are redrawn from the diagram, with adapted Chinese explanations. This
+      lesson shows responsibilities, not live defensive reactions.

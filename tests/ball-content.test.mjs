@@ -9,7 +9,7 @@ import {getBallState, resolveBallScenario} from '../app/ball.js';
 const lessons = fs.readdirSync(new URL('../content/lessons/', import.meta.url))
   .filter(file => file.endsWith('.yaml'))
   .map(file => load(fs.readFileSync(new URL(`../content/lessons/${file}`, import.meta.url), 'utf8')))
-  .filter(lesson => lesson.kind === 'offense');
+  .filter(lesson => lesson.kind === 'offense' && !lesson.id.startsWith('concept-'));
 const targets = ['C', 'X', 'Y', 'Z'];
 const distance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const player = (lesson, id) => lesson.players.find(item => item.id === id);

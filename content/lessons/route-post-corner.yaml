@@ -1,4 +1,4 @@
-# UTF-8; yard-scale teaching geometry and timing are shared across languages.
+# Editable bilingual lesson; source links and teaching adaptations travel with the data.
 format: flag-lesson
 version: 1
 id: route-post-corner
@@ -23,15 +23,28 @@ source:
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: POST CORNER
       note: 已同时核对正文与第 6–9 路线图：先直跑 7 码，内斜切，再向外斜切；第二次变向深度未指定。
+      role: primary
+      kind: explanation
+      publisher: NFL FLAG
+      scope: 本条跑法的方向、名称或图示；具体示意距离另见距离说明。
     - title: NFL FLAG · 球场尺寸
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+      role: supporting
+      kind: rules
+      publisher: NFL FLAG
+      scope: 辅助理解规则或场地，不作为本条战术的原图出处。
     - title: NFL FLAG · 官方路线图（6–9）
       url: >-
         https://nflstatic.s3.amazonaws.com/attachments/ckhmre5uq232e0jlg1wnfqwlr-screen-shot-2020-11-17-at-8-00-34-pm.max.png
       locator: 8 · POST CORNER
       note: 核对内斜切后再外斜切的双变向；原图没有给第二转折点精确码数，本图的 10 码为教学设置。
+      role: primary
+      kind: diagram
+      publisher: NFL FLAG
+      scope: 本条跑法的方向、名称或图示；具体示意距离另见距离说明。
+  adaptation: 路线按码重绘；未由来源规定的距离、回接点与播放秒数为教学示例，具体区别见距离说明。
 field:
   width: 30
   height: 70
@@ -223,6 +236,15 @@ translations:
     source.references.2.note: >-
       Verifies the inside-then-outside double move. The diagram does not prescribe the second cut
       depth; this drawing uses 10 yards as a teaching choice.
+    source.references.0.publisher: NFL FLAG
+    source.references.0.scope: The route’s name, direction or diagram; distance choices are identified separately.
+    source.references.1.publisher: NFL FLAG
+    source.references.1.scope: Rules or field context only, not the source of this play diagram.
+    source.references.2.publisher: NFL FLAG
+    source.references.2.scope: The route’s name, direction or diagram; distance choices are identified separately.
+    source.adaptation: >-
+      Routes are redrawn in yards. Distances, return points and playback seconds not specified by
+      the source are teaching choices, identified in the distance notes.
 routeGuide:
   player: X
   note: >-

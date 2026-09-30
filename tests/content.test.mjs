@@ -11,10 +11,10 @@ const lesson = id => pack.lessons.find(l => l.id === id);
 
 test('inventory keeps the 64 source entries and adds In without inventing a PDF page', () => {
   const counts = Object.fromEntries(['route', 'formation', 'offense', 'run', 'defense'].map(kind => [kind, pack.lessons.filter(l => l.kind === kind).length]));
-  assert.deepEqual(counts, { route: 11, formation: 10, offense: 30, run: 9, defense: 5 });
-  assert.equal(pack.lessons.length, 65);
+  assert.deepEqual(counts, { route: 11, formation: 10, offense: 36, run: 9, defense: 5 });
+  assert.equal(pack.lessons.length, 71);
   assert.deepEqual(pack.assets, []);
-  const original = pack.lessons.filter(data => data.id !== 'route-in');
+  const original = pack.lessons.filter(data => data.id !== 'route-in' && !data.id.startsWith('concept-'));
   assert.equal(original.length, 64);
   for (const data of original) {
     assert.ok(Number.isInteger(data.source?.page) && data.source.page > 0, `${data.id}: source page`);
@@ -63,7 +63,7 @@ test('all scenes stay finite at keyframes and reverse seeks without changing sou
 });
 
 test('all 30 offensive plays carry specific teaching, individual coaching and online source references', () => {
-  const offense = pack.lessons.filter(data => data.kind === 'offense');
+  const offense = pack.lessons.filter(data => data.kind === 'offense' && !data.id.startsWith('concept-'));
   assert.equal(new Set(offense.map(data => data.summary)).size, 30, 'each play has its own summary');
   for (const data of offense) {
     for (const field of ['goal', 'cooperation', 'cue', 'question']) assert.ok(data.teaching?.[field]?.trim(), `${data.id}: teaching.${field}`);

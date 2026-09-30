@@ -1,4 +1,4 @@
-# UTF-8; yard-scale teaching geometry and timing are shared across languages.
+# Editable bilingual lesson; source links and teaching adaptations travel with the data.
 format: flag-lesson
 version: 1
 id: route-hitch
@@ -16,22 +16,35 @@ source:
   title: NFL FLAG 路线教学 · 附件名称与官网说明
   page: 3
   note: >-
-    名称与原书编号保留自附件；跑法按 NFL FLAG 官网的图和文字核对。球场按 30 × 70 码绘制，含两端各 10 码端区。首段 7 码采用官方路线树文字示例；官网图示向内后方钩回。本图朝所示 QB 斜回约
-    2 码，2 码指实际回跑路程，终点距开球线约 5.3 码。精确回跑角度和长度、QB 站位与动画时长为教学设置。
+    名称与原书编号保留自附件；跑法按 NFL FLAG 官网的图和文字核对。球场按 30 × 70 码绘制，含两端各 10 码端区。首段 7
+    码采用官方路线树文字示例；官网图示向内后方钩回。本图朝所示 QB 斜回约 2 码，2 码指实际回跑路程，终点距开球线约 5.3 码。精确回跑角度和长度、QB 站位与动画时长为教学设置。
   references:
     - title: NFL FLAG · 路线树说明
       url: https://nflflag.com/coaches/default/flag-football-rules/flag-football-plays
       locator: HITCH
       note: 用于核对跑法名称与转向；本站中文说明、儿童口令和图形为教学改写。
+      role: primary
+      kind: explanation
+      publisher: NFL FLAG
+      scope: 本条跑法的方向、名称或图示；具体示意距离另见距离说明。
     - title: NFL FLAG · 球场尺寸
       url: https://nflflag.com/coaches/flag-football-rules/how-to-play-flag-football
       locator: Flag Football Field
       note: 全场宽 30 码、长 70 码，含两端各 10 码端区；本图开球线和 QB 站位为教学选择。
+      role: supporting
+      kind: rules
+      publisher: NFL FLAG
+      scope: 辅助理解规则或场地，不作为本条战术的原图出处。
     - title: NFL FLAG · 基础路线图 0–5
       url: >-
         https://nflstatic.s3.amazonaws.com/attachments/ckhmrilp9233r0jlg45p0cmj1-screen-shot-2020-11-17-at-8-03-55-pm.max.png
       locator: 0 — HITCH
       note: 核对直跑后向内后方钩回的图形；不把图片像素当作固定码数或角度。
+      role: primary
+      kind: diagram
+      publisher: NFL FLAG
+      scope: 本条跑法的方向、名称或图示；具体示意距离另见距离说明。
+  adaptation: 路线按码重绘；未由来源规定的距离、回接点与播放秒数为教学示例，具体区别见距离说明。
 field:
   width: 30
   height: 70
@@ -115,102 +128,116 @@ notes:
 translations:
   en:
     summary: >-
-      HITCH · Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about 2 yards,
-      making an inward hook.
+      HITCH · Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about
+      2 yards, making an inward hook.
     title.zh: 0 · HITCH
     source.title: NFL FLAG route lesson · PDF names and official explanations
     source.note: >-
-      Names and original numbering are retained from the PDF; movement was checked against both the NFL FLAG
-      diagram and text. The field is drawn at 30 × 70 yards, including two 10-yard end zones. The 7-yard stem
-      follows the official route-tree text, and the diagram shows a hook back inside. This example runs about
-      2 yards diagonally toward the illustrated QB; 2 yards is the return-path length, ending at about 5.3
-      yards of depth. The precise return angle and length, QB position and animation timing are teaching
-      choices.
+      Names and original numbering are retained from the PDF; movement was checked against both the
+      NFL FLAG diagram and text. The field is drawn at 30 × 70 yards, including two 10-yard end
+      zones. The 7-yard stem follows the official route-tree text, and the diagram shows a hook back
+      inside. This example runs about 2 yards diagonally toward the illustrated QB; 2 yards is the
+      return-path length, ending at about 5.3 yards of depth. The precise return angle and length,
+      QB position and animation timing are teaching choices.
     source.references.0.title: NFL FLAG · Route tree guide
     source.references.0.locator: HITCH
     source.references.0.note: >-
-      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams are teaching
-      adaptations.
+      Used for route names and directions. Chinese explanations, child-friendly cues and diagrams
+      are teaching adaptations.
     notes.0: >-
-      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones. X starts
-      on the left of the line, with QB 5 yards behind as a reference; this is not a full five-player
-      formation.
+      The field is drawn to yard scale: 30 yards wide and 70 long, including two 10-yard end zones.
+      X starts on the left of the line, with QB 5 yards behind as a reference; this is not a full
+      five-player formation.
     notes.1: >-
-      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not animated.
-      Distance labels distinguish official examples from teaching choices. Agree on actual route depths,
-      passing timing and practice distances with your coach and QB.
+      The stationary QB is a teaching reference; snaps, passes, dropbacks and defense are not
+      animated. Distance labels distinguish official examples from teaching choices. Agree on actual
+      route depths, passing timing and practice distances with your coach and QB.
     teaching.goal: >-
-      Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about 2 yards, making
-      an inward hook.
+      Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about 2
+      yards, making an inward hook.
     teaching.cooperation: >-
-      Start ahead and left of QB. Plant, turn and run diagonally back toward QB on your right, presenting your
-      chest and hands.
+      Start ahead and left of QB. Plant, turn and run diagonally back toward QB on your right,
+      presenting your chest and hands.
     teaching.cue: Run, hook back, come toward QB.
     teaching.question: Does the hook bring you closer to QB or farther away?
     players.X.name: Receiver X
     players.X.label.zh: HITCH
     players.X.label.description: >-
-      Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about 2 yards, making
-      an inward hook.
+      Run straight for 7 yards, plant and turn, then run diagonally back toward QB for about 2
+      yards, making an inward hook.
     players.X.label.note: >-
-      The 7-yard stem follows the official route-tree text, and the diagram shows a hook back inside. This
-      example runs about 2 yards diagonally toward the illustrated QB; 2 yards is the return-path length,
-      ending at about 5.3 yards of depth. The precise return angle and length, QB position and animation
-      timing are teaching choices. Agree on practice depths with your coach and QB.
+      The 7-yard stem follows the official route-tree text, and the diagram shows a hook back
+      inside. This example runs about 2 yards diagonally toward the illustrated QB; 2 yards is the
+      return-path length, ending at about 5.3 yards of depth. The precise return angle and length,
+      QB position and animation timing are teaching choices. Agree on practice depths with your
+      coach and QB.
     players.X.coaching.cooperation: >-
-      Start ahead and left of QB. Plant, turn and run diagonally back toward QB on your right, presenting your
-      chest and hands.
+      Start ahead and left of QB. Plant, turn and run diagonally back toward QB on your right,
+      presenting your chest and hands.
     players.X.coaching.timing: >-
-      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not prescribe a
-      delay after the snap.
+      The demonstration runs from 0 to 10 seconds. Keyframes mark movement changes; they do not
+      prescribe a delay after the snap.
     players.QB.name: Quarterback QB
     players.QB.label.zh: Quarterback reference
     players.QB.label.description: >-
-      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative direction. This is
-      a teaching position, not a required game stance or instruction to stand still.
+      QB is drawn 5 yards behind the line at the field’s horizontal center to show relative
+      direction. This is a teaching position, not a required game stance or instruction to stand
+      still.
     players.QB.label.note: An added reference position for comparing routes, not a QB position prescribed by the PDF.
     players.QB.motion.note: 'Teaching reference: keep the marker fixed; actual QB dropbacks, passes and runs are not shown.'
     players.QB.coaching.cooperation: >-
-      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and release time
-      are not specified.
-    players.QB.coaching.timing: The marker stays fixed only as a positional reference, not to specify real-game movement order.
+      Watch whether X moves toward the middle, sideline or deeper upfield. Pass trajectory and
+      release time are not specified.
+    players.QB.coaching.timing: >-
+      The marker stays fixed only as a positional reference, not to specify real-game movement
+      order.
     timeline.note: >-
-      The ten-second animation only shows movement order. Geometry and depth marks use yards; playback seconds
-      are not real running time and cannot be converted into yardage. QB stays still as a positional
-      reference.
+      The ten-second animation only shows movement order. Geometry and depth marks use yards;
+      playback seconds are not real running time and cannot be converted into yardage. QB stays
+      still as a positional reference.
     keyframes.start.label: Starting positions
     keyframes.start.cue: >-
-      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind. Attack goes
-      upward; inside means toward the field center.
+      Start at zero on the line of scrimmage: X is on the left and QB is centered 5 yards behind.
+      Attack goes upward; inside means toward the field center.
     keyframes.turn.label: 7-yard turn
     keyframes.turn.cue: >-
-      After a 7-yard stem, plant and turn, then run diagonally back toward QB for about 2 yards. The run path
-      makes a small hook; the triangle also faces QB.
+      After a 7-yard stem, plant and turn, then run diagonally back toward QB for about 2 yards. The
+      run path makes a small hook; the triangle also faces QB.
     keyframes.end.label: Hook back toward QB
     keyframes.end.cue: >-
-      You have come about 2 yards toward QB and are now at about 5.3 yards of depth. Keep your chest and hands
-      toward QB, ready for the catch.
+      You have come about 2 yards toward QB and are now at about 5.3 yards of depth. Keep your chest
+      and hands toward QB, ready for the catch.
     source.references.1.title: NFL FLAG · Field dimensions
     source.references.1.locator: Flag Football Field
     source.references.1.note: >-
-      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated line of
-      scrimmage and QB position are teaching choices.
+      The field is 30 yards wide and 70 yards long, including two 10-yard end zones. The illustrated
+      line of scrimmage and QB position are teaching choices.
     routeGuide.note: >-
-      The 7-yard stem follows the official route-tree text, and the diagram shows a hook back inside. This
-      example runs about 2 yards diagonally toward the illustrated QB; 2 yards is the return-path length,
-      ending at about 5.3 yards of depth. The precise return angle and length, QB position and animation
-      timing are teaching choices. Distance labels show depth beyond the line, not total distance traveled.
+      The 7-yard stem follows the official route-tree text, and the diagram shows a hook back
+      inside. This example runs about 2 yards diagonally toward the illustrated QB; 2 yards is the
+      return-path length, ending at about 5.3 yards of depth. The precise return angle and length,
+      QB position and animation timing are teaching choices. Distance labels show depth beyond the
+      line, not total distance traveled.
     routeGuide.marks.turn.label: Turn at 7 yd
     routeGuide.marks.turn.note: 'Official route-tree example: turn after a 7-yard stem. Agree on the practice depth with QB.'
     source.references.2.title: NFL FLAG · Basic route diagram 0–5
     source.references.2.locator: 0 — HITCH
     source.references.2.note: >-
-      Shows the straight stem followed by an inward, backward hook. Image pixels do not prescribe distances or
-      angles.
+      Shows the straight stem followed by an inward, backward hook. Image pixels do not prescribe
+      distances or angles.
     routeGuide.marks.return.label: Hook about 2 yd toward QB
     routeGuide.marks.return.note: >-
-      This example returns about 2 yards diagonally, ending at about 5.3 yards of depth. Two yards is the
-      return-path length, not a 2-yard loss of depth. Angle and length are teaching choices.
+      This example returns about 2 yards diagonally, ending at about 5.3 yards of depth. Two yards
+      is the return-path length, not a 2-yard loss of depth. Angle and length are teaching choices.
+    source.references.0.publisher: NFL FLAG
+    source.references.0.scope: The route’s name, direction or diagram; distance choices are identified separately.
+    source.references.1.publisher: NFL FLAG
+    source.references.1.scope: Rules or field context only, not the source of this play diagram.
+    source.references.2.publisher: NFL FLAG
+    source.references.2.scope: The route’s name, direction or diagram; distance choices are identified separately.
+    source.adaptation: >-
+      Routes are redrawn in yards. Distances, return points and playback seconds not specified by
+      the source are teaching choices, identified in the distance notes.
 routeGuide:
   player: X
   note: >-

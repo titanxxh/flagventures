@@ -1,4 +1,4 @@
-# UTF-8; source paths retained, ball scenarios explicitly choreographed for teaching.
+# Editable bilingual lesson; source links and teaching adaptations travel with the data.
 format: flag-lesson
 version: 1
 id: hb-option
@@ -8,7 +8,7 @@ title:
   en: HB OPTION
 summary: Q 交给 Y 后，Y 假传但不出手，再持球跑进；假传不能被演成真正传球。
 source:
-  title: NFL FLAG 2024 中英文对照学习译本（用户附件）
+  title: NFL FLAG Play Book · 英文原书（封面 2020）
   page: 54
   note: 以用户附件为依据；中文为非官方学习译文。坐标归一化重绘，不是实际码数。 原图没有完整球权链；本次新增的球权顺序、会合点和球员配速是明确标注的教学改编，来源图线本身保留。
   references:
@@ -16,10 +16,28 @@ source:
       url: https://nflflag.com/coaches/football-drills/running-back-drills
       locator: 交接与假交接
       note: 支持交接和假交接的通用动作概念，不确定本页的持球顺序或秒数。
+      role: supporting
+      kind: training
+      publisher: NFL FLAG
+      scope: 支持个别动作或术语对照，不支持整套战术的跑位与球权链。
     - title: NFL FLAG · 当前规则说明
       url: https://nflflag.com/coaches/flag-football-rules
       locator: 开球、后场交接与初始 QB
       note: 核对后场交接与初始接开球球员不能直接持球越线；本图配速不是比赛计时，实际训练按球队适用规则。
+      role: supporting
+      kind: rules
+      publisher: NFL FLAG
+      scope: 辅助理解规则或场地，不作为本条战术的原图出处。
+    - url: >-
+        https://nflstatic.s3.amazonaws.com/attachments/ckmqis77f02hv0jo0uvaxh5qq-nfl-flag-play-book-formations-prd-2.pdf#page=54
+      role: primary
+      kind: diagram
+      title: NFL FLAG · 原始战术图
+      publisher: NFL FLAG
+      locator: PDF 第 54 页 · HB OPTION
+      scope: 原始站位与路线图；图中未注明的球权、先后与秒数不由此推断。
+      note: 封面标 2020、文件制作元数据为 2021；已逐图对照用户双语附件的同页站位与线路。两文件的翻译、颜色和版面不同，不称为相同的 2024 版本。
+  adaptation: 完整球权链、真假交接时机、会合点与播放秒数为教学编排；原图只支持已经明确画出或注明的部分。
 field:
   width: 100
   height: 55
@@ -257,7 +275,7 @@ translations:
     summary: >-
       After Q gives to Y, Y pump-fakes without releasing, then runs. A fake pass must not become a
       real transfer.
-    source.title: NFL FLAG 2024 bilingual study edition (user-provided PDF)
+    source.title: NFL FLAG Play Book · English source (2020 cover)
     source.note: >-
       Based on the supplied PDF. The Chinese study translation is unofficial; drawing coordinates
       are not actual yards. The source has no complete possession script. Added exchanges, meeting
@@ -401,6 +419,23 @@ translations:
     ball.scenarios.y-pump-and-run.motions.Z.motion.note: >-
       Movement starts after the snap. This example retains the shape of this player’s source route
       and adjusts pacing to the 12-second teaching timeline.
+    source.references.0.publisher: NFL FLAG
+    source.references.0.scope: Supports individual movements or terminology, not the whole play or possession sequence.
+    source.references.1.publisher: NFL FLAG
+    source.references.1.scope: Rules or field context only, not the source of this play diagram.
+    source.references.2.title: NFL FLAG · Original play diagram
+    source.references.2.publisher: NFL FLAG
+    source.references.2.locator: PDF page 54 · HB OPTION
+    source.references.2.scope: >-
+      Original positions and route diagram; unspecified possession, sequencing and seconds are not
+      inferred.
+    source.references.2.note: >-
+      Cover dated 2020; file creation metadata dated 2021. Positions and routes were visually
+      compared with the same page in the supplied bilingual edition. Translation, colors and layout
+      differ; these are not claimed to be the same 2024 edition.
+    source.adaptation: >-
+      Full possession sequences, exchange and fake timing, meeting points and playback seconds are
+      teaching choices. The diagram supports only what it explicitly shows or states.
 ball:
   initialOwner: C
   defaultScenario: y-pump-and-run

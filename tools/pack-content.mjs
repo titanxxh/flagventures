@@ -2,6 +2,7 @@ import { readFile, writeFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { load, JSON_SCHEMA } from 'js-yaml';
 import { parseLesson, validateCatalog, validatePack } from '../app/validation.js';
+import { checkBuiltInProvenance } from '../app/provenance.js';
 
 const catalogPath = path.resolve(process.argv[2] || 'content/catalog.yaml');
 const root = path.dirname(catalogPath);
@@ -34,6 +35,10 @@ for (const file of files.sort()) {
 const pack = { format: 'flag-playbook', version: 1, title: catalog.title, lessons, sections, assets };
 const { warnings } = validatePack(pack, '默认战术包');
 if (warnings.length) throw new Error(warnings.join('\n'));
+if (catalogPath === path.resolve('content/catalog.yaml')) {
+  const provenanceErrors = checkBuiltInProvenance(pack);
+  if (provenanceErrors.length) throw new Error(provenanceErrors.join('\n'));
+}
 const output = path.resolve(process.argv[3] || path.join(root, 'default.flagbook.json'));
 await writeFile(output, JSON.stringify(pack, null, 2));
 console.log(`已打包 ${lessons.length} 条内容、${sections.length} 个章节、${assets.length} 张参考图片 → ${output}`);
