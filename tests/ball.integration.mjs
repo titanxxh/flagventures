@@ -10,7 +10,7 @@ import {localizeLesson} from '../app/localization.js';
 
 const pack = JSON.parse(await readFile('content/default.flagbook.json', 'utf8'));
 const lessons = pack.lessons.filter(lesson => lesson.ball);
-const browser = await chromium.launch({channel: 'chrome', headless: true});
+const browser = await chromium.launch({headless: true, ...(process.env.CHROME_EXECUTABLE ? {executablePath: process.env.CHROME_EXECUTABLE} : {channel: 'chrome'})});
 const output = resolve('tmp/ball-integration');
 await mkdir(output, {recursive: true});
 try {
@@ -30,7 +30,7 @@ try {
   }));
   const near = (actual, expected, label) => assert.ok(Math.hypot(...actual.map((v, i) => v - expected[i])) < 1e-5, label);
   let scenarios = 0;
-  assert.equal(lessons.length, 39);
+  assert.equal(lessons.length, 45);
   for (const lesson of lessons) {
     await select(lesson.id);
     assert.equal(await page.locator('[data-ball-scenario]').count(), lesson.ball.scenarios.length);

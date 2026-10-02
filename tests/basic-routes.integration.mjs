@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
-const browser=await chromium.launch({channel:'chrome',headless:true});
+const browser=await chromium.launch({headless:true,...(process.env.CHROME_EXECUTABLE?{executablePath:process.env.CHROME_EXECUTABLE}:{channel:'chrome'})});
 try {
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -72,7 +72,20 @@ try {
   for(const lesson of lessons){
    await page.locator(`[data-lesson="${lesson.id}"]`).evaluate(n=>n.click());
    assert.equal(await page.locator('#field [data-player="QB"]').count(),1,`${lesson.id}: QB context`);
-   const box=(await page.locator('#field').getAttribute('viewBox')).split(' ').map(Number);
+   // Routes open zoomed to the run: full width, QB, line of scrimmage and every turn stay in view.
+   const zoom=page.locator('#fieldZoom');
+   if(await zoom.getAttribute('aria-pressed')==='true') await zoom.click();
+   const viewBox=async()=>(await page.locator('#field').getAttribute('viewBox')).split(' ').map(Number);
+   const zoomed=await viewBox();
+   const qbAt=lesson.players.find(p=>p.id==='QB').at;
+   const runnerAt=lesson.players.find(p=>p.id===lesson.routeGuide.player);
+   const points=[qbAt,runnerAt.at,[0,lesson.field.lineOfScrimmageY],...(runnerAt.motion.steps||runnerAt.motion.options.flatMap(o=>o.steps)).map(step=>step.to).filter(Boolean)];
+   assert.ok(zoomed[0]<=0 && zoomed[0]+zoomed[2]>=lesson.field.width,`${lesson.id}: zoom keeps both sidelines`);
+   assert.ok(zoomed[3]<lesson.field.height,`${lesson.id}: zoom crops unused depth`);
+   for(const [,y] of points) assert.ok(y>=zoomed[1] && y<=zoomed[1]+zoomed[3],`${lesson.id}: zoom keeps ${y} in view`);
+   await zoom.click();
+   assert.equal(await zoom.getAttribute('aria-pressed'),'true');
+   const box=await viewBox();
    assert.ok(box[0]<=0 && box[1]<=0 && box[0]+box[2]>=lesson.field.width && box[1]+box[3]>=lesson.field.height,`${lesson.id}: full field`);
    assert.equal(await page.locator('[data-field-endzone]').count(),2);
    assert.equal(await page.locator('#routeOrientation').isVisible(),true);
@@ -125,5 +138,5 @@ try {
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  }
  assert.deepEqual(errors,[]);
- console.log('PASS all basic routes: full field, fixed QB reference, visible bilingual explanations, yard scale and exact depth markers');
+ console.log('PASS all basic routes: zoomed route view and full field, fixed QB reference, visible bilingual explanations, yard scale and exact depth markers');
 } finally{await browser.close();}

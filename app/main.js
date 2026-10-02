@@ -14,6 +14,10 @@ const bases = { source: '来源明确命名', 'shape-match': '路线形态对照
 const colors = ['#80d4ff', '#ffc078', '#c7e8a2', '#fff1d5', '#ff9690', '#d7c9ff'];
 const builtIn = JSON.parse($('builtInData').textContent);
 const template = JSON.parse($('templateData').textContent);
+// Phones get larger players and labels; tablets and phones open the catalog as a drawer.
+const narrowQuery = matchMedia('(max-width: 650px)');
+const drawerQuery = matchMedia('(max-width: 900px)');
+const touchQuery = matchMedia('(hover: none)');
 try { setLanguage(localStorage.getItem('flagventures.language')); } catch {}
 const updateStaticLanguage = captureStaticTranslations(document.documentElement);
 let canonicalPack = builtIn;
@@ -24,7 +28,7 @@ let sourceLesson;
 let ballScenario;
 let rebuildingLesson = false;
 let order = [];
-let state = { time: 0, playing: false, speed: 2, role: null, choices: {} };
+let state = { time: 0, playing: false, speed: 2, role: null, choices: {}, fullField: false };
 let hovered = null;
 let focused = null;
 let pendingImport = null;
@@ -61,14 +65,73 @@ function seek(time) {
   if (time > 0 && !getScene(lesson, 0, state.choices).ready) { notify('先选好要演示的选项，再一起看跑位。'); return; }
   state.time = Math.max(0, Math.min(lesson.timeline.duration, time)); pause();
 }
-function showDialog(id) { pause(); $(id).showModal(); }
+function togglePlay() {
+  if (!lesson || $('play').disabled || !getScene(lesson, 0, state.choices).ready) return;
+  if (state.time >= lesson.timeline.duration) state.time = 0;
+  state.playing = !state.playing; lastTick = undefined; render();
+}
+function setSpeed(value) {
+  state.speed = value; lastTick = undefined;
+  document.querySelectorAll('[data-speed]').forEach(item => item.setAttribute('aria-pressed', String(Number(item.dataset.speed) === value)));
+}
+function stepKeyframe(direction) {
+  if (!lesson?.keyframes.length) return;
+  const frames = lesson.keyframes;
+  const target = direction > 0 ? frames.find(frame => frame.at > state.time + 1e-6) : frames.findLast(frame => frame.at < state.time - 1e-6);
+  seek((target ?? (direction > 0 ? frames.at(-1) : frames[0])).at);
+}
+function lessonFromHash() {
+  const match = /^#lesson=(.+)$/.exec(location.hash);
+  try { return match ? decodeURIComponent(match[1]) : undefined; } catch { return undefined; }
+}
+// The address keeps the current lesson so a refresh or a shared link returns to it.
+function syncHash() {
+  const target = lesson ? `#lesson=${encodeURIComponent(lesson.id)}` : '';
+  if (location.hash === target) return;
+  try { history.replaceState(history.state, '', target || `${location.pathname}${location.search}`); }
+  catch { if (target) location.replace(target); }
+}
+// Scroll only the catalog list, never the page, so the selected entry stays in view.
+function revealCatalogEntry(id) {
+  const entry = catalogNodes.get(id), list = $('catalog');
+  if (!entry || !list.clientHeight) return;
+  const box = entry.getBoundingClientRect(), view = list.getBoundingClientRect();
+  if (box.top >= view.top && box.bottom <= view.bottom) return;
+  list.scrollTop += box.top - view.top - Math.max(0, (view.height - box.height) / 3);
+}
+function setCatalogOpen(open, moveFocus = true) {
+  if (document.body.classList.contains('catalog-open') === open) return;
+  document.body.classList.toggle('catalog-open', open);
+  $('catalogBackdrop').hidden = !open;
+  $('catalogToggle').setAttribute('aria-expanded', String(open));
+  if (open) {
+    revealCatalogEntry(lesson?.id);
+    if (moveFocus) (catalogNodes.get(lesson?.id) || $('search')).focus({preventScroll: true});
+  } else if (moveFocus && $('library').contains(document.activeElement)) $('catalogToggle').focus({preventScroll: true});
+}
+// On wide screens, size the field so its caption and controls fit in the first screen.
+// Narrow screens scroll to the board instead and use the CSS limits.
+function fitField() {
+  const board = document.querySelector('.board');
+  if (drawerQuery.matches || !lesson) { board.style.removeProperty('--field-max'); return; }
+  const top = $('field').getBoundingClientRect().top + scrollY;
+  const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
+  // Tall (portrait) fields would become unreadably small if forced into the first screen.
+  const box = $('field').viewBox.baseVal;
+  const floor = box && box.width / box.height < 1.1 ? innerHeight * .62 : 300;
+  const value = `${Math.round(Math.max(floor, Math.min(680, innerHeight - top - below)))}px`;
+  if (board.style.getPropertyValue('--field-max') !== value) board.style.setProperty('--field-max', value);
+}
+let fitRequest;
+addEventListener('resize', () => { cancelAnimationFrame(fitRequest); fitRequest = requestAnimationFrame(fitField); });
+function showDialog(id) { pause(); setCatalogOpen(false, false); $(id).showModal(); }
 function download(name, content, mime) {
   const url = URL.createObjectURL(new Blob([content], { type: mime }));
   const link = node('a', { href: url, download: name });
   document.body.append(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
-function setPack(value, status) {
+function setPack(value, status, initialId) {
   canonicalPack = value; libraryStatus = status;
   pack = localizePack(value, getLanguage(), t);
   expandedGroups = new Set();
@@ -79,7 +142,7 @@ function setPack(value, status) {
   text($('libraryCount'), t`${pack.lessons.length} 个教学条目 · 本地可用`);
   $('search').value = '';
   buildCatalog();
-  selectLesson(order[0]);
+  selectLesson(order.includes(initialId) ? initialId : order[0]);
 }
 function buildCatalog() {
   const query = $('search').value.trim().toLocaleLowerCase();
@@ -153,10 +216,21 @@ function selectLesson(id, preserve = false) {
   try { rebuildLesson(id, preserve); }
   finally { rebuildingLesson = false; }
   render();
+  fitField();
+  syncHash();
+}
+// Rebuild only the SVG (zoom or screen-size changes) without touching playback state.
+function rebuildField() {
+  if (!lesson) return;
+  rebuildingLesson = true;
+  try { buildField(); }
+  finally { rebuildingLesson = false; }
+  render();
+  fitField();
 }
 function rebuildLesson(id, preserve = false) {
   sourceLesson = pack.lessons.find(item => item.id === id);
-  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: sourceLesson?.kind === 'route' ? sourceLesson.players.find(player => ['path', 'choice'].includes(player.motion.type))?.id || null : null, choices: {}, showBall: true, scenarioId: sourceLesson?.ball?.defaultScenario };
+  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: sourceLesson?.kind === 'route' ? sourceLesson.players.find(player => ['path', 'choice'].includes(player.motion.type))?.id || null : null, choices: {}, showBall: true, scenarioId: sourceLesson?.ball?.defaultScenario, fullField: state.fullField };
   lesson = sourceLesson;
   ballScenario = undefined;
   if (sourceLesson?.ball && state.showBall) {
@@ -176,14 +250,18 @@ function rebuildLesson(id, preserve = false) {
   $('routeOrientation').hidden = lesson?.kind !== 'route';
   $('teamPlanHeading').textContent = t(lesson?.kind === 'route' ? '这条路线怎么跑' : '这套配合想做到什么');
   $('ballControls').hidden = !sourceLesson?.ball;
+  $('ballSourceNote').hidden = !sourceLesson?.ball?.note;
   $('ballReadout').hidden = $('ballLegend').hidden = !ballScenario;
+  $('lessonMain').dataset.kind = lesson?.kind || '';
+  $('lessonMain').dataset.hasBall = String(Boolean(ballScenario));
+  $('fieldZoom').hidden = lesson?.kind !== 'route';
   if (!lesson) {
     text($('lessonTitle'), '内容包暂无教学条目');
     text($('summary'), '可以导入 YAML 添加战术，或从“我的战术文件”恢复内置手册。');
     for (const id of ['breadcrumb', 'lessonEnglish', 'direction', 'fieldHint', 'timingNote', 'sourceNote',
       'focusStatus', 'routeEnglish', 'routeChinese', 'routeDescription', 'routeBasis', 'routeDuties',
       'frameNumber', 'frameTitle', 'frameCue']) text($(id), '');
-    for (const id of ['field', 'roles', 'choices', 'frames', 'notes', 'sourceReferences']) $(id).replaceChildren();
+    for (const id of ['field', 'roles', 'choices', 'frames', 'timelineTicks', 'notes', 'sourceReferences']) $(id).replaceChildren();
     for (const id of ['play', 'reset', 'seek', 'previous', 'next', 'exportLesson']) $(id).disabled = true;
     $('source').hidden = $('choices').hidden = $('routeDuties').hidden = true;
     $('teamPlan').hidden = $('playerCoaching').hidden = $('routeSituation').hidden = $('sourceReferences').hidden = true;
@@ -220,7 +298,7 @@ function rebuildLesson(id, preserve = false) {
   text($('teachingCue'), lesson.teaching?.cue || '「你站在哪里？」');
   text($('teachingQuestion'), lesson.teaching?.question || '「你跑的时候，队友去哪儿？」');
   text($('direction'), `${lesson.field.attackDirection === 'up' ? '↑' : '↓'} ${t('进攻方向')}${lesson.kind === 'defense' ? t(' · 防守视角') : ''}`);
-  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? lesson.field.unit === 'yard' ? '全场按码绘制 · 秒数仅为演示时间' : '全场示意 · 距离与时间用于教学' : lesson.field.unit === 'yard' ? '按码绘制的教学区域 · 秒数为演示时间' : '悬停球员看跑法 · 点击保留');
+  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? lesson.field.unit === 'yard' ? '全场按码绘制 · 秒数仅为演示时间' : '全场示意 · 距离与时间用于教学' : lesson.field.unit === 'yard' ? '按码绘制的教学区域 · 秒数为演示时间' : touchQuery.matches ? '点一下球员，看他的跑法' : '悬停球员看跑法 · 点击保留');
   text($('timingNote'), lesson.timeline.note);
   text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? t`，第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}` : '来源待补：没有附带可识别的出处，也未声明自编。');
   $('notes').replaceChildren(...(lesson.notes || []).map(note => node('li', {}, note)));
@@ -233,6 +311,8 @@ function rebuildLesson(id, preserve = false) {
   const index = order.indexOf(id);
   text($('lessonIndex'), `${index + 1} / ${order.length}`);
   $('previous').disabled = index === 0; $('next').disabled = index === order.length - 1;
+  revealCatalogEntry(id);
+  $('fieldZoom').setAttribute('aria-pressed', String(Boolean(state.fullField)));
   buildRoles(); buildChoices(); buildBallControls(); buildField(); buildFrames(); buildDistanceGuide();
 }
 
@@ -300,7 +380,7 @@ function buildProvenance() {
 }
 function buildRoles() {
   const buttons = [node('button', { class: 'role', 'data-show-all': '', 'aria-pressed': 'true' }, '看全队')];
-  for (const player of lesson.players) buttons.push(node('button', { class: 'role', 'data-player': player.id, 'aria-pressed': 'false', 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` }, player.id));
+  for (const player of lesson.players) buttons.push(node('button', { class: 'role', 'data-player': player.id, 'aria-pressed': 'false', style: `--chip-color: ${playerColor(player)}`, 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` }, player.id));
   $('roles').replaceChildren(...buttons);
 }
 function buildChoices() {
@@ -330,6 +410,10 @@ function buildFrames() {
     button.append(node('span', {}, `${String(index + 1).padStart(2, '0')} · ${frame.at.toFixed(1)}s`), node('strong', {}, frame.label));
     return button;
   }));
+  // Keyframe dots sit under the progress bar so playback shows where the teaching stops are.
+  const duration = lesson.timeline.duration;
+  $('timelineTicks').replaceChildren(...(duration > 0 ? lesson.keyframes : []).map((frame, index) =>
+    node('span', {class: 'timeline-tick', 'data-tick': index, style: `--at: ${Math.min(1, frame.at / duration)}`})));
 }
 function numberLabel(value) { return Number(value.toFixed(1)).toString(); }
 function depthLabel(value) { return t`${numberLabel(value)} 码`; }
@@ -348,20 +432,75 @@ function buildDistanceGuide() {
   }));
 }
 
+function glyphScale() { return narrowQuery.matches ? 1.4 : 1; }
+// An explicit aspect ratio lets every browser derive the field height from its width.
+function setViewBox(field, {x, y, width, height}) {
+  field.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
+  field.style.aspectRatio = `${width} / ${height}`;
+}
+// Keep the line-of-scrimmage caption clear of the players lined up on it: try just above
+// the line, then just below, sliding along it from the preferred side until there is a gap.
+function placeLineLabel(label, {width, lineY, players, unit, glyph, preferEnd}) {
+  label.setAttribute('text-anchor', 'start');
+  label.setAttribute('x', 0); label.setAttribute('y', lineY);
+  const measured = label.getBBox();
+  const rise = lineY - measured.y;
+  const circles = players.map(player => ({x: player.at[0], y: player.at[1], r: 2.6 * glyph}));
+  const fits = (left, baseline) => {
+    const box = {x: left, y: baseline - rise, width: measured.width, height: measured.height};
+    return box.x >= unit && box.x + box.width <= width - unit
+      && !circles.some(({x, y, r}) => x + r > box.x && x - r < box.x + box.width && y + r > box.y && y - r < box.y + box.height);
+  };
+  const lefts = [];
+  for (let left = 2 * unit; left + measured.width <= width - unit; left += unit) lefts.push(left);
+  if (preferEnd) lefts.reverse();
+  // Hug the line first; then clear the players' circles entirely above or below it.
+  const clear = 2.8 * glyph;
+  for (const baseline of [lineY - 1.1 * glyph, lineY + rise + 1.1 * glyph, lineY - clear - (measured.height - rise), lineY + clear + rise]) {
+    const left = lefts.find(value => fits(value, baseline));
+    if (left !== undefined) { label.setAttribute('x', left); label.setAttribute('y', baseline); return; }
+  }
+  label.setAttribute('x', preferEnd ? Math.max(unit, width - 2 * unit - measured.width) : 2 * unit);
+  label.setAttribute('y', lineY - 1.1 * glyph);
+}
+// Basic routes open zoomed to the route, QB and depth labels; "看全场" restores the whole field.
+function routeViewport(viewport, {lineOfScrimmageY, height, endZoneDepth = 0}, labels, unit, glyph) {
+  const points = lesson.players.map(player => player.at);
+  for (const route of getRoutes(lesson, state.choices)) {
+    points.push(route.from);
+    for (const step of route.steps) for (const key of ['to', 'control', 'control1', 'control2']) if (step[key]) points.push(step[key]);
+  }
+  for (const box of labels) points.push([box.x, box.y], [box.x, box.y + box.height]);
+  if (lineOfScrimmageY !== undefined) points.push([0, lineOfScrimmageY]);
+  const ys = points.map(point => point[1]);
+  let top = Math.min(...ys) - 5 * glyph, bottom = Math.max(...ys) + 6 * glyph;
+  const minimum = height * .36;
+  if (bottom - top < minimum) { const extra = (minimum - (bottom - top)) / 2; top -= extra; bottom += extra; }
+  // Never slice a field caption (end zones, 场地中间, 中线) in half at the crop edge.
+  const bands = [[height / 2 - unit - 1.6 * glyph, height / 2 - unit + .5 * glyph], [endZoneDepth + 4 * unit - 1.6 * glyph, endZoneDepth + 4 * unit + .5 * glyph]];
+  if (endZoneDepth) bands.push([endZoneDepth / 2 - 1.4 * glyph, endZoneDepth / 2 + 1.4 * glyph], [height - endZoneDepth / 2 - 1.4 * glyph, height - endZoneDepth / 2 + 1.4 * glyph]);
+  for (const [from, to] of bands) {
+    if (top > from && top < to) top = from - .5 * glyph;
+    if (bottom > from && bottom < to) bottom = to + .5 * glyph;
+  }
+  top = Math.max(viewport.y, top); bottom = Math.min(viewport.y + viewport.height, bottom);
+  return {...viewport, y: top, height: bottom - top};
+}
+
 function buildField() {
   const { width: w, height: h, lineOfScrimmageY } = lesson.field;
   const isRoute = lesson.kind === 'route';
   const scaled = lesson.field.unit === 'yard';
   const unit = isRoute ? Math.min(w / 48, h / 80) : scaled ? Math.min(w / 60, h / 60) : Math.min(w / 100, h / 55);
+  // Geometry (grid, margins, callouts) uses `unit`; players, lines and captions use `g` so they stay legible on phones.
+  const g = unit * glyphScale();
   const field = $('field');
-  const viewport = { x: -3 * unit, y: -3 * unit, width: w + (scaled ? 14 : 6) * unit, height: h + 6 * unit };
-  field.classList.toggle('full-route-field', isRoute);
-  field.classList.toggle('yard-play-field', scaled && !isRoute);
+  let viewport = { x: -3 * unit, y: -3 * unit, width: w + (scaled ? 14 : 6) * unit, height: h + 6 * unit };
   $('routeMotionHint').hidden = !isRoute;
-  field.setAttribute('viewBox', `${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}`);
+  setViewBox(field, viewport);
   field.style.overflow = 'hidden';
   field.replaceChildren();
-  fieldNodes = { players: new Map(), routes: [], zones: new Map(), assignments: new Map(), facingGuides: new Map(), unit, viewport };
+  fieldNodes = { players: new Map(), routes: [], zones: new Map(), assignments: new Map(), facingGuides: new Map(), unit: g, viewport };
   const defs = svg('defs');
   const arrow = svg('marker', { id: 'guide-arrow', viewBox: '0 0 8 8', refX: 6, refY: 4, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' });
   arrow.append(svg('path', { d: 'M0 0 L8 4 L0 8 L2 4 Z', fill: '#d7c9ff' })); defs.append(arrow);
@@ -386,7 +525,7 @@ function buildField() {
       for (let distance = 0, count = 0; distance <= limit && count <= 200; distance += majorInterval, count++) {
         const y = lineOfScrimmageY + direction * distance;
         field.append(svg('path', {d: `M${w} ${y}h${unit}`, stroke: '#e8cf90', 'stroke-width': .2 * unit}));
-        field.append(svg('text', {x: w + 1.8 * unit, y, fill: '#e8cf90', 'font-size': 2.2 * unit, 'dominant-baseline': 'middle', 'data-yard-tick': distance}, depthLabel(distance)));
+        field.append(svg('text', {x: w + 1.8 * unit, y, fill: '#e8cf90', 'font-size': 1.8 * g, 'dominant-baseline': 'middle', 'data-yard-tick': distance}, depthLabel(distance)));
       }
     }
   } else {
@@ -401,19 +540,21 @@ function buildField() {
     for (const [y, label] of [[0, lesson.field.attackDirection === 'up' ? '进攻端区' : '己方端区'], [h - depth, lesson.field.attackDirection === 'up' ? '己方端区' : '进攻端区']]) {
       if (!depth) continue;
       field.append(svg('rect', {x: 0, y, width: w, height: depth, fill: '#cfdfbd', 'fill-opacity': .1, 'data-field-endzone': ''}));
-      field.append(svg('text', {x: w / 2, y: y + depth / 2, 'dominant-baseline': 'middle', 'text-anchor': 'middle', fill: '#d2dfcd', 'font-size': 2 * unit}, label));
+      field.append(svg('text', {x: w / 2, y: y + depth / 2, 'dominant-baseline': 'middle', 'text-anchor': 'middle', fill: '#d2dfcd', 'font-size': 2 * g}, label));
     }
     field.append(svg('path', {d: `M${w / 2} ${depth}V${h - depth}`, stroke: '#ffffff40', 'stroke-width': .15 * unit, 'stroke-dasharray': `${unit} ${unit}`}));
-    field.append(svg('text', {x: w / 2, y: depth + 4 * unit, fill: '#d2dfcd', 'font-size': 1.7 * unit, 'text-anchor': 'middle'}, '场地中间'));
+    field.append(svg('text', {x: w / 2, y: depth + 4 * unit, fill: '#d2dfcd', 'font-size': 1.7 * g, 'text-anchor': 'middle'}, '场地中间'));
     field.append(svg('path', {d: `M0 ${h / 2}H${w}`, stroke: '#ffffff45', 'stroke-width': .18 * unit}));
-    field.append(svg('text', {x: w - unit, y: h / 2 - unit, fill: '#b9d5d1', 'font-size': 1.5 * unit, 'text-anchor': 'end'}, '中线'));
+    field.append(svg('text', {x: w - unit, y: h / 2 - unit, fill: '#b9d5d1', 'font-size': 1.5 * g, 'text-anchor': 'end'}, '中线'));
     for (const [x, angle] of [[1.8 * unit, -90], [w - 1.8 * unit, 90]]) {
-      field.append(svg('text', {transform: `translate(${x} ${h * .64}) rotate(${angle})`, 'text-anchor': 'middle', fill: '#b9d5d1', 'font-size': 1.6 * unit}, '边线'));
+      field.append(svg('text', {transform: `translate(${x} ${h * .64}) rotate(${angle})`, 'text-anchor': 'middle', fill: '#b9d5d1', 'font-size': 1.6 * g}, '边线'));
     }
   }
   if (lineOfScrimmageY !== undefined) {
     field.append(svg('path', { d: `M0 ${lineOfScrimmageY}H${w}`, stroke: '#9bd0db80', 'stroke-width': .25 * unit }));
-    field.append(svg('text', { x: isRoute ? w - 2 * unit : 2 * unit, y: lineOfScrimmageY - 1.1 * unit, fill: '#b9d5d1', 'font-size': (isRoute ? 1.6 : 1.35) * unit, 'text-anchor': isRoute ? 'end' : 'start' }, '开球线'));
+    const lineLabel = svg('text', { fill: '#b9d5d1', stroke: '#214f40', 'stroke-width': .45 * g, 'paint-order': 'stroke', 'font-size': 1.6 * g, 'data-scrimmage-label': '' }, '开球线');
+    field.append(lineLabel);
+    placeLineLabel(lineLabel, {width: w, lineY: lineOfScrimmageY, players: lesson.players, unit, glyph: g, preferEnd: isRoute});
   }
   for (const zone of lesson.zones || []) {
     const group = svg('g', { 'data-zone': zone.id });
@@ -424,40 +565,40 @@ function buildField() {
   }
   for (const assignment of lesson.assignments || []) {
     const group = svg('g', { 'data-assignment': assignment.id });
-    if (assignment.guide) group.append(svg('path', { d: pathToSvg(assignment.guide.from, assignment.guide.segments), fill: 'none', stroke: '#d7c9ff', 'stroke-width': .28 * unit, 'stroke-dasharray': `${.7 * unit} ${.5 * unit}`, ...(assignment.type === 'matchup' ? {} : {'marker-end': 'url(#guide-arrow)'}) }));
+    if (assignment.guide) group.append(svg('path', { d: pathToSvg(assignment.guide.from, assignment.guide.segments), fill: 'none', stroke: '#d7c9ff', 'stroke-width': .28 * g, 'stroke-dasharray': `${.7 * unit} ${.5 * unit}`, ...(assignment.type === 'matchup' ? {} : {'marker-end': 'url(#guide-arrow)'}) }));
     field.append(group); fieldNodes.assignments.set(assignment.id, group);
   }
   for (const route of getRoutes(lesson, state.choices)) {
     const player = lesson.players.find(player => player.id === route.playerId);
-    const shape = {fill: 'none', stroke: playerColor(player), 'stroke-width': .43 * unit, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'pointer-events': 'none'};
+    const shape = {fill: 'none', stroke: playerColor(player), 'stroke-width': .43 * g, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'pointer-events': 'none'};
     const path = svg('path', { ...shape, class: 'route', 'data-player-route': player.id, d: pathToSvg(route.from, route.steps), 'marker-end': isRoute ? 'none' : `url(#arrow-${player.id})` });
     const activeNode = isRoute ? svg('path', {...shape, 'data-active-route': player.id, 'marker-end': `url(#arrow-${player.id})`, visibility: 'hidden'}) : undefined;
     field.append(path); fieldNodes.routes.push({ node: path, activeNode, ...route });
   }
-  buildBallPaths(field, unit);
+  buildBallPaths(field, g);
   const measurements = getRouteMeasurements(lesson);
   const distanceLabels = [];
   for (const [index, mark] of measurements.entries()) {
     const [x, y] = mark.position;
     const group = svg('g', {class: 'distance-marker', 'data-distance-mark': mark.id, 'data-depth-yards': mark.depthYards, 'data-marker-x': x, 'data-marker-y': y, role: 'button', tabindex: 0, 'aria-label': `${depthLabel(mark.depthYards)} · ${mark.label}`});
-    group.append(svg('circle', {class: 'distance-marker-focus', cx: x, cy: y, r: 3.3 * unit, fill: 'none', stroke: '#ffe8a7', 'stroke-width': .25 * unit}));
-    group.append(svg('circle', {cx: x, cy: y, r: .8 * unit, fill: '#e8cf90', stroke: '#173b30', 'stroke-width': .2 * unit}));
+    group.append(svg('circle', {class: 'distance-marker-focus', cx: x, cy: y, r: 3.3 * g, fill: 'none', stroke: '#ffe8a7', 'stroke-width': .25 * g}));
+    group.append(svg('circle', {cx: x, cy: y, r: .8 * g, fill: '#e8cf90', stroke: '#173b30', 'stroke-width': .2 * g}));
     group.addEventListener('click', () => seek(mark.at));
     group.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); seek(mark.at); } });
     const label = `${index + 1} · ${depthLabel(mark.depthYards)}`;
-    const labelNode = svg('text', {x: x + 1.7 * unit, y: y - 1.8 * unit, fill: '#ffe8a7', stroke: '#214f40', 'stroke-width': .5 * unit, 'paint-order': 'stroke', 'font-size': 2.2 * unit, 'font-weight': 700}, label);
+    const labelNode = svg('text', {x: x + 1.7 * g, y: y - 1.8 * g, fill: '#ffe8a7', stroke: '#214f40', 'stroke-width': .5 * g, 'paint-order': 'stroke', 'font-size': 2.2 * g, 'font-weight': 700}, label);
     group.append(labelNode);
     field.append(group);
     // Cuts at the same depth still need separate readable labels (for example Chair).
     let bounds = labelNode.getBBox();
     for (let attempt = 0; attempt < measurements.length; attempt++) {
-      const overlap = distanceLabels.some(box => bounds.x < box.x + box.width + unit && bounds.x + bounds.width + unit > box.x && bounds.y < box.y + box.height + unit && bounds.y + bounds.height + unit > box.y);
+      const overlap = distanceLabels.some(box => bounds.x < box.x + box.width + g && bounds.x + bounds.width + g > box.x && bounds.y < box.y + box.height + g && bounds.y + bounds.height + g > box.y);
       if (!overlap) break;
-      labelNode.setAttribute('y', Number(labelNode.getAttribute('y')) - 3.5 * unit);
+      labelNode.setAttribute('y', Number(labelNode.getAttribute('y')) - 3.5 * g);
       bounds = labelNode.getBBox();
     }
-    if (Number(labelNode.getAttribute('y')) !== y - 1.8 * unit) {
-      group.insertBefore(svg('path', {d: `M${x} ${y}L${labelNode.getAttribute('x')} ${Number(labelNode.getAttribute('y')) + .6 * unit}`, stroke: '#e8cf90', 'stroke-width': .16 * unit, 'stroke-dasharray': `${.4 * unit} ${.4 * unit}`, 'pointer-events': 'none', fill: 'none'}), group.firstChild);
+    if (Number(labelNode.getAttribute('y')) !== y - 1.8 * g) {
+      group.insertBefore(svg('path', {d: `M${x} ${y}L${labelNode.getAttribute('x')} ${Number(labelNode.getAttribute('y')) + .6 * g}`, stroke: '#e8cf90', 'stroke-width': .16 * g, 'stroke-dasharray': `${.4 * g} ${.4 * g}`, 'pointer-events': 'none', fill: 'none'}), group.firstChild);
     }
     distanceLabels.push(bounds);
   }
@@ -466,9 +607,9 @@ function buildField() {
     const runner = lesson.players.find(player => player.id === lesson.routeGuide.player);
     // Mark the initial straight stem separately from the route's total travel.
     if (firstMark.step === 0 && runner.at[0] === firstMark.position[0] && runner.at[1] === lineOfScrimmageY) {
-      const x = Math.max(unit, runner.at[0] - 4 * unit), top = firstMark.position[1], bottom = lineOfScrimmageY;
-      field.append(svg('path', {d: `M${x + unit} ${top}H${x}V${bottom}h${unit}`, stroke: '#e8cf90', 'stroke-width': .2 * unit, fill: 'none', 'data-stem-bracket': ''}));
-      field.append(svg('text', {x: x - unit, y: (top + bottom) / 2, fill: '#ffe8a7', 'font-size': 2.2 * unit, 'text-anchor': 'end', 'dominant-baseline': 'middle'}, depthLabel(firstMark.depthYards)));
+      const x = Math.max(unit, runner.at[0] - 4 * g), top = firstMark.position[1], bottom = lineOfScrimmageY;
+      field.append(svg('path', {d: `M${x + unit} ${top}H${x}V${bottom}h${unit}`, stroke: '#e8cf90', 'stroke-width': .2 * g, fill: 'none', 'data-stem-bracket': ''}));
+      field.append(svg('text', {x: x - unit, y: (top + bottom) / 2, fill: '#ffe8a7', 'font-size': 2.2 * g, 'text-anchor': 'end', 'dominant-baseline': 'middle'}, depthLabel(firstMark.depthYards)));
     }
   }
   // Current-step arrows sit above distance dots so a turn marker cannot hide the arrowhead.
@@ -476,43 +617,50 @@ function buildField() {
   const facingPlayers = new Set(getRoutes(lesson).filter(route => route.steps.some(step => step.facePlayer)).map(route => route.playerId));
   $('facingHint').hidden = facingPlayers.size === 0;
   for (const id of facingPlayers) {
-    const guide = svg('line', {'data-facing-guide': id, stroke: '#ffe8a7', 'stroke-width': .2 * unit, 'stroke-dasharray': `${.45 * unit} ${.6 * unit}`, 'pointer-events': 'none', visibility: 'hidden'});
+    const guide = svg('line', {'data-facing-guide': id, stroke: '#ffe8a7', 'stroke-width': .2 * g, 'stroke-dasharray': `${.45 * g} ${.6 * g}`, 'pointer-events': 'none', visibility: 'hidden'});
     field.append(guide); fieldNodes.facingGuides.set(id, guide);
   }
   for (const player of lesson.players) {
     const group = svg('g', { class: 'player', 'data-player': player.id, tabindex: 0, role: 'button', 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` });
-    group.append(svg('circle', { class: 'focus-ring', r: 2.85 * unit, fill: 'none', stroke: '#fff8d6', 'stroke-width': .25 * unit, opacity: 0 }));
-    const common = { fill: playerColor(player), stroke: '#153b2f', 'stroke-width': .22 * unit };
-    if (player.team === 'defense') group.append(svg('path', { ...common, d: `M0 ${-2.2 * unit}L${2.2 * unit} ${1.85 * unit}L${-2.2 * unit} ${1.85 * unit}Z` }));
-    else if (player.id === 'C') group.append(svg('rect', { ...common, x: -1.85 * unit, y: -1.85 * unit, width: 3.7 * unit, height: 3.7 * unit, rx: .45 * unit }));
-    else group.append(svg('circle', { ...common, r: 1.95 * unit }));
-    if (facingPlayers.has(player.id)) group.append(svg('path', {'data-facing': '', d: `M${-1.1 * unit} ${-2.65 * unit}L0 ${-4.25 * unit}L${1.1 * unit} ${-2.65 * unit}Z`, fill: '#ffe8a7', stroke: '#153b2f', 'stroke-width': .2 * unit, visibility: 'hidden'}));
-    group.append(svg('text', { x: 0, y: (player.team === 'defense' ? .95 : .75) * unit, 'text-anchor': 'middle', 'font-size': (player.id.length > 2 ? 1.25 : player.id.length > 1 ? 1.7 : 2.2) * unit, 'font-weight': 750, fill: '#153b2f' }, player.id));
-    if (isRoute && player.id === 'QB') group.append(svg('text', {x: 0, y: 4.5 * unit, 'text-anchor': 'middle', fill: '#ffd3a2', 'font-size': 1.6 * unit}, '传球参照'));
-    group.append(svg('circle', { r: 2.7 * unit, fill: 'transparent' }));
+    group.append(svg('circle', { class: 'focus-ring', r: 2.85 * g, fill: 'none', stroke: '#fff8d6', 'stroke-width': .25 * g, opacity: 0 }));
+    const common = { fill: playerColor(player), stroke: '#153b2f', 'stroke-width': .22 * g };
+    if (player.team === 'defense') group.append(svg('path', { ...common, d: `M0 ${-2.2 * g}L${2.2 * g} ${1.85 * g}L${-2.2 * g} ${1.85 * g}Z` }));
+    else if (player.id === 'C') group.append(svg('rect', { ...common, x: -1.85 * g, y: -1.85 * g, width: 3.7 * g, height: 3.7 * g, rx: .45 * g }));
+    else group.append(svg('circle', { ...common, r: 1.95 * g }));
+    if (facingPlayers.has(player.id)) group.append(svg('path', {'data-facing': '', d: `M${-1.1 * g} ${-2.65 * g}L0 ${-4.25 * g}L${1.1 * g} ${-2.65 * g}Z`, fill: '#ffe8a7', stroke: '#153b2f', 'stroke-width': .2 * g, visibility: 'hidden'}));
+    group.append(svg('text', { x: 0, y: (player.team === 'defense' ? .95 : .75) * g, 'text-anchor': 'middle', 'font-size': (player.id.length > 2 ? 1.25 : player.id.length > 1 ? 1.7 : 2.2) * g, 'font-weight': 750, fill: '#153b2f' }, player.id));
+    if (isRoute && player.id === 'QB') group.append(svg('text', {x: 0, y: 4.5 * g, 'text-anchor': 'middle', fill: '#ffd3a2', 'font-size': 1.6 * g}, '传球参照'));
+    // A generous invisible hit area keeps small letters easy to tap.
+    group.append(svg('circle', { r: 2.7 * g * (narrowQuery.matches ? 1.2 : 1), fill: 'transparent' }));
     field.append(group); fieldNodes.players.set(player.id, group);
   }
-  buildBallActions(field, unit);
+  buildBallActions(field, unit, g);
   if (ballScenario) {
     const ball = svg('g', {'data-ball': '', role: 'img', 'pointer-events': 'none'});
     // The same small offset is used for held balls and both flight endpoints.
     // It keeps the football visible beside a player's letter without teleporting.
-    const glyph = svg('g', {transform: `translate(${2.65 * unit} ${-1.7 * unit}) rotate(-30)`});
-    glyph.append(svg('ellipse', {rx: 1.65 * unit, ry: .96 * unit, fill: '#934725', stroke: '#fff5ce', 'stroke-width': .4 * unit}));
-    glyph.append(svg('path', {d: `M${-.85 * unit} 0H${.85 * unit} M${-.45 * unit} ${-.35 * unit}V${.35 * unit} M0 ${-.35 * unit}V${.35 * unit} M${.45 * unit} ${-.35 * unit}V${.35 * unit}`, stroke: '#fff5ce', 'stroke-width': .2 * unit, fill: 'none'}));
+    const glyph = svg('g', {transform: `translate(${2.65 * g} ${-1.7 * g}) rotate(-30)`});
+    glyph.append(svg('ellipse', {rx: 1.65 * g, ry: .96 * g, fill: '#934725', stroke: '#fff5ce', 'stroke-width': .4 * g}));
+    glyph.append(svg('path', {d: `M${-.85 * g} 0H${.85 * g} M${-.45 * g} ${-.35 * g}V${.35 * g} M0 ${-.35 * g}V${.35 * g} M${.45 * g} ${-.35 * g}V${.35 * g}`, stroke: '#fff5ce', 'stroke-width': .2 * g, fill: 'none'}));
     ball.append(glyph); field.append(ball); fieldNodes.ball = ball;
-    const carrier = svg('circle', {'data-ball-carrier': '', r: 2.45 * unit, stroke: '#fff5ce', 'stroke-width': .45 * unit, fill: 'none', 'pointer-events': 'none'});
+    const carrier = svg('circle', {'data-ball-carrier': '', r: 2.45 * g, stroke: '#fff5ce', 'stroke-width': .45 * g, fill: 'none', 'pointer-events': 'none'});
     field.insertBefore(carrier, ball); fieldNodes.carrier = carrier;
   }
+  if (isRoute && !state.fullField) {
+    viewport = routeViewport(viewport, lesson.field, distanceLabels, unit, g);
+    setViewBox(field, viewport);
+    fieldNodes.viewport = viewport;
+  }
   const tooltip = svg('g', { id: 'fieldTooltip', 'pointer-events': 'none', 'aria-hidden': 'true', style: 'display:none' });
-  tooltip.append(svg('rect', { width: 26 * unit, height: 7.5 * unit, rx: 1 * unit, fill: '#fffefa', stroke: '#d1ddc5', 'stroke-width': .15 * unit }));
-  const first = svg('text', { x: 1.2 * unit, y: 3 * unit, fill: '#183c32', 'font-size': 2 * unit, 'font-weight': 700 });
-  const second = svg('text', { x: 1.2 * unit, y: 5.8 * unit, fill: '#68775e', 'font-size': 1.35 * unit });
+  tooltip.append(svg('rect', { width: 26 * g, height: 7.5 * g, rx: 1 * g, fill: '#fffefa', stroke: '#d1ddc5', 'stroke-width': .15 * g }));
+  const first = svg('text', { x: 1.2 * g, y: 3 * g, fill: '#183c32', 'font-size': 2 * g, 'font-weight': 700 });
+  const second = svg('text', { x: 1.2 * g, y: 5.8 * g, fill: '#4f5f53', 'font-size': 1.35 * g });
   tooltip.append(first, second); field.append(tooltip);
   Object.assign(fieldNodes, { tooltip, tooltipFirst: first, tooltipSecond: second });
 }
 
 function buildBallPaths(field, unit) {
+  // `unit` is the glyph size here: flight endpoints must match the drawn ball offset.
   $('ballReadout').hidden = $('ballLegend').hidden = !ballScenario;
   if (!ballScenario) return;
   const ball = getBallState(lesson, 0, state.choices, ballScenario);
@@ -538,7 +686,7 @@ function buildBallPaths(field, unit) {
   });
 }
 
-function buildBallActions(field, unit) {
+function buildBallActions(field, unit, glyph) {
   if (!ballScenario) return;
   const types = {'handoff': '交递', 'fake-handoff': '假交', 'pump-fake': '假传'};
   const actions = ballScenario.events.filter(event => types[event.type]).map(event => {
@@ -554,7 +702,7 @@ function buildBallActions(field, unit) {
   const overlap = (a, b) => Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x))
     * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
   const obstacles = actions.map(({point: [x, y]}) => ({x: x - 4 * unit, y: y - 4 * unit, width: 8 * unit, height: 8 * unit}));
-  for (const player of lesson.players) obstacles.push({x: player.at[0] - 3 * unit, y: player.at[1] - 3 * unit, width: 6 * unit, height: 6 * unit});
+  for (const player of lesson.players) obstacles.push({x: player.at[0] - 3 * glyph, y: player.at[1] - 3 * glyph, width: 6 * glyph, height: 6 * glyph});
   fieldNodes.ballActions = actions.map(({event, point: [x, y], endAt}, index) => {
     const participants = event.type === 'handoff' ? `${event.from} → ${event.to}` : event.to ? `${event.from} / ${event.to}` : event.from;
     const label = `${index + 1} · ${t(types[event.type])} ${participants}`;
@@ -627,6 +775,8 @@ function renderBall(time) {
   text($('ballStatus'), status);
   const eventCue = event?.endAt !== undefined && time >= event.endAt ? event.endCue || event.cue : event?.cue;
   text($('ballEvent'), eventCue || ballScenario.title);
+  // The caption beside the readout often already says the same thing.
+  $('ballEvent').hidden = $('ballEvent').textContent === $('frameCue').textContent;
   fieldNodes.ball.setAttribute('transform', `translate(${ball.position.join(' ')})`);
   fieldNodes.ball.setAttribute('data-ball-state', ball.state);
   fieldNodes.ball.setAttribute('data-ball-owner', ball.owner || '');
@@ -716,7 +866,8 @@ function render() {
   text($('focusStatus'), state.role === null ? '正在看全队' : t`关注 ${state.role} · 队友仍可见`);
   text($('routePerson'), player?.id || '?'); $('routePerson').style.background = player ? playerColor(player) : '#e6eadf';
   text($('routeMode'), player ? t`${player.id} 的${t(lesson.kind === 'defense' ? '分工' : '跑法')} · ${t(hovered ? '悬停查看' : focused ? '键盘查看' : '已保留')}` : '认识跑法');
-  text($('routeEnglish'), player ? player.label.en || player.label.zh : '移到球员上试试');
+  $('routeCard').classList.toggle('is-empty', !player);
+  text($('routeEnglish'), player ? player.label.en || player.label.zh : touchQuery.matches ? '点一下球员试试' : '移到球员上试试');
   text($('routeChinese'), player?.label.en && player.label.en !== player.label.zh ? player.label.zh : '');
   text($('routeDescription'), scenarioMotion?.note || player?.label.description || '名称、路线和动作一起看。点击一个字母，边播放边观察他和队友怎样配合。');
   $('playerCoaching').hidden = !player?.coaching;
@@ -757,8 +908,11 @@ function render() {
   $('play').disabled = staticScene || !scene.ready;
   $('seek').disabled = staticScene || !scene.ready;
   $('seek').value = state.time;
+  const progress = lesson.timeline.duration > 0 ? state.time / lesson.timeline.duration : 0;
+  $('seek').style.setProperty('--progress', `calc(8px + (100% - 16px) * ${progress})`);
   text($('clock'), `${state.time.toFixed(1)} / ${lesson.timeline.duration.toFixed(1)} s`);
   const frameIndex = lesson.keyframes.indexOf(scene.keyframe);
+  $('timelineTicks').querySelectorAll('[data-tick]').forEach((tick, index) => { tick.dataset.current = String(index === frameIndex); });
   text($('frameNumber'), String(frameIndex + 1).padStart(2, '0'));
   text($('frameTitle'), scene.keyframe.label); text($('frameCue'), scene.keyframe.cue);
   $('frames').querySelectorAll('button').forEach((button, index) => {
@@ -787,13 +941,28 @@ $('language').addEventListener('change', () => {
   buildCatalog(); selectLesson(id, true);
 });
 $('search').addEventListener('input', buildCatalog);
-$('catalog').addEventListener('click', event => { const button = event.target.closest('[data-lesson]'); if (button) selectLesson(button.dataset.lesson); });
+$('catalog').addEventListener('click', event => {
+  const button = event.target.closest('[data-lesson]'); if (!button) return;
+  selectLesson(button.dataset.lesson);
+  if (drawerQuery.matches) setCatalogOpen(false);
+});
+$('catalogToggle').addEventListener('click', () => setCatalogOpen(!document.body.classList.contains('catalog-open')));
+$('catalogClose').addEventListener('click', () => setCatalogOpen(false));
+$('catalogBackdrop').addEventListener('click', () => setCatalogOpen(false));
+drawerQuery.addEventListener('change', () => setCatalogOpen(false, false));
+narrowQuery.addEventListener('change', rebuildField);
+document.querySelector('.brand').addEventListener('click', event => { event.preventDefault(); scrollTo({top: 0}); });
+window.addEventListener('hashchange', () => {
+  const id = lessonFromHash();
+  if (id && id !== lesson?.id && pack.lessons.some(item => item.id === id)) selectLesson(id);
+});
 $('previous').addEventListener('click', () => selectLesson(order[order.indexOf(lesson.id) - 1]));
 $('next').addEventListener('click', () => selectLesson(order[order.indexOf(lesson.id) + 1]));
-$('play').addEventListener('click', () => {
-  if (!getScene(lesson, 0, state.choices).ready) return;
-  if (state.time >= lesson.timeline.duration) state.time = 0;
-  state.playing = !state.playing; lastTick = undefined; render();
+$('play').addEventListener('click', togglePlay);
+$('fieldZoom').addEventListener('click', () => {
+  state.fullField = !state.fullField;
+  $('fieldZoom').setAttribute('aria-pressed', String(state.fullField));
+  rebuildField();
 });
 $('reset').addEventListener('click', () => seek(0));
 $('ballEnabled').addEventListener('change', event => {
@@ -810,15 +979,35 @@ $('ballOptions').addEventListener('click', event => {
 });
 $('seek').addEventListener('input', event => seek(Number(event.target.value)));
 $('frames').addEventListener('click', event => { const button = event.target.closest('[data-frame]'); if (button) seek(lesson.keyframes[Number(button.dataset.frame)].at); });
-document.querySelectorAll('[data-speed]').forEach(button => button.addEventListener('click', () => {
-  state.speed = Number(button.dataset.speed);
-  lastTick = undefined;
-  document.querySelectorAll('[data-speed]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+document.querySelectorAll('[data-speed]').forEach(button => button.addEventListener('click', () => setSpeed(Number(button.dataset.speed))));
+// Shortcuts stay out of the way of typing, sliders, menus and focused buttons.
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && document.body.classList.contains('catalog-open')) { setCatalogOpen(false); return; }
+  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || !lesson) return;
+  if (document.querySelector('dialog[open]') || document.body.classList.contains('catalog-open')) return;
+  const target = event.target instanceof Element ? event.target : null;
+  if (target?.closest('input, select, textarea, [contenteditable="true"]')) return;
+  const onControl = Boolean(target?.closest('button, summary, a, [role="button"]'));
+  if (event.key === ' ' || event.key === 'k' || event.key === 'K') {
+    if (event.key === ' ' && onControl) return;
+    event.preventDefault(); togglePlay();
+  } else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+    event.preventDefault(); stepKeyframe(event.key === 'ArrowRight' ? 1 : -1);
+  } else if (/^[1-4]$/.test(event.key)) setSpeed([.5, 1, 2, 3][Number(event.key) - 1]);
+  else if (event.key === '0') seek(0);
+});
+// The legend opens by default on wide screens; a parent's own choice is remembered.
+try {
+  const legend = localStorage.getItem('flagventures.legend');
+  $('boardLegend').open = legend ? legend === 'open' : !drawerQuery.matches;
+} catch { $('boardLegend').open = !drawerQuery.matches; }
+$('boardLegend').querySelector('summary').addEventListener('click', () => setTimeout(() => {
+  try { localStorage.setItem('flagventures.legend', $('boardLegend').open ? 'open' : 'closed'); } catch {}
 }));
 $('choices').addEventListener('click', event => {
   const button = event.target.closest('[data-choice-player]'); if (!button) return;
   state.choices[button.dataset.choicePlayer] = button.dataset.option;
-  state.time = 0; pause();
+  state.time = 0; pause(); fitField();
 });
 for (const id of ['field', 'roles']) {
   const surface = $(id);
@@ -908,5 +1097,5 @@ function tick(now) {
   } else lastTick = undefined;
   requestAnimationFrame(tick);
 }
-try { validatePack(builtIn, '内置手册'); setPack(builtIn, '内置手册'); requestAnimationFrame(tick); }
+try { validatePack(builtIn, '内置手册'); setPack(builtIn, '内置手册', lessonFromHash()); requestAnimationFrame(tick); }
 catch (error) { text($('lessonTitle'), '内置内容检查未通过'); text($('summary'), error.message); console.error(error); }

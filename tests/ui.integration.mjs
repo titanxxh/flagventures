@@ -36,7 +36,7 @@ const currentTime = async () => Number(await page.locator('#seek').inputValue())
 const positions = () => page.locator('#field .player').evaluateAll(nodes => nodes.map(node => [node.dataset.player, node.getAttribute('transform')]));
 const open = async () => {
   await page.goto(pathToFileURL(target).href, {waitUntil: 'load'});
-  await page.locator('#catalog [data-lesson]').first().waitFor();
+  await page.locator('#catalog [data-lesson]').first().waitFor({state: 'attached'});
   assert.ok(!(await page.locator('#lessonTitle').textContent()).includes('检查未通过'));
 };
 const manage = async () => {
@@ -53,6 +53,10 @@ const importSamples = async () => {
   assert.equal((await ids()).length, samplePack.lessons.length);
 };
 const select = async id => {
+  // Tablets and phones keep the catalog in a drawer.
+  if (await page.locator('#catalogToggle').isVisible() && !(await page.locator('body.catalog-open').count())) {
+    await page.locator('#catalogToggle').click();
+  }
   const entry = page.locator(`#catalog [data-lesson="${id}"]`);
   const member = page.locator(`[data-lesson="${id}"]`);
   const section = page.locator('#catalog details.catalog-section').filter({has: member});
@@ -141,14 +145,14 @@ try {
     }
   });
 
-  await caseRun('all four catalog sections collapse, search and follow cross-section navigation without resetting the scene', async () => {
+  await caseRun('every catalog section collapses, search and follow cross-section navigation without resetting the scene', async () => {
     await open();
     const sections = await page.locator('#builtInData').evaluate(node => JSON.parse(node.textContent).sections);
     assert.deepEqual(sections.map(section => [section.id, section.lessonIds.length]), [
-      ['routes', 11], ['offensive-formations', 40], ['run-plays', 9], ['defense', 5],
+      ['routes', 11], ['offensive-formations', 40], ['run-plays', 9], ['defense', 5], ['passing-concepts', 6],
     ]);
     const sectionNode = id => page.locator(`#catalog details.catalog-section[data-catalog-section="${id}"]`);
-    assert.equal(await page.locator('#catalog > details.catalog-section').count(), 4);
+    assert.equal(await page.locator('#catalog > details.catalog-section').count(), sections.length);
     for (const section of sections) {
       const details = sectionNode(section.id);
       const header = details.locator(':scope > summary.section-label');
@@ -212,7 +216,7 @@ try {
 
   await caseRun('formation groups expand, preserve search context and follow next lesson', async () => {
     await open();
-    assert.equal(await page.locator('.catalog-group').count(), 10);
+    assert.equal(await page.locator('.catalog-group').count(), 13);
     assert.equal(await page.locator('.catalog-group[open]').count(), 0);
     const first = page.locator('[data-catalog-group="single-back-formation"]');
     assert.equal(await first.locator('[data-lesson]').count(), 4);
@@ -519,6 +523,165 @@ try {
     }
     await page.setViewportSize({width: 1440, height: 1000});
     assert.deepEqual(externalRequests, [], 'local teaching must not request remote resources');
+  });
+
+  await caseRun('the address remembers the lesson and opens shared links', async () => {
+    // Leave the document first: a same-file link with a new fragment would not reload it.
+    await page.goto('about:blank');
+    await page.goto(`${pathToFileURL(target).href}#lesson=cover-2`, {waitUntil: 'load'});
+    await page.locator('#catalog [data-lesson]').first().waitFor({state: 'attached'});
+    const lessons = await page.locator('#builtInData').evaluate(node => JSON.parse(node.textContent).lessons.map(item => [item.id, item.title.zh]));
+    const title = id => lessons.find(([lessonId]) => lessonId === id)[1];
+    assert.equal(await page.locator('#lessonTitle').textContent(), title('cover-2'));
+    assert.equal(await page.locator('[aria-current="true"]').getAttribute('data-lesson'), 'cover-2');
+    await select('hb-dive');
+    assert.equal(new URL(page.url()).hash, '#lesson=hb-dive');
+    await page.evaluate(() => { location.hash = '#lesson=route-post'; });
+    await page.waitForFunction(expected => document.querySelector('#lessonTitle').textContent === expected, title('route-post'));
+    await page.reload();
+    assert.equal(await page.locator('#lessonTitle').textContent(), title('route-post'), 'a refresh returns to the same lesson');
+    await page.evaluate(() => { location.hash = '#lesson=not-a-lesson'; });
+    await page.waitForTimeout(100);
+    assert.equal(await page.locator('#lessonTitle').textContent(), title('route-post'), 'unknown links leave the current lesson alone');
+    await open();
+    assert.equal(await page.locator('[aria-current="true"]').getAttribute('data-lesson'), lessons[0][0], 'without a link the first lesson opens');
+  });
+
+  await caseRun('the catalog scrolls to follow the selected lesson', async () => {
+    await page.setViewportSize({width: 1440, height: 800});
+    await open();
+    const order = await ids();
+    const visibleInCatalog = () => page.locator('#catalog [aria-current="true"]').evaluate(entry => {
+      const box = entry.getBoundingClientRect(), view = document.querySelector('#catalog').getBoundingClientRect();
+      return box.top >= view.top - 1 && box.bottom <= view.bottom + 1;
+    });
+    for (let index = 0; index < order.length - 1; index += 7) {
+      await page.evaluate(id => { location.hash = `#lesson=${id}`; }, order[index]);
+      await page.waitForFunction(id => document.querySelector('#catalog [aria-current="true"]')?.dataset.lesson === id, order[index]);
+      assert.equal(await visibleInCatalog(), true, `${order[index]} is scrolled into the catalog`);
+      assert.equal(await page.evaluate(() => scrollY), 0, 'following the catalog never scrolls the page');
+    }
+    await select(order.at(-2));
+    await page.locator('#next').click();
+    assert.equal(await visibleInCatalog(), true, 'next keeps the catalog in step');
+    await page.setViewportSize({width: 1440, height: 1000});
+  });
+
+  await caseRun('keyboard shortcuts drive playback without hijacking focused controls', async () => {
+    await open();
+    await select('spread-play-1');
+    assert.ok(await page.locator('#frames [data-frame]').count() > 2);
+    await page.locator('#summary').click();
+    await page.keyboard.press('Space');
+    await page.waitForFunction(() => Number(document.querySelector('#seek').value) > .05);
+    assert.match(await page.locator('#playState').textContent(), /演示中/);
+    await page.keyboard.press('Space');
+    assert.match(await page.locator('#playState').textContent(), /暂停/);
+    await page.keyboard.press('0');
+    assert.equal(await currentTime(), 0);
+    const pressed = () => page.locator('#frames [aria-pressed="true"]').getAttribute('data-frame');
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await pressed(), '1');
+    const first = await currentTime();
+    assert.ok(first > 0);
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await pressed(), '2');
+    assert.ok(await currentTime() > first);
+    await page.keyboard.press('ArrowLeft');
+    assert.equal(await pressed(), '1');
+    assert.equal(await currentTime(), first);
+    assert.match(await page.locator('#playState').textContent(), /暂停/, 'stepping pauses playback');
+    for (const [key, speed] of [['1', '0.5'], ['4', '3'], ['3', '2']]) {
+      await page.keyboard.press(key);
+      assert.equal(await page.locator(`[data-speed="${speed}"]`).getAttribute('aria-pressed'), 'true', `key ${key}`);
+    }
+    await page.locator('#reset').focus();
+    await page.keyboard.press('Space');
+    assert.equal(await currentTime(), 0, 'Space on a focused button activates that button');
+    assert.match(await page.locator('#playState').textContent(), /暂停/, 'and does not also start playback');
+    await page.locator('#search').focus();
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.type('1');
+    assert.equal(await currentTime(), 0, 'typing in search never seeks');
+    assert.equal(await page.locator('[data-speed="2"]').getAttribute('aria-pressed'), 'true', 'typing in search never changes speed');
+    await page.locator('#search').fill('');
+  });
+
+  await caseRun('on a 1440×900 screen the field, caption and controls fit without scrolling', async () => {
+    await page.setViewportSize({width: 1440, height: 900});
+    for (const id of ['spread-play-1', 'route-hitch', 'cover-2', 'hb-dive', 'single-back-formation']) {
+      await open();
+      await select(id);
+      const layout = await page.evaluate(() => ({
+        field: document.querySelector('#field').getBoundingClientRect().toJSON(),
+        play: document.querySelector('#play').getBoundingClientRect().toJSON(),
+        cue: document.querySelector('.cue').getBoundingClientRect().toJSON(),
+        scrollY,
+      }));
+      assert.equal(layout.scrollY, 0, id);
+      assert.ok(layout.play.bottom <= 900 && layout.cue.bottom <= 900, `${id}: controls are in the first screen (${Math.round(layout.play.bottom)})`);
+      assert.ok(layout.field.height >= 300, `${id}: field stays at least 300px tall (${Math.round(layout.field.height)})`);
+    }
+    await page.setViewportSize({width: 1440, height: 1000});
+  });
+
+  await caseRun('phones use a catalog drawer, a full-width field and large touch targets', async () => {
+    await open();
+    await page.setViewportSize({width: 390, height: 844});
+    const library = page.locator('#library');
+    await library.waitFor({state: 'hidden'});
+    assert.equal(await page.locator('#catalogToggle').getAttribute('aria-expanded'), 'false');
+    await page.locator('#catalogToggle').click();
+    assert.equal(await page.locator('#library').isVisible(), true);
+    assert.equal(await page.locator('#catalogToggle').getAttribute('aria-expanded'), 'true');
+    await page.keyboard.press('Escape');
+    await library.waitFor({state: 'hidden'});
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'catalogToggle', 'focus returns to the menu button');
+    await select('spread-play-1');
+    await library.waitFor({state: 'hidden'});
+    assert.match(await page.locator('#lessonTitle').textContent(), /分散阵型/);
+    await page.locator('#catalogToggle').click();
+    await page.locator('#catalogBackdrop').click({position: {x: 370, y: 400}});
+    await library.waitFor({state: 'hidden'});
+    const sizes = await page.evaluate(() => ({
+      field: document.querySelector('#field').getBoundingClientRect().width,
+      player: document.querySelector('#field .player circle:last-child').getBoundingClientRect().width,
+      header: document.querySelector('.app-header').getBoundingClientRect().height,
+      overflow: document.documentElement.scrollWidth - innerWidth,
+    }));
+    assert.equal(Math.round(sizes.field), 390, 'the field uses the full screen width');
+    assert.ok(sizes.player >= 30, `players are easy to tap (${sizes.player.toFixed(1)}px)`);
+    assert.ok(sizes.header <= 64, 'the header stays on one row');
+    assert.ok(sizes.overflow <= 1, 'no horizontal scrolling');
+    await page.screenshot({path: join(output, 'phone-board.png'), fullPage: true});
+    await page.setViewportSize({width: 1024, height: 900});
+    assert.equal(await page.locator('#catalogToggle').isVisible(), false, 'desktop shows the catalog inline');
+    assert.equal(await page.locator('#library').isVisible(), true);
+    await page.setViewportSize({width: 1440, height: 1000});
+  });
+
+  await caseRun('the line-of-scrimmage caption never covers a player in either language', async () => {
+    await page.setViewportSize({width: 1440, height: 1000});
+    await open();
+    const ids = await page.locator('#builtInData').evaluate(node => JSON.parse(node.textContent).lessons.map(item => item.id));
+    for (const language of ['zh', 'en']) {
+      await page.selectOption('#language', language);
+      for (const id of ids) {
+        await page.evaluate(id => { location.hash = `#lesson=${id}`; }, id);
+        await page.waitForFunction(id => document.querySelector('#catalog [aria-current="true"]')?.dataset.lesson === id, id);
+        const overlaps = await page.locator('#field').evaluate(field => {
+          const label = field.querySelector('[data-scrimmage-label]');
+          if (!label) return [];
+          const a = label.getBoundingClientRect();
+          return [...field.querySelectorAll('.player')].filter(player => {
+            const b = player.querySelector('circle:not(.focus-ring), rect, path').getBoundingClientRect();
+            return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+          }).map(player => player.dataset.player);
+        });
+        assert.deepEqual(overlaps, [], `${language}/${id}`);
+      }
+    }
+    await page.selectOption('#language', 'zh');
   });
 } finally {
   await writeFile(join(output, 'results.json'), JSON.stringify({target, pauseCheckMs, results, browserErrors: errors, externalRequests}, null, 2));
