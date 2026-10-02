@@ -29,6 +29,8 @@ test('shortcuts map keys to actions and stay out of typing and focused buttons',
   assert.deepEqual(shortcutFor(key('[')), {type: 'lesson', direction: -1});
   assert.deepEqual(['1', '2', '3', '4'].map(value => shortcutFor(key(value)).value), [.5, 1, 2, 3]);
   assert.deepEqual(shortcutFor(key('0')), {type: 'reset'});
+  assert.deepEqual(shortcutFor(key('f')), {type: 'fullscreen'});
+  assert.deepEqual(shortcutFor(key('F')), {type: 'fullscreen'});
   for (const modifier of ['altKey', 'ctrlKey', 'metaKey']) assert.equal(shortcutFor(key('1', {[modifier]: true})), null, modifier);
   for (const value of [' ', 'ArrowRight', '1', ']']) assert.equal(shortcutFor(key(value), {typing: true}), null, `typing ${value}`);
   assert.equal(shortcutFor(key('x')), null);

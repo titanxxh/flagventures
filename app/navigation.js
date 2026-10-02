@@ -25,5 +25,6 @@ export function shortcutFor({key, altKey, ctrlKey, metaKey}, {typing = false, on
   if (key === ']' || key === '[') return {type: 'lesson', direction: key === ']' ? 1 : -1};
   if (/^[1-4]$/.test(key)) return {type: 'speed', value: speeds[Number(key) - 1]};
   if (key === '0') return {type: 'reset'};
+  if (key === 'f' || key === 'F') return {type: 'fullscreen'};
   return null;
 }

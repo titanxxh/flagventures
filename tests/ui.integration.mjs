@@ -775,6 +775,77 @@ try {
     } finally { await page.emulateMedia({media: 'screen'}); }
   });
 
+  await caseRun('full screen keeps field, caption and controls together on a sideways phone', async () => {
+    await page.setViewportSize({width: 844, height: 390});
+    await open();
+    await select('spread-play-1');
+    await page.locator('#fullscreen').click();
+    const layout = await page.evaluate(() => ({
+      board: document.querySelector('.board').getBoundingClientRect().toJSON(),
+      field: document.querySelector('#field').getBoundingClientRect().height,
+      play: document.querySelector('#play').getBoundingClientRect().bottom,
+      cue: document.querySelector('.cue').getBoundingClientRect().top,
+    }));
+    assert.deepEqual([layout.board.x, layout.board.y, layout.board.width, layout.board.height], [0, 0, 844, 390]);
+    assert.ok(layout.play <= 390 && layout.cue < 390, 'caption and controls stay on screen');
+    assert.ok(layout.field >= 200, `field keeps a usable height (${Math.round(layout.field)})`);
+    assert.equal(await page.locator('#fullscreen').getAttribute('aria-pressed'), 'true');
+    await page.locator('#play').click();
+    await page.waitForFunction(() => Number(document.querySelector('#seek').value) > .1);
+    await page.locator('#play').click();
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('.board.board-fullscreen').count(), 0, 'Escape leaves full screen');
+    assert.equal(await page.locator('#fullscreen').getAttribute('aria-pressed'), 'false');
+    await page.locator('#summary').click();
+    await page.keyboard.press('f');
+    assert.equal(await page.locator('.board.board-fullscreen').count(), 1, 'F enters full screen');
+    await page.locator('#fullscreen').click();
+    assert.equal(await page.locator('.board.board-fullscreen').count(), 0);
+    await page.setViewportSize({width: 1440, height: 1000});
+  });
+
+  await caseRun('headings are never empty, search shows focus and phone touch targets are at least 24px', async () => {
+    await open();
+    for (const id of ['route-hitch', 'spread-play-1', 'cover-2', 'hb-option']) {
+      await select(id);
+      for (const player of await page.locator('#roles [data-player]').evaluateAll(nodes => nodes.map(node => node.dataset.player))) {
+        await page.locator(`#roles [data-player="${player}"]`).click();
+        const empty = await page.evaluate(() => [...document.querySelectorAll('h1, h2, h3, h4')]
+          .filter(heading => heading.getClientRects().length && !heading.textContent.trim()).map(heading => heading.id || heading.className));
+        assert.deepEqual(empty, [], `${id}/${player}`);
+      }
+    }
+    await page.locator('#search').focus();
+    assert.notEqual(await page.locator('.search').evaluate(node => getComputedStyle(node).boxShadow), 'none', 'search shows a focus ring');
+    await page.setViewportSize({width: 390, height: 844});
+    await select('route-option');
+    await page.locator('.source-menu > summary').click();
+    await page.locator('#sourceDetails > summary').click();
+    const small = await page.evaluate(() => [...document.querySelectorAll('button, a[href], input, select, summary, [role="button"]')]
+      .filter(node => node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden' && !node.closest('dialog:not([open]), #library, p'))
+      .map(node => ({name: node.id || node.textContent.trim().slice(0, 20), height: node.getBoundingClientRect().height}))
+      .filter(item => item.height < 24));
+    assert.deepEqual(small, [], 'every standalone control is at least 24px tall');
+    await page.setViewportSize({width: 1440, height: 1000});
+  });
+
+  await caseRun('the built-in safety check still reports broken content after the first lesson shows', async () => {
+    const html = await readFile(target, 'utf8');
+    const marker = '<script type="application/json" id="builtInData">';
+    const start = html.indexOf(marker) + marker.length;
+    const end = html.indexOf('</script>', start);
+    const pack = JSON.parse(html.slice(start, end));
+    pack.sections.push(structuredClone(pack.sections.at(-1)));
+    const broken = html.slice(0, start) + JSON.stringify(pack).replaceAll('<', '\\u003c') + html.slice(end);
+    const brokenPath = join(output, 'broken-built-in.html');
+    await writeFile(brokenPath, broken);
+    const errorsBefore = errors.length;
+    await page.goto(pathToFileURL(brokenPath).href, {waitUntil: 'load'});
+    await page.waitForFunction(() => document.querySelector('#lessonTitle').textContent.includes('检查未通过'));
+    assert.match(await page.locator('#summary').textContent(), /sections|章节|重复|duplicate/i);
+    errors.splice(errorsBefore);
+  });
+
   await caseRun('the line-of-scrimmage caption never covers a player in either language', async () => {
     await page.setViewportSize({width: 1440, height: 1000});
     await open();
