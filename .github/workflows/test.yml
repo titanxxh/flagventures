@@ -38,6 +38,11 @@ jobs:
         env:
           PAUSE_CHECK_MS: '3000'
         run: npm run test:browser
+      # Firefox, and WebKit as the closest stand-in for Safari on iPhone and iPad.
+      - name: Install Firefox and WebKit
+        run: npx playwright install --with-deps firefox webkit
+      - name: Firefox and WebKit smoke test
+        run: npm run test:cross-browser
       - name: Keep browser test screenshots
         if: failure()
         uses: actions/upload-artifact@v4

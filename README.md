@@ -14,7 +14,7 @@
 - **组合配合**：第五章新增 Slant–Flat、Spacing、Stack 90 Degrees、Flood、Levels、Mesh，分三个层级组；每课含完整五人、四种传球选择与双语讲解。
 - **可追溯出处**：全部 71 条在标题旁提供原始资料链接和定位，另列教学改编。Flood、Levels、Mesh 可跳转到相近的原书战术并比较差异。
 - **转向距离**：基础路线从开球线起标注码数，按比例画出转向点，并区分官方示例与本次演示设置；点击标注可暂停讲解。
-- **调速与讲解**：默认 2× 播放。球场下方的控制栏集中播放、进度（带关键帧刻度）和 0.5×、1×、2×、3× 调速，当前画面讲解紧贴球场；宽屏下球场、讲解与控制栏在首屏同时可见；较矮的笔记本和平板横屏上，球场按窗口高度放大，滚到球场即可看全，而不是缩成一小块。支持进度拖动、可持续暂停的关键帧和键盘快捷键：空格播放 / 暂停，← → 跳关键帧，[ ] 切换上一条 / 下一条，1–4 调速，0 回到站位，F 全屏。暂停时不占用 CPU。
+- **调速与讲解**：默认 2× 播放。球场下方的控制栏集中播放、进度（带关键帧刻度）和 0.5×、1×、2×、3× 调速，当前画面讲解紧贴球场；电脑和平板横屏上，球场、讲解与整条控制栏始终在首屏，不用滚动就能点播放；较矮的笔记本（如 1366×768、1280×720）会收紧标题区，长的球路说明先显示一行（点「展开说明」看全），几个球路选项开头相同时只说一次。支持进度拖动、可持续暂停的关键帧和键盘快捷键：空格播放 / 暂停，← → 跳关键帧，[ ] 切换上一条 / 下一条，1–4 调速，0 回到站位，F 全屏。暂停时不占用 CPU。
 - **深色模式**：跟随手机或电脑的系统设置自动切换，晚上讲解不刺眼；打印讲义始终是浅色。
 - **全屏观看**：球场右上角的「全屏」让球场、讲解和控制栏占满屏幕，手机横屏或投到电视上讲解时更清楚。
 - **手机与平板**：目录收进左上角菜单，球场占满屏宽，球员和标注按屏幕放大，关注球员的字母按钮就在球场上方。
@@ -52,9 +52,9 @@ npm run build
 
 测试和构建前会自动从 YAML 与目录生成完整内容包，无需原始 PDF 或原页图片。生成的内容包与预览副本不纳入版本控制；仓库保留可直接打开的主 HTML。
 
-`npm run test:browser` 使用已安装的 Google Chrome 检查本地文件、播放与导入导出；也可以用环境变量 `CHROME_EXECUTABLE` 指定其他 Chromium。
+`npm run test:browser` 使用已安装的 Google Chrome 检查本地文件、播放与导入导出；也可以用环境变量 `CHROME_EXECUTABLE` 指定其他 Chromium。`npm run test:cross-browser` 在 Firefox 和 WebKit（Safari 的内核）里跑一遍核心流程，先用 `npx playwright install firefox webkit` 安装这两个浏览器。
 
-每个 PR 和推送到 `main` 都会运行[测试工作流](.github/workflows/test.yml)：单元测试、构建、检查 `dist/Flagventures.html` 已随源码重新构建，以及全部浏览器测试。修改 `app/` 或 `content/` 后记得运行 `npm run build` 并提交 `dist/Flagventures.html`。修改源码后先运行 `npm run build`。
+每个 PR 和推送到 `main` 都会运行[测试工作流](.github/workflows/test.yml)：单元测试、构建、检查 `dist/Flagventures.html` 已随源码重新构建，全部浏览器测试，以及 Firefox 和 WebKit 冒烟测试。修改 `app/` 或 `content/` 后记得运行 `npm run build` 并提交 `dist/Flagventures.html`。修改源码后先运行 `npm run build`。
 
 推送到 `main` 后，[发布工作流](.github/workflows/pages.yml)会自动运行测试、构建并部署到 GitHub Pages。仓库的 Settings → Pages → Build and deployment → Source 应选择 **GitHub Actions**。
 
