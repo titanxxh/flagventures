@@ -83,6 +83,14 @@ try {
    assert.ok(zoomed[0]<=0 && zoomed[0]+zoomed[2]>=lesson.field.width,`${lesson.id}: zoom keeps both sidelines`);
    assert.ok(zoomed[3]<lesson.field.height,`${lesson.id}: zoom crops unused depth`);
    for(const [,y] of points) assert.ok(y>=zoomed[1] && y<=zoomed[1]+zoomed[3],`${lesson.id}: zoom keeps ${y} in view`);
+   const clipped=await page.locator('#field').evaluate(field=>{
+    const [,top,,height]=field.getAttribute('viewBox').split(' ').map(Number);
+    return [...field.querySelectorAll('text:not([transform])')].filter(node=>!node.closest('.player,#fieldTooltip')).filter(node=>{
+     const box=node.getBBox();
+     return box.height>0 && box.y<top+height && box.y+box.height>top && (box.y<top-.01 || box.y+box.height>top+height+.01);
+    }).map(node=>node.textContent);
+   });
+   assert.deepEqual(clipped,[],`${lesson.id}: the zoom edge never cuts a caption or yard number in half`);
    await zoom.click();
    assert.equal(await zoom.getAttribute('aria-pressed'),'true');
    const box=await viewBox();

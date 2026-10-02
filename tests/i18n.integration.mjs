@@ -12,7 +12,7 @@ try {
  await page.goto(url);
  await page.selectOption('#language','en');
  assert.equal(await page.locator('html').getAttribute('lang'),'en');
- assert.match(await page.title(),/^Flagventures/);
+ assert.match(await page.title(),/ · Flagventures$/);assert.doesNotMatch(await page.title(),/[\u3400-\u9fff]/u);
  const pack=JSON.parse(await readFile('content/default.flagbook.json','utf8'));
  // Walk all lessons and all player cards, including hidden source notes and choices.
  for(const lesson of pack.lessons){
