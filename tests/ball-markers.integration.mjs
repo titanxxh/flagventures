@@ -17,7 +17,7 @@ const actionText = {
 };
 const output = resolve('tmp/ball-markers-integration');
 await mkdir(output, {recursive: true});
-const browser = await chromium.launch({channel: 'chrome', headless: true});
+const browser = await chromium.launch({headless: true, ...(process.env.CHROME_EXECUTABLE ? {executablePath: process.env.CHROME_EXECUTABLE} : {channel: 'chrome'})});
 try {
   const page = await browser.newPage({viewport: {width: 1440, height: 1050}});
   const errors = [], requests = [];

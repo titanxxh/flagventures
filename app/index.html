@@ -10,83 +10,130 @@
 </head>
 <body>
   <header class="app-header">
-    <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">⚑</span><span>Flagventures<small>一起看懂跑位</small></span></a>
-    <div class="header-actions"><label class="language-switch"><span class="sr-only">Language / 语言</span><select id="language" aria-label="Language / 语言"><option value="zh">中文</option><option value="en">English</option></select></label><span id="libraryCount" class="badge"></span><button id="manage" class="button light">我的战术文件</button><button id="help" class="icon-button" aria-label="使用说明">?</button></div>
+    <button id="catalogToggle" class="icon-button catalog-toggle" aria-controls="library" aria-expanded="false" aria-label="打开教学目录">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+    </button>
+    <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">⚑</span><span class="brand-name">Flagventures<small>一起看懂跑位</small></span></a>
+    <div class="header-actions">
+      <label class="language-switch"><span class="sr-only">Language / 语言</span><select id="language" aria-label="Language / 语言"><option value="zh">中文</option><option value="en">English</option></select></label>
+      <span id="libraryCount" class="badge"></span>
+      <button id="manage" class="button light manage-button">
+        <svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M2.5 5.5a1.5 1.5 0 0 1 1.5-1.5h4l1.8 2H16a1.5 1.5 0 0 1 1.5 1.5v7.5A1.5 1.5 0 0 1 16 16.5H4A1.5 1.5 0 0 1 2.5 15z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/></svg>
+        <span class="manage-label">我的战术文件</span>
+      </button>
+      <button id="help" class="icon-button" aria-label="使用说明">?</button>
+    </div>
   </header>
   <div class="layout">
-    <aside class="library" aria-label="教学目录">
-      <div class="library-top"><h2>战术手册</h2><span id="libraryStatus">内置手册</span></div>
+    <aside id="library" class="library" aria-label="教学目录">
+      <div class="library-top">
+        <h2>战术手册</h2>
+        <span id="libraryStatus">内置手册</span>
+        <button id="catalogClose" class="icon-button catalog-close" aria-label="关闭目录">×</button>
+      </div>
       <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="找名称、跑法或页码" aria-label="搜索教学条目"></label>
       <nav id="catalog" aria-label="按原书顺序浏览"></nav>
       <p class="library-note">一次 5–10 分钟<br>看站位 → 认跑法 → 讲配合</p>
     </aside>
-    <main>
-      <div class="lesson-heading"><div><div id="breadcrumb" class="eyebrow"></div><h1 id="lessonTitle"></h1><p id="lessonEnglish"></p></div><button id="source" class="text-button" hidden>对照原图 ↗</button></div>
-      <div id="provenanceBar" class="provenance-bar" aria-label="出处与改编"></div>
+    <div id="catalogBackdrop" class="catalog-backdrop" hidden></div>
+    <main id="lessonMain">
+      <div class="lesson-heading">
+        <div class="lesson-titles">
+          <div id="breadcrumb" class="eyebrow"></div>
+          <h1 id="lessonTitle"></h1>
+          <div class="lesson-meta">
+            <p id="lessonEnglish"></p>
+            <div id="provenanceBar" class="provenance-bar" aria-label="出处与改编"></div>
+          </div>
+        </div>
+        <button id="source" class="text-button" hidden>对照原图 ↗</button>
+      </div>
       <p id="summary" class="lesson-summary"></p>
       <div class="teaching-grid">
         <div class="stage">
           <p id="routeOrientation" class="route-orientation" hidden>向内＝朝场地中间；向外＝朝边线。QB 是传球参照，“向内”不是跑回 QB 所在的位置。</p>
           <section id="ballControls" class="ball-controls" aria-label="球的流转" hidden>
-            <div class="ball-controls-heading"><h2 id="ballChoiceHeading">这次球传给谁</h2><label class="ball-toggle"><input id="ballEnabled" type="checkbox" checked>显示球路</label></div>
-            <div id="ballOptions" class="ball-options" role="group" aria-label="选择球路情形"></div>
-            <p id="ballScenarioNote" class="ball-scenario-note"></p>
-            <details class="ball-source"><summary>演示说明</summary><p id="ballSourceNote"></p></details>
-          </section>
-          <section class="board" aria-label="跑位演示">
-            <div class="board-top"><span id="direction"></span><span id="playState" role="status"></span></div>
-            <div id="ballReadout" class="ball-readout" hidden><span class="ball-readout-icon" aria-hidden="true">◆</span><div><strong id="ballStatus" role="status"></strong><span id="ballEvent"></span></div></div>
-            <svg id="field" role="group" aria-label="球场、球员和路线"></svg>
-            <div id="ballLegend" class="ball-legend" hidden>
-              <ul aria-label="本应用的教学图例">
-                <li><i class="legend-line legend-run" aria-hidden="true"></i><span>彩色实线：球员跑动</span></li>
-                <li><i class="legend-line legend-flight" aria-hidden="true"></i><span>橙色虚线：传球 / 开球</span></li>
-                <li><i class="legend-handoff" aria-hidden="true">○</i><span>空心圆：交递</span></li>
-                <li><i class="legend-fake" aria-hidden="true">FAKE</i><span>假交 / 假传：球不换人</span></li>
-                <li><i class="legend-line legend-carry" aria-hidden="true"></i><span>白色轨迹：已持球跑过</span></li>
-                <li><i class="legend-ball" aria-hidden="true">●</i><span>球形图标：球的位置</span></li>
-              </ul>
-              <p>本应用教学图例 · 点击场内动作标记，停下来讲解</p>
+            <div class="ball-controls-row">
+              <h2 id="ballChoiceHeading">这次球传给谁</h2>
+              <div id="ballOptions" class="ball-options" role="group" aria-label="选择球路情形"></div>
+              <label class="ball-toggle"><input id="ballEnabled" type="checkbox" checked>显示球路</label>
             </div>
-            <p id="routeMotionHint" class="facing-hint" hidden>淡线：完整路线 · 实线箭头：当前跑动方向</p>
-            <p id="facingHint" class="facing-hint" hidden>小三角：面朝方向 · 虚线：看向队友</p>
-            <div class="board-bottom"><span id="fieldHint"></span><span id="focusStatus"></span></div>
+            <p id="ballScenarioNote" class="ball-scenario-note"></p>
           </section>
           <div id="choices" class="choices" hidden></div>
-          <div class="controls">
-            <button id="play" class="button primary">▶ 开始演示</button>
-            <button id="reset" class="button light">回到站位</button>
-            <output id="clock"></output>
-            <div class="speed" role="group" aria-label="播放速度">
-              <span>播放速度</span>
-              <button data-speed="0.5" aria-pressed="false">0.5×<small>慢放</small></button>
-              <button data-speed="1" aria-pressed="false">1×<small>原速</small></button>
-              <button data-speed="2" aria-pressed="true">2×<small>默认</small></button>
-              <button data-speed="3" aria-pressed="false">3×<small>更快</small></button>
+          <section class="board" aria-label="跑位演示">
+            <div class="board-top">
+              <span id="direction" class="board-direction"></span>
+              <div class="board-roles">
+                <span class="board-roles-label">关注</span>
+                <div id="roles" class="roles" role="group" aria-label="关注球员"></div>
+              </div>
+              <span class="board-status">
+                <button id="fieldZoom" class="board-chip" type="button" aria-pressed="false" hidden>看全场</button>
+                <span id="playState" role="status"></span>
+              </span>
             </div>
-          </div>
-          <label class="sr-only" for="seek">演示进度，调整后暂停</label><input id="seek" type="range" min="0" max="10" step="0.01" value="0">
+            <svg id="field" role="group" aria-label="球场、球员和路线"></svg>
+            <section class="cue" aria-label="当前画面讲解">
+              <span id="frameNumber" class="frame-number"></span>
+              <div class="cue-text"><h2 id="frameTitle"></h2><p id="frameCue"></p></div>
+              <div id="ballReadout" class="ball-readout" hidden><span class="ball-readout-icon" aria-hidden="true">◆</span><div><strong id="ballStatus" role="status"></strong><span id="ballEvent"></span></div></div>
+            </section>
+            <div class="controls">
+              <button id="play" class="button primary">▶ 开始演示</button>
+              <button id="reset" class="button ghost">回到站位</button>
+              <div class="timeline">
+                <label class="sr-only" for="seek">演示进度，调整后暂停</label>
+                <input id="seek" type="range" min="0" max="10" step="0.01" value="0">
+                <div id="timelineTicks" class="timeline-ticks" aria-hidden="true"></div>
+              </div>
+              <output id="clock"></output>
+              <div class="speed" role="group" aria-label="播放速度">
+                <span class="speed-label">速度</span>
+                <button data-speed="0.5" aria-pressed="false" aria-label="0.5× 慢放">0.5×</button>
+                <button data-speed="1" aria-pressed="false" aria-label="1× 原速">1×</button>
+                <button data-speed="2" aria-pressed="true" aria-label="2× 默认">2×</button>
+                <button data-speed="3" aria-pressed="false" aria-label="3× 更快">3×</button>
+              </div>
+            </div>
+            <details id="boardLegend" class="board-legend">
+              <summary>图例与操作</summary>
+              <div id="ballLegend" class="ball-legend" hidden>
+                <ul aria-label="本应用的教学图例">
+                  <li><i class="legend-line legend-run" aria-hidden="true"></i><span>彩色实线：球员跑动</span></li>
+                  <li><i class="legend-line legend-flight" aria-hidden="true"></i><span>橙色虚线：传球 / 开球</span></li>
+                  <li><i class="legend-handoff" aria-hidden="true">○</i><span>空心圆：交递</span></li>
+                  <li><i class="legend-fake" aria-hidden="true">FAKE</i><span>假交 / 假传：球不换人</span></li>
+                  <li><i class="legend-line legend-carry" aria-hidden="true"></i><span>白色轨迹：已持球跑过</span></li>
+                  <li><i class="legend-ball" aria-hidden="true">●</i><span>球形图标：球的位置</span></li>
+                </ul>
+                <p>本应用教学图例 · 点击场内动作标记，停下来讲解</p>
+              </div>
+              <p id="routeMotionHint" class="facing-hint" hidden>淡线：完整路线 · 实线箭头：当前跑动方向</p>
+              <p id="facingHint" class="facing-hint" hidden>小三角：面朝方向 · 虚线：看向队友</p>
+              <p class="shortcut-hint">键盘：空格 播放 / 暂停 · ← → 上一个 / 下一个关键帧 · 1–4 切换速度 · 0 回到站位</p>
+            </details>
+            <div class="board-bottom"><span id="fieldHint"></span><span id="focusStatus"></span></div>
+          </section>
           <section id="routeDistances" class="route-distances" hidden><h2>从开球线看距离</h2><p class="distance-help">深度从开球线起算，不是累计跑过的路程。点击标注可停在对应位置。</p><p id="distanceNote"></p><div id="distanceMarks" class="distance-marks"></div></section>
           <div class="frame-header"><h2>停下来，一步一步看</h2><span>点关键帧，画面会一直停留</span></div>
           <div id="frames" class="frames" aria-label="关键帧"></div>
-          <section class="cue" aria-label="当前画面讲解"><span id="frameNumber" class="frame-number"></span><div><h2 id="frameTitle"></h2><p id="frameCue"></p></div></section>
         </div>
         <aside class="teaching" aria-label="角色与教学提示">
           <section id="teamPlan" class="team-plan" hidden><h2 id="teamPlanHeading">这套配合想做到什么</h2><p id="teachingGoal"></p><p id="teamCooperation"></p></section>
-          <section class="focus-section"><h2>这次关注谁</h2><div id="roles" class="roles" aria-label="关注球员"></div><p class="hint">悬停看跑法 · 点击保留<br>队友仍在场上，方便看配合</p></section>
           <section class="route-card" id="routeCard"><div class="route-top"><span id="routePerson">?</span><span id="routeMode">认识跑法</span></div><strong id="routeEnglish">移到球员上试试</strong><h3 id="routeChinese"></h3><p id="routeDescription"></p><div id="playerCoaching" class="player-coaching" hidden><h4>我和队友怎样配合</h4><p id="routeCooperation"></p><h4>什么时候出发</h4><p id="routeTiming"></p></div><p id="routeSituation" class="route-situation" hidden></p><p id="routeDuties" hidden></p><p id="routeBasis" class="basis"></p></section>
           <section class="mini-lesson"><span class="eyebrow">陪孩子讲一讲</span><p id="teachingCue">「你站在哪里？」</p><p id="teachingQuestion">「你跑的时候，队友去哪儿？」</p><p>「换一个位置，你还记得吗？」</p></section>
         </aside>
       </div>
       <section id="relatedPlays" class="related-plays" hidden></section>
-      <details id="sourceDetails" class="source-notes"><summary>跑动先后与资料说明</summary><p id="timingNote"></p><p id="sourceNote"></p><p id="sourceAdaptation" class="source-adaptation" hidden></p><ul id="notes"></ul><div id="sourceReferences" class="source-references" hidden></div></details>
+      <details id="sourceDetails" class="source-notes"><summary>跑动先后与资料说明</summary><p id="timingNote"></p><p id="sourceNote"></p><p id="ballSourceNote" hidden></p><p id="sourceAdaptation" class="source-adaptation" hidden></p><ul id="notes"></ul><div id="sourceReferences" class="source-references" hidden></div></details>
       <footer class="lesson-footer"><button id="previous" class="text-button">← 上一条</button><span id="lessonIndex"></span><button id="next" class="text-button">下一条 →</button></footer>
     </main>
   </div>
   <div id="toast" class="toast" role="status" hidden></div>
   <dialog id="sourceDialog" class="source-dialog"><div class="dialog-head"><h2 id="sourceTitle">原页对照</h2><button class="button light" data-close>关闭</button></div><img id="sourceImage" alt="本教学条目对应的手册原页"><p id="sourceCaption"></p></dialog>
   <dialog id="manageDialog"><div class="dialog-head"><h2>我的战术文件</h2><button class="button light" data-close>关闭</button></div><p>一份 YAML 描述一个教学条目。修改文字和路线后导入，网页会用统一方式呈现。</p><div class="file-actions"><button id="chooseFiles" class="button primary">导入 YAML / 战术包</button><button id="exportPack" class="button light">保存完整战术包</button><button id="exportLesson" class="button light">下载当前条目 YAML</button><button id="downloadTemplate" class="button light">下载新增模板</button></div><input id="fileInput" type="file" accept=".yaml,.yml,.json" multiple hidden><p class="callout">新增和修改只保留在本次打开的网页里。离开前点「保存完整战术包」，下次打开后再导入。</p><div id="importReport" role="status" hidden></div><div id="importActions" class="file-actions" hidden><button id="applyImport" class="button primary">确认应用</button><button id="cancelImport" class="button light">取消</button></div><hr><div class="restore-row"><div><strong>内置手册随时可用</strong><p>恢复内置教学内容，包括原手册与补充路线。</p></div><button id="restore" class="button light">选择内置手册</button></div></dialog>
-  <dialog id="helpDialog"><div class="dialog-head"><h2>给孩子的 5–10 分钟小课</h2><button class="button light" data-close>关闭</button></div><ol class="help-steps"><li><strong>先看站位。</strong>从左侧选一条，找找自己的字母。</li><li><strong>认识跑法。</strong>鼠标移到球员上，名称与路线一起看；点击可保留。键盘 Tab 也能查看。</li><li><strong>一起看配合。</strong>看这套战术的目标和自己的配合任务，再点击关键帧停住讲解。</li><li><strong>换位再讲。</strong>回到站位，换一名队员，让孩子用手指画路线。</li></ol><p>默认以 2 倍速演示。播放按钮下方可选择 0.5×、1×、2× 或 3×，讲细节时可随时慢放。</p><p>点击关键帧或拖动进度会暂停；按「继续播放」从那里接着走。连续播放经过关键帧不会自动停。</p><p>进攻战术可切换 C、X、Y、Z 四个接球目标，跑球可选择交接或跑传情形。彩色实线表示球员跑动，橙色虚线表示传球或开球，白色轨迹表示已持球跑过的路。空心圆表示交递；FAKE 表示假交或假传，球不换人。点击场内动作标记，可暂停在交递或假动作发生的一刻。标记区分待演示、此刻和已发生。切换情形会回到起点并暂停。关闭“显示球路”可只看原图跑位。这些图例、动画秒数和补充球路为本应用的教学设置，网页不自动判断防守。</p><p>自己编战术：下载模板 → 用文本编辑器修改 → 导入预览 → 保存完整战术包。教学内容可离线使用；资料链接和官方视频在点击后联网打开。</p><p class="hint">按 Esc 关闭弹窗。恢复内置手册或重新打开网页后，需要重新载入自己保存的战术包。</p></dialog>
+  <dialog id="helpDialog"><div class="dialog-head"><h2>给孩子的 5–10 分钟小课</h2><button class="button light" data-close>关闭</button></div><ol class="help-steps"><li><strong>先看站位。</strong>从左侧选一条，找找自己的字母。</li><li><strong>认识跑法。</strong>鼠标移到球员上，名称与路线一起看；点击可保留。键盘 Tab 也能查看。</li><li><strong>一起看配合。</strong>看这套战术的目标和自己的配合任务，再点击关键帧停住讲解。</li><li><strong>换位再讲。</strong>回到站位，换一名队员，让孩子用手指画路线。</li></ol><p>默认以 2 倍速演示。球场下方的控制栏可选择 0.5×、1×、2× 或 3×，讲细节时可随时慢放。</p><p>点击关键帧或拖动进度会暂停；按「继续播放」从那里接着走。连续播放经过关键帧不会自动停。</p><p>进攻战术可切换 C、X、Y、Z 四个接球目标，跑球可选择交接或跑传情形。彩色实线表示球员跑动，橙色虚线表示传球或开球，白色轨迹表示已持球跑过的路。空心圆表示交递；FAKE 表示假交或假传，球不换人。点击场内动作标记，可暂停在交递或假动作发生的一刻。标记区分待演示、此刻和已发生。切换情形会回到起点并暂停。关闭“显示球路”可只看原图跑位。这些图例、动画秒数和补充球路为本应用的教学设置，网页不自动判断防守。</p><p>键盘：空格播放或暂停，← → 跳到上一个或下一个关键帧，1–4 切换速度，0 回到站位。</p><p>地址栏会记住当前条目，可以收藏或把链接发给家人，打开后直接回到这一条。</p><p>自己编战术：下载模板 → 用文本编辑器修改 → 导入预览 → 保存完整战术包。教学内容可离线使用；资料链接和官方视频在点击后联网打开。</p><p class="hint">按 Esc 关闭弹窗。恢复内置手册或重新打开网页后，需要重新载入自己保存的战术包。</p></dialog>
   <script type="application/json" id="builtInData">__BUILT_IN_DATA__</script>
   <script type="application/json" id="templateData">__TEMPLATE_DATA__</script>
   <script>/*__APP_JS__*/</script>
