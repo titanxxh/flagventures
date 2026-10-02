@@ -186,6 +186,38 @@ try {
     }
   }
 
+  // Cards stay in place while players run, so no card may hide a player at any
+  // keyframe of any scenario, in either language, at desktop or phone width.
+  let cardChecks = 0;
+  for (const language of ['zh', 'en']) {
+    await page.selectOption('#language', language);
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({width, height: 1050});
+      for (const lesson of lessons) {
+        await select(lesson.id);
+        for (const scenario of lesson.ball.scenarios.filter(item => item.events.some(event => actionTypes.has(event.type)))) {
+          await page.locator(`[data-ball-scenario="${scenario.id}"]`).evaluate(button => button.click());
+          const frames = await page.locator('#frames [data-frame]').count();
+          for (let frame = 0; frame < frames; frame++) {
+            await page.locator(`#frames [data-frame="${frame}"]`).evaluate(button => button.click());
+            const covered = await page.locator('#field').evaluate(field => {
+              const players = [...field.querySelectorAll('.player')].map(group => [group.dataset.player, group.querySelector('circle:not(.focus-ring), rect, path').getBoundingClientRect()]);
+              return [...field.querySelectorAll('.ball-action-card')].flatMap(card => {
+                const box = card.getBoundingClientRect();
+                return players.filter(([, shape]) => Math.min(box.right, shape.right) - Math.max(box.left, shape.left) > 3
+                  && Math.min(box.bottom, shape.bottom) - Math.max(box.top, shape.top) > 3)
+                  .map(([id]) => `${card.parentElement.dataset.ballAction} covers ${id}`);
+              });
+            });
+            assert.deepEqual(covered, [], `${lesson.id}/${scenario.id}/${language}/${width}: frame ${frame} keeps every player visible`);
+            cardChecks++;
+          }
+        }
+      }
+    }
+  }
+  assert.ok(cardChecks > 300, 'every scenario keyframe was checked');
+
   // A valid imported lesson may use maximum-length player IDs and transfer again
   // before the default handoff emphasis would expire. Exercise the real importer.
   const longIds = new Map([['Q', 'Q'.padEnd(64, 'q')], ['Y', 'Y'.padEnd(64, 'y')]]);
@@ -238,5 +270,5 @@ try {
   assert.equal(await page.locator('#ballReadout').isVisible(), false);
   assert.deepEqual(errors, []);
   assert.deepEqual(requests, [], 'action markers work offline');
-  console.log(`PASS ${lessons.length} running plays / ${scenarioCount} scenarios / ${actionCount} actions: true and fake markers, exact action points, phases, pause/seek, keyboard, bilingual labels, layer cleanup, desktop/narrow layout`);
+  console.log(`PASS ${lessons.length} running plays / ${scenarioCount} scenarios / ${actionCount} actions: true and fake markers, exact action points, phases, pause/seek, keyboard, bilingual labels, layer cleanup, desktop/narrow layout, ${cardChecks} keyframes with every player clear of cards`);
 } finally { await browser.close(); }

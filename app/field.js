@@ -294,8 +294,15 @@ function buildBallActions(field, unit, glyph, {lesson, choices, ballScenario, on
   const {width, height} = lesson.field;
   const overlap = (a, b) => Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x))
     * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
-  const obstacles = actions.map(({point: [x, y]}) => ({x: x - 4 * unit, y: y - 4 * unit, width: 8 * unit, height: 8 * unit}));
-  for (const player of lesson.players) obstacles.push({x: player.at[0] - 3 * glyph, y: player.at[1] - 3 * glyph, width: 6 * glyph, height: 6 * glyph});
+  // Cards stay put while players move, so keep them clear of every player at
+  // each keyframe, and above all while their own action is happening.
+  const playerBox = ([x, y], weight) => ({x: x - 4 * glyph, y: y - 4 * glyph, width: 8 * glyph, height: 8 * glyph, weight});
+  const playersAt = (times, weight) => lesson.players.flatMap(player => times.map(time => playerBox(positionAt(player, time, choices), weight)));
+  const obstacles = [
+    ...actions.map(({point: [x, y]}) => ({x: x - 4 * unit, y: y - 4 * unit, width: 8 * unit, height: 8 * unit, weight: 5})),
+    ...playersAt([...new Set([0, ...lesson.keyframes.map(frame => frame.at)])], 15),
+    ...playersAt([lesson.timeline.duration], 30)
+  ];
   nodes.ballActions = actions.map(({event, point: [x, y], endAt}, index) => {
     const participants = event.type === 'handoff' ? `${event.from} → ${event.to}` : event.to ? `${event.from} / ${event.to}` : event.from;
     const label = `${index + 1} · ${t(types[event.type])} ${participants}`;
@@ -326,21 +333,35 @@ function buildBallActions(field, unit, glyph, {lesson, choices, ballScenario, on
     }
     // Keep callouts away from the meeting points and from one another. Their
     // leaders stay anchored while players move; layout is stable during seeking.
-    const candidates = [];
+    const near = [];
     for (const offset of [0, -9, 9, -18, 18, -27, 27]) {
-      candidates.push([x - box.width - 5.2 * unit, y - box.height / 2 + offset * unit]);
-      candidates.push([x + 5.2 * unit, y - box.height / 2 + offset * unit]);
+      near.push([x - box.width - 5.2 * unit, y - box.height / 2 + offset * unit]);
+      near.push([x + 5.2 * unit, y - box.height / 2 + offset * unit]);
     }
-    candidates.push([x - box.width / 2, y - box.height - 5.2 * unit], [x - box.width / 2, y + 5.2 * unit]);
-    const scored = candidates.map(([cx, cy]) => {
+    near.push([x - box.width / 2, y - box.height - 5.2 * unit], [x - box.width / 2, y + 5.2 * unit]);
+    const blockers = [...obstacles, ...playersAt([0, .5, 1].map(step => event.at + (endAt - event.at) * step), 40)];
+    const best = candidates => candidates.map(([cx, cy]) => {
       const candidate = {...box, x: Math.max(unit, Math.min(width - box.width - unit, cx)), y: Math.max(unit, Math.min(height - box.height - unit, cy))};
       const padded = {...candidate, x: candidate.x - unit, y: candidate.y - unit, width: box.width + 2 * unit, height: box.height + 2 * unit};
-      const distance = Math.hypot(candidate.x + box.width / 2 - x, candidate.y + box.height / 2 - y) / unit;
-      const score = distance + placed.reduce((sum, other) => sum + overlap(padded, other) / unit ** 2 * 100, 0)
-        + obstacles.reduce((sum, other) => sum + overlap(padded, other) / unit ** 2 * 5, 0);
-      return {candidate, score};
-    }).sort((a, b) => a.score - b.score);
-    const position = scored[0].candidate;
+      // A leader that runs through another card reads as pointing at the wrong action.
+      const end = [Math.max(candidate.x, Math.min(candidate.x + box.width, x)), Math.max(candidate.y, Math.min(candidate.y + box.height, y))];
+      const crossings = Array.from({length: 12}, (_, step) => [x + (end[0] - x) * (step + .5) / 12, y + (end[1] - y) * (step + .5) / 12])
+        .filter(([px, py]) => placed.some(other => px > other.x && px < other.x + other.width && py > other.y && py < other.y + other.height)).length;
+      const penalty = crossings * 40 + placed.reduce((sum, other) => sum + overlap(padded, other) / unit ** 2 * 100, 0)
+        + blockers.reduce((sum, other) => sum + overlap(padded, other) / unit ** 2 * other.weight, 0);
+      return {candidate, penalty, score: penalty + Math.hypot(candidate.x + box.width / 2 - x, candidate.y + box.height / 2 - y) / unit};
+    }).reduce((a, b) => b.score < a.score ? b : a);
+    let choice = best(near);
+    // On a crowded or short field none of those spots may be clear; then any
+    // clear spot is better than one that hides a player, even if further away.
+    if (choice.penalty > 0) {
+      const grid = [];
+      for (let gx = unit; gx <= width - box.width - unit; gx += 2 * unit) {
+        for (let gy = unit; gy <= height - box.height - unit; gy += 2 * unit) grid.push([gx, gy]);
+      }
+      if (grid.length) { const other = best(grid); if (other.score < choice.score) choice = other; }
+    }
+    const position = choice.candidate;
     placed.push(position);
     for (const [key, value] of Object.entries(position)) card.setAttribute(key, value);
     title.setAttribute('x', position.x + 1.4 * unit); title.setAttribute('y', position.y + 3.05 * unit);
