@@ -95,12 +95,17 @@ function setCatalogOpen(open, moveFocus = true) {
 function fitField() {
   const board = document.querySelector('.board');
   if (drawerQuery.matches || !lesson || board.classList.contains('board-fullscreen')) { board.style.removeProperty('--field-max'); return; }
-  const top = $('field').getBoundingClientRect().top + scrollY;
+  const fieldTop = $('field').getBoundingClientRect().top;
   const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
   // Tall (portrait) fields would become unreadably small if forced into the first screen.
   const box = $('field').viewBox.baseVal;
   const floor = box && box.width / box.height < 1.1 ? innerHeight * .62 : innerHeight < 820 ? 240 : 300;
-  const value = `${Math.round(Math.max(floor, Math.min(680, innerHeight - top - below)))}px`;
+  // On short laptop screens (1280×720, 1366×768) the field and its controls often cannot share
+  // the first screen with the heading. Rather than a tiny field whose controls are still out
+  // of view, let the board fill the window once it is scrolled to.
+  const firstScreen = innerHeight - fieldTop - scrollY - below;
+  const space = firstScreen >= floor ? firstScreen : innerHeight - (fieldTop - board.getBoundingClientRect().top) - below;
+  const value = `${Math.round(Math.max(floor, Math.min(680, space)))}px`;
   if (board.style.getPropertyValue('--field-max') !== value) board.style.setProperty('--field-max', value);
 }
 let fitRequest;
