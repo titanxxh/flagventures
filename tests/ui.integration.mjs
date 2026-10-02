@@ -630,6 +630,31 @@ try {
     await page.setViewportSize({width: 1440, height: 1000});
   });
 
+  await caseRun('on short laptop and tablet screens the board fills the window instead of shrinking the field', async () => {
+    for (const [width, height] of [[1280, 720], [1366, 768], [1024, 768]]) {
+      await page.setViewportSize({width, height});
+      for (const id of ['spread-play-1', 'spread-play-2', 'route-hitch', 'cover-2', 'hb-dive', 'single-back-formation']) {
+        await open();
+        await select(id);
+        const layout = await page.evaluate(() => {
+          const field = document.querySelector('#field'), box = field.viewBox.baseVal, rect = field.getBoundingClientRect();
+          return {
+            field: rect.height, fullWidth: rect.width * box.height / box.width,
+            board: document.querySelector('.board').getBoundingClientRect().top,
+            play: document.querySelector('#play').getBoundingClientRect().bottom,
+            controls: document.querySelector('.controls').getBoundingClientRect().bottom,
+          };
+        });
+        const label = `${width}×${height} ${id}`;
+        // Either everything shares the first screen, or the field is not squeezed for nothing.
+        if (layout.play <= height) { assert.ok(layout.field >= 239, `${label}: first-screen field keeps its minimum size`); continue; }
+        assert.ok(layout.field >= Math.min(380, layout.fullWidth - 1), `${label}: field is not squeezed (${Math.round(layout.field)}px of ${Math.round(layout.fullWidth)}px)`);
+        assert.ok(layout.controls - layout.board <= height, `${label}: once scrolled to, the board shows the field and controls together`);
+      }
+    }
+    await page.setViewportSize({width: 1440, height: 1000});
+  });
+
   await caseRun('phones use a catalog drawer, a full-width field and large touch targets', async () => {
     await open();
     await page.setViewportSize({width: 390, height: 844});
@@ -739,12 +764,11 @@ try {
     await page.setViewportSize({width: 1024, height: 768});
     await open();
     await select('spread-play-2');
+    // Field size at this height is covered by the short-screen case above.
     const tablet = await page.evaluate(() => ({
-      play: document.querySelector('#play').getBoundingClientRect().bottom,
       toggle: document.querySelector('.ball-toggle').getBoundingClientRect().top,
       heading: document.querySelector('#ballChoiceHeading').getBoundingClientRect().top,
     }));
-    assert.ok(tablet.play <= 768, `1024×768: play button is in the first screen (${Math.round(tablet.play)})`);
     assert.ok(Math.abs(tablet.toggle - tablet.heading) < 12, 'the ball toggle shares the heading row');
     await page.setViewportSize({width: 390, height: 844});
     await page.selectOption('#language', 'en');
