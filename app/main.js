@@ -412,7 +412,8 @@ function render() {
   $('roles').querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.hasAttribute('data-show-all') ? state.role === null : button.dataset.player === state.role)));
   const scenarioMotion = ballScenario?.motions?.find(item => item.player === player?.id)?.motion;
   text($('focusStatus'), state.role === null ? '正在看全队' : t`关注 ${state.role} · 队友仍可见`);
-  text($('routePerson'), player?.id || '?'); $('routePerson').style.background = player ? playerColor(player) : '#e6eadf';
+  text($('routePerson'), player?.id || '?'); $('routePerson').style.background = player ? playerColor(player) : 'var(--surface)';
+  $('routePerson').style.color = player ? '#153b2f' : 'var(--ink)';
   text($('routeMode'), player ? t`${player.id} 的${t(lesson.kind === 'defense' ? '分工' : '跑法')} · ${t(hovered ? '悬停查看' : focused ? '键盘查看' : '已保留')}` : '认识跑法');
   $('routeCard').classList.toggle('is-empty', !player);
   text($('routeEnglish'), player ? player.label.en || player.label.zh : touchQuery.matches ? '点一下球员试试' : '移到球员上试试');
