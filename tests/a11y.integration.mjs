@@ -21,8 +21,10 @@ const states = [
 ];
 try {
   const failures = [];
-  for (const [name, viewport, id, language, action] of states) {
-    const page = await browser.newPage({viewport});
+  for (const colorScheme of ['light', 'dark']) for (const [state, viewport, id, language, action] of states) {
+    const name = `${state} (${colorScheme})`;
+    const context = await browser.newContext({viewport, colorScheme});
+    const page = await context.newPage();
     await page.goto(`${url}#lesson=${id}`);
     if (language === 'en') await page.selectOption('#language', 'en');
     if (action) await action(page);
@@ -31,8 +33,8 @@ try {
     const violations = await page.evaluate(async () => (await window.axe.run(document, {resultTypes: ['violations']})).violations
       .map(violation => `${violation.id}: ${violation.nodes.slice(0, 3).map(node => node.target.join(' ')).join(', ')}`));
     if (violations.length) failures.push(`${name}\n  ${violations.join('\n  ')}`);
-    await page.close();
+    await context.close();
   }
   assert.deepEqual(failures, [], `accessibility violations:\n${failures.join('\n')}`);
-  console.log(`PASS accessibility (axe-core) in ${states.length} states: desktop, phone, English, catalog drawer, dialogs and full screen`);
+  console.log(`PASS accessibility (axe-core) in ${states.length} states × light and dark: desktop, phone, English, catalog drawer, dialogs and full screen`);
 } finally { await browser.close(); }
