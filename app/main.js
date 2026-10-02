@@ -644,6 +644,12 @@ function tick(now) {
   render();
   if (state.playing) startTicking(); else lastTick = undefined;
 }
+// The online copy installs to the home screen and works offline. The downloaded single
+// file (file://) has no manifest or service worker to load, so it skips both.
+if (location.protocol === 'https:' || location.protocol === 'http:') {
+  document.head.append(node('link', {rel: 'manifest', href: 'manifest.webmanifest'}), node('link', {rel: 'apple-touch-icon', href: 'apple-touch-icon.png'}));
+  if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
 function showStartupError(error) { text($('lessonTitle'), '内置内容检查未通过'); text($('summary'), error.message); console.error(error); }
 try { setPack(builtIn, '内置手册', lessonFromHash(location.hash)); }
 catch (error) { showStartupError(error); }
