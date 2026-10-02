@@ -8,13 +8,14 @@
     "test": "node --test tests/*.test.mjs",
     "prebuild": "node tools/pack-content.mjs",
     "build": "node tools/build.mjs",
-    "test:browser": "node tests/ui.integration.mjs && node tests/i18n.integration.mjs && node tests/basic-routes.integration.mjs && node tests/ball.integration.mjs && node tests/ball-markers.integration.mjs"
+    "test:browser": "node tests/ui.integration.mjs && node tests/i18n.integration.mjs && node tests/basic-routes.integration.mjs && node tests/ball.integration.mjs && node tests/ball-markers.integration.mjs && node tests/a11y.integration.mjs"
   },
   "dependencies": {
     "ajv": "8.17.1",
     "js-yaml": "4.1.1"
   },
   "devDependencies": {
+    "axe-core": "4.13.0",
     "esbuild": "0.25.12",
     "playwright": "1.62.1"
   }

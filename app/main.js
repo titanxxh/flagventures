@@ -94,7 +94,7 @@ function setCatalogOpen(open, moveFocus = true) {
 // Narrow screens scroll to the board instead and use the CSS limits.
 function fitField() {
   const board = document.querySelector('.board');
-  if (drawerQuery.matches || !lesson) { board.style.removeProperty('--field-max'); return; }
+  if (drawerQuery.matches || !lesson || board.classList.contains('board-fullscreen')) { board.style.removeProperty('--field-max'); return; }
   const top = $('field').getBoundingClientRect().top + scrollY;
   const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
   // Tall (portrait) fields would become unreadably small if forced into the first screen.
@@ -110,6 +110,18 @@ function goToLesson(direction) {
   if (id) navigateTo(id);
 }
 function navigateTo(id) { selectLesson(id, false, 'push'); }
+// Full screen keeps the field, caption and controls together on short screens (phones held
+// sideways, a TV). The CSS class does the layout; the Fullscreen API also hides browser chrome.
+function setFullscreen(on) {
+  const board = document.querySelector('.board');
+  if (board.classList.contains('board-fullscreen') === on) return;
+  board.classList.toggle('board-fullscreen', on);
+  document.body.classList.toggle('board-fullscreen-open', on);
+  $('fullscreen').setAttribute('aria-pressed', String(on));
+  if (on) board.requestFullscreen?.()?.catch(() => {});
+  else if (document.fullscreenElement) document.exitFullscreen?.()?.catch(() => {});
+  fitField();
+}
 function showDialog(id) { pause(); setCatalogOpen(false, false); $(id).showModal(); }
 function download(name, content, mime) {
   const url = URL.createObjectURL(new Blob([content], { type: mime }));
@@ -405,6 +417,7 @@ function render() {
   $('routeCard').classList.toggle('is-empty', !player);
   text($('routeEnglish'), player ? player.label.en || player.label.zh : touchQuery.matches ? '点一下球员试试' : '移到球员上试试');
   text($('routeChinese'), player?.label.en && player.label.en !== player.label.zh ? player.label.zh : '');
+  $('routeChinese').hidden = !$('routeChinese').textContent;
   text($('routeDescription'), scenarioMotion?.note || player?.label.description || '名称、路线和动作一起看。点击一个字母，边播放边观察他和队友怎样配合。');
   $('playerCoaching').hidden = !player?.coaching;
   text($('routeCooperation'), player?.coaching?.cooperation);
@@ -488,6 +501,8 @@ $('printLesson').addEventListener('click', () => { pause(); print(); });
 addEventListener('beforeprint', () => { if (state.playing) pause(); });
 $('next').addEventListener('click', () => goToLesson(1));
 $('play').addEventListener('click', togglePlay);
+$('fullscreen').addEventListener('click', () => setFullscreen(!document.body.classList.contains('board-fullscreen-open')));
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) setFullscreen(false); });
 $('fieldZoom').addEventListener('click', () => {
   state.fullField = !state.fullField;
   $('fieldZoom').setAttribute('aria-pressed', String(state.fullField));
@@ -512,6 +527,7 @@ document.querySelectorAll('[data-speed]').forEach(button => button.addEventListe
 // Shortcuts stay out of the way of typing, sliders, menus and focused buttons.
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && document.body.classList.contains('catalog-open')) { setCatalogOpen(false); return; }
+  if (event.key === 'Escape' && document.body.classList.contains('board-fullscreen-open')) { setFullscreen(false); return; }
   if (event.defaultPrevented || !lesson || document.querySelector('dialog[open]') || document.body.classList.contains('catalog-open')) return;
   const target = event.target instanceof Element ? event.target : null;
   const action = shortcutFor(event, {
@@ -525,6 +541,7 @@ document.addEventListener('keydown', event => {
   else if (action.type === 'speed') setSpeed(action.value);
   else if (action.type === 'reset') seek(0);
   else if (action.type === 'lesson') goToLesson(action.direction);
+  else if (action.type === 'fullscreen') setFullscreen(!document.body.classList.contains('board-fullscreen-open'));
 });
 // The legend opens by default on wide screens; a parent's own choice is remembered.
 try {
@@ -627,5 +644,11 @@ function tick(now) {
   render();
   if (state.playing) startTicking(); else lastTick = undefined;
 }
-try { validatePack(builtIn, '内置手册'); setPack(builtIn, '内置手册', lessonFromHash(location.hash)); }
-catch (error) { text($('lessonTitle'), '内置内容检查未通过'); text($('summary'), error.message); console.error(error); }
+function showStartupError(error) { text($('lessonTitle'), '内置内容检查未通过'); text($('summary'), error.message); console.error(error); }
+try { setPack(builtIn, '内置手册', lessonFromHash(location.hash)); }
+catch (error) { showStartupError(error); }
+// The build already validated the built-in pack. Re-checking it here is only a safety net,
+// so it waits until the first lesson is on screen (it costs ~0.3 s on a slow phone).
+(window.requestIdleCallback || (callback => setTimeout(callback, 300)))(() => {
+  try { validatePack(builtIn, '内置手册'); } catch (error) { showStartupError(error); }
+});

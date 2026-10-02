@@ -128,7 +128,7 @@ h1, h2, h3, p { margin-top: 0; }
 .library-top span { font-size: 11px; color: var(--muted); margin-left: auto; }
 .catalog-close { display: none; }
 .search { display: flex; gap: 6px; background: #e9ece3; align-items: center; border: 1px solid transparent; border-radius: 8px; padding: 8px 10px; margin-bottom: 14px; }
-.search:focus-within { border-color: #93aa91; }
+.search:focus-within { border-color: var(--focus); box-shadow: 0 0 0 2px var(--focus); }
 .search > span { font-size: 22px; line-height: 1; color: var(--muted); }
 .search input { background: transparent; min-width: 0; width: 100%; border: 0; outline: none; font-size: 13px; color: var(--ink); }
 #catalog { overflow: auto; flex: 1; scrollbar-width: thin; padding: 2px 8px 2px 2px; overscroll-behavior: contain; }
@@ -293,8 +293,8 @@ main[data-kind=route] .board { --field-chrome: 470px; }
 .board .primary { background: var(--gold); color: #173b2f; border-color: var(--gold); min-width: 118px; }
 .ghost { background: transparent; color: var(--board-text); border-color: #ffffff4d; }
 .ghost:hover { border-color: #ffffffa0; }
-.timeline { position: relative; flex: 1 1 200px; min-width: 160px; height: 30px; }
-#seek { --progress: 0%; -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 22px; margin: 0; background: transparent; cursor: pointer; }
+.timeline { position: relative; flex: 1 1 200px; min-width: 160px; height: 34px; }
+#seek { --progress: 0%; -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 26px; margin: 0; background: transparent; cursor: pointer; }
 #seek::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(to right, var(--board-gold) var(--progress), #ffffff33 var(--progress)); }
 #seek::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -5px; border-radius: 50%; background: #fff8e0; border: 2px solid var(--board-gold); }
 #seek::-moz-range-track { height: 6px; border-radius: 3px; background: #ffffff33; }
@@ -302,7 +302,7 @@ main[data-kind=route] .board { --field-chrome: 470px; }
 #seek::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: #fff8e0; border: 2px solid var(--board-gold); }
 #seek:disabled { opacity: .45; cursor: default; }
 #seek:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
-.timeline-ticks { position: absolute; left: 0; right: 0; top: 22px; height: 6px; pointer-events: none; }
+.timeline-ticks { position: absolute; left: 0; right: 0; top: 26px; height: 6px; pointer-events: none; }
 .timeline-tick { position: absolute; top: 0; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #ffffff70; left: calc(8px + (100% - 16px) * var(--at)); }
 .timeline-tick[data-current=true] { background: var(--board-gold); transform: scale(1.4); }
 #clock { font-variant-numeric: tabular-nums; font-size: 12px; min-width: 72px; text-align: right; color: var(--board-muted); }
@@ -394,7 +394,7 @@ main[data-kind=route] .board { --field-chrome: 470px; }
 .route-card .basis:empty { display: none; }
 .route-card .route-situation { background: #f0f1e5; padding: 10px; border-radius: 7px; font-size: 12px; }
 .player-coaching { border-top: 1px solid #e6e8dd; padding-top: 12px; }
-.player-coaching h4 { font-size: 12px; margin: 0 0 5px; color: #2f5a3a; }
+.route-card .player-coaching h3 { font-size: 12px; margin: 0 0 5px; color: #2f5a3a; font-weight: 700; }
 .player-coaching p { margin-bottom: 12px; }
 .mini-lesson { border-left: 2px solid #d5ba79; padding-left: 13px; }
 .mini-lesson .eyebrow { display: block; margin-bottom: 10px; }
@@ -407,7 +407,7 @@ main[data-kind=route] .board { --field-chrome: 470px; }
 .related-play button { white-space: normal; text-align: left; font-weight: 650; padding: 6px 0; }
 .related-play p, .related-play small { font-size: 13px; margin: 0; color: var(--muted); }
 .source-notes { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: 13px; line-height: 1.8; }
-.source-notes summary { cursor: pointer; font-size: 13px; color: var(--ink); }
+.source-notes summary { cursor: pointer; font-size: 13px; color: var(--ink); padding: 6px 0; }
 .source-notes p { margin: 12px 0; }
 .source-notes ul { padding-left: 20px; margin-bottom: 0; }
 .source-adaptation { padding: 12px; border-left: 3px solid var(--gold); background: #f0eee0; }
@@ -415,6 +415,21 @@ main[data-kind=route] .board { --field-chrome: 470px; }
 .source-references ul { padding-left: 18px; }
 .source-references li { margin: 0 0 15px; overflow-wrap: anywhere; }
 .source-references a { text-underline-offset: 3px; overflow-wrap: anywhere; }
+/* Standalone source links stay comfortable touch targets (at least 24px tall). */
+.source-menu-links a, .source-references li > a, .distance-mark a { display: inline-block; padding: 4px 0; }
+
+/* Full-screen board: the field takes whatever height the caption and controls leave */
+.board.board-fullscreen { position: fixed; inset: 0; z-index: 35; margin: 0; border-radius: 0; display: flex; flex-direction: column; overflow: auto; }
+.board-fullscreen #field { flex: 1 1 0; min-height: 140px; height: auto; max-height: none; aspect-ratio: auto !important; }
+.board-fullscreen .board-legend, .board-fullscreen .board-bottom { display: none; }
+.board-fullscreen-open { overflow: hidden; }
+@media (max-height: 500px) {
+  .board-fullscreen .board-top { padding-top: 6px; }
+  .board-fullscreen .board-roles { order: 0; flex-basis: auto; }
+  .board-fullscreen .ball-readout { flex-basis: auto; max-width: 40%; margin-left: auto; }
+  .board-fullscreen .cue { min-height: 0; padding-top: 6px; padding-bottom: 6px; }
+  .board-fullscreen .controls { padding-top: 6px; padding-bottom: 8px; }
+}
 .source-references li > span, .source-references li > strong { display: block; margin-top: 5px; }
 .reference-meta { font-size: 12px; color: var(--muted); }
 .lesson-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
