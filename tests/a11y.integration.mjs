@@ -18,6 +18,8 @@ const states = [
   ['help dialog', {width: 1440, height: 900}, 'spread-play-1', 'zh', page => page.locator('#help').click()],
   ['playbook dialog, English', {width: 1440, height: 900}, 'spread-play-1', 'en', page => page.locator('#manage').click()],
   ['full screen, sideways phone', {width: 844, height: 390}, 'single-back-play-1', 'zh', page => page.locator('#fullscreen').click()],
+  ['short laptop, English, shared ball lead', {width: 1280, height: 649}, 'qb-option', 'en'],
+  ['short laptop, Chinese, note opened', {width: 1366, height: 657}, 'spread-play-2', 'zh', page => page.locator('#ballNoteMore').click()],
 ];
 try {
   const failures = [];
@@ -36,5 +38,5 @@ try {
     await context.close();
   }
   assert.deepEqual(failures, [], `accessibility violations:\n${failures.join('\n')}`);
-  console.log(`PASS accessibility (axe-core) in ${states.length} states × light and dark: desktop, phone, English, catalog drawer, dialogs and full screen`);
+  console.log(`PASS accessibility (axe-core) in ${states.length} states × light and dark: desktop, short laptop, phone, English, catalog drawer, dialogs and full screen`);
 } finally { await browser.close(); }

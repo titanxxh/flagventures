@@ -19,6 +19,14 @@ const template = JSON.parse($('templateData').textContent);
 const narrowQuery = matchMedia('(max-width: 650px)');
 const drawerQuery = matchMedia('(max-width: 900px)');
 const touchQuery = matchMedia('(hover: none)');
+// Keep in step with the short-screen block in style.css.
+const shortQuery = matchMedia('(min-width: 901px) and (max-height: 860px)');
+// The summary often restates the teaching goal shown with the teaching notes; say it once.
+// Built-in route summaries prefix the goal with the route name ("HITCH · …").
+function repeatsGoal(summary = '', goal = '') {
+  const clean = value => value.replace(/^[^·]{1,30} · /u, '').replace(/[\s。.]+$/u, '').trim();
+  return Boolean(goal) && clean(summary) === goal.replace(/[\s。.]+$/u, '').trim();
+}
 try { setLanguage(localStorage.getItem('flagventures.language')); } catch {}
 const updateStaticLanguage = captureStaticTranslations(document.documentElement);
 let canonicalPack = builtIn;
@@ -95,21 +103,18 @@ function setCatalogOpen(open, moveFocus = true) {
 function fitField() {
   const board = document.querySelector('.board');
   if (drawerQuery.matches || !lesson || board.classList.contains('board-fullscreen')) { board.style.removeProperty('--field-max'); return; }
-  const fieldTop = $('field').getBoundingClientRect().top;
+  const top = $('field').getBoundingClientRect().top + scrollY;
   const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
-  // Tall (portrait) fields would become unreadably small if forced into the first screen.
+  // Field, caption and controls share the first screen so play is always in reach; the
+  // short-screen styles trim the heading to leave the field room. Only the opt-in full-field
+  // view of a route is too tall to squeeze in, so it keeps a usable height and scrolls.
   const box = $('field').viewBox.baseVal;
-  const floor = box && box.width / box.height < 1.1 ? innerHeight * .62 : innerHeight < 820 ? 240 : 300;
-  // On short laptop screens (1280×720, 1366×768) the field and its controls often cannot share
-  // the first screen with the heading. Rather than a tiny field whose controls are still out
-  // of view, let the board fill the window once it is scrolled to.
-  const firstScreen = innerHeight - fieldTop - scrollY - below;
-  const space = firstScreen >= floor ? firstScreen : innerHeight - (fieldTop - board.getBoundingClientRect().top) - below;
-  const value = `${Math.round(Math.max(floor, Math.min(680, space)))}px`;
+  const floor = box && box.width / box.height < .8 ? innerHeight * .62 : 140;
+  const value = `${Math.round(Math.max(floor, Math.min(680, innerHeight - top - below)))}px`;
   if (board.style.getPropertyValue('--field-max') !== value) board.style.setProperty('--field-max', value);
 }
 let fitRequest;
-addEventListener('resize', () => { cancelAnimationFrame(fitRequest); fitRequest = requestAnimationFrame(fitField); });
+addEventListener('resize', () => { cancelAnimationFrame(fitRequest); fitRequest = requestAnimationFrame(() => { syncBallNote(); fitField(); }); });
 function goToLesson(direction) {
   const id = lesson && order[order.indexOf(lesson.id) + direction];
   if (id) navigateTo(id);
@@ -201,6 +206,7 @@ function rebuildLesson(id, preserve = false) {
     text($('lessonTitle'), '内容包暂无教学条目');
     document.title = t('Flagventures · 一起看懂跑位');
     text($('summary'), '可以导入 YAML 添加战术，或从“我的战术文件”恢复内置手册。');
+    $('lessonMain').dataset.summaryRepeats = 'false';
     for (const id of ['breadcrumb', 'lessonEnglish', 'direction', 'fieldHint', 'timingNote', 'sourceNote',
       'focusStatus', 'routeEnglish', 'routeChinese', 'routeDescription', 'routeBasis', 'routeDuties',
       'frameNumber', 'frameTitle', 'frameCue']) text($(id), '');
@@ -236,6 +242,7 @@ function rebuildLesson(id, preserve = false) {
   document.title = `${lesson.title.zh} · Flagventures`;
   text($('lessonEnglish'), `${lesson.title.en || ''}${lesson.source?.page ? t` · 来源第 ${lesson.source.page} 页` : ''}`);
   text($('summary'), lesson.summary);
+  $('lessonMain').dataset.summaryRepeats = String(repeatsGoal(lesson.summary, lesson.teaching?.goal));
   $('teamPlan').hidden = !lesson.teaching;
   text($('teachingGoal'), lesson.teaching?.goal);
   text($('teamCooperation'), lesson.teaching?.cooperation);
@@ -329,6 +336,9 @@ function buildRoles() {
   const buttons = [node('button', { class: 'role', 'data-show-all': '', 'aria-pressed': 'true' }, '看全队')];
   for (const player of lesson.players) buttons.push(node('button', { class: 'role', 'data-player': player.id, 'aria-pressed': 'false', style: `--chip-color: ${playerColor(player)}`, 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` }, player.id));
   $('roles').replaceChildren(...buttons);
+  // Offense and defense together are too many chips to share a row with the direction and
+  // full-screen button; give them their own row instead of wrapping into three.
+  $('lessonMain').dataset.manyRoles = String(lesson.players.length > 5);
 }
 function buildChoices() {
   const players = lesson.players.filter(player => player.motion.type === 'choice');
@@ -346,10 +356,27 @@ function buildBallControls() {
   if (!sourceLesson.ball) return;
   $('ballEnabled').checked = Boolean(state.showBall);
   text($('ballChoiceHeading'), lesson.kind === 'offense' ? '这次球传给谁' : '选择球的流转');
-  $('ballOptions').replaceChildren(...sourceLesson.ball.scenarios.map(scenario =>
-    node('button', {'data-ball-scenario': scenario.id, 'aria-pressed': String(Boolean(state.showBall) && state.scenarioId === scenario.id), ...(state.showBall ? {} : {disabled: ''})}, scenario.title)));
+  // Sequences often open the same way ("Y 接开球后交 Q · Q 传给 C"); say the shared part once
+  // so each button shows only what differs. The button's name keeps the full title.
+  const titles = sourceLesson.ball.scenarios.map(scenario => t(scenario.title).split(' · '));
+  let shared = 0;
+  while (titles.length > 1 && titles.every(parts => parts.length > shared + 1 && parts[shared] === titles[0][shared])) shared++;
+  const lead = shared ? [node('span', {class: 'ball-options-lead'}, `${titles[0].slice(0, shared).join(' · ')} ·`)] : [];
+  $('ballOptions').replaceChildren(...lead, ...sourceLesson.ball.scenarios.map((scenario, index) =>
+    node('button', {'data-ball-scenario': scenario.id, 'aria-pressed': String(Boolean(state.showBall) && state.scenarioId === scenario.id), ...(state.showBall ? {} : {disabled: ''}),
+      ...(shared ? {'aria-label': titles[index].join(' · ')} : {})}, titles[index].slice(shared).join(' · '))));
   text($('ballScenarioNote'), ballScenario?.note || '已切换为只看跑位。打开球路可查看传球和交接。');
   text($('ballSourceNote'), sourceLesson.ball.note);
+  syncBallNote();
+}
+// On short screens the scenario note shows one line so the play button stays in the first
+// screen; the button opens the rest when it does not fit.
+function syncBallNote() {
+  const note = $('ballScenarioNote'), more = $('ballNoteMore');
+  const open = shortQuery.matches && $('ballControls').dataset.noteOpen === 'true';
+  more.hidden = !shortQuery.matches || (!open && note.scrollWidth <= note.clientWidth + 1);
+  more.setAttribute('aria-expanded', String(open));
+  text(more, open ? '收起' : '展开说明');
 }
 function buildFrames() {
   $('frames').replaceChildren(...lesson.keyframes.map((frame, index) => {
@@ -526,6 +553,11 @@ $('ballOptions').addEventListener('click', event => {
   state.scenarioId = button.dataset.ballScenario;
   state.time = 0; state.playing = false;
   selectLesson(lesson.id, true);
+});
+$('ballNoteMore').addEventListener('click', () => {
+  const controls = $('ballControls');
+  controls.dataset.noteOpen = String(controls.dataset.noteOpen !== 'true');
+  syncBallNote(); fitField();
 });
 $('seek').addEventListener('input', event => seek(Number(event.target.value)));
 $('frames').addEventListener('click', event => { const button = event.target.closest('[data-frame]'); if (button) seek(lesson.keyframes[Number(button.dataset.frame)].at); });

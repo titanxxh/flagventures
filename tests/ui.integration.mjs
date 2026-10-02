@@ -630,29 +630,57 @@ try {
     await page.setViewportSize({width: 1440, height: 1000});
   });
 
-  await caseRun('on short laptop and tablet screens the board fills the window instead of shrinking the field', async () => {
-    for (const [width, height] of [[1280, 720], [1366, 768], [1024, 768]]) {
+  await caseRun('on short laptop and tablet screens play stays in the first screen with a usable field', async () => {
+    // Browser viewports of common laptops (1366×768, 1280×720, 1920×1080 at 125%) and tablets.
+    for (const [width, height] of [[1366, 657], [1280, 649], [1536, 730], [1440, 789], [1024, 768], [1024, 690]]) {
       await page.setViewportSize({width, height});
-      for (const id of ['spread-play-1', 'spread-play-2', 'route-hitch', 'cover-2', 'hb-dive', 'single-back-formation']) {
+      for (const id of ['spread-play-1', 'spread-play-2', 'route-hitch', 'cover-2', 'hb-dive', 'qb-option', 'single-back-formation', 'concept-levels']) {
         await open();
         await select(id);
         const layout = await page.evaluate(() => {
-          const field = document.querySelector('#field'), box = field.viewBox.baseVal, rect = field.getBoundingClientRect();
-          return {
-            field: rect.height, fullWidth: rect.width * box.height / box.width,
-            board: document.querySelector('.board').getBoundingClientRect().top,
-            play: document.querySelector('#play').getBoundingClientRect().bottom,
-            controls: document.querySelector('.controls').getBoundingClientRect().bottom,
-          };
+          const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
+          return {scrollY, field: rect('#field').height, play: rect('#play'), speed: rect('.speed'), boardTop: rect('.board-top').height};
         });
         const label = `${width}×${height} ${id}`;
-        // Either everything shares the first screen, or the field is not squeezed for nothing.
-        if (layout.play <= height) { assert.ok(layout.field >= 239, `${label}: first-screen field keeps its minimum size`); continue; }
-        assert.ok(layout.field >= Math.min(380, layout.fullWidth - 1), `${label}: field is not squeezed (${Math.round(layout.field)}px of ${Math.round(layout.fullWidth)}px)`);
-        assert.ok(layout.controls - layout.board <= height, `${label}: once scrolled to, the board shows the field and controls together`);
+        assert.equal(layout.scrollY, 0, label);
+        assert.ok(layout.play.bottom <= height && layout.speed.bottom <= height, `${label}: play and speed are in the first screen (${Math.round(layout.speed.bottom)})`);
+        assert.ok(Math.abs(layout.play.top - layout.speed.top) < 8, `${label}: the control bar is one row`);
+        assert.ok(layout.field >= 150, `${label}: the field stays usable (${Math.round(layout.field)}px)`);
+        assert.ok(layout.boardTop < 100, `${label}: the board's top bar takes at most two rows (${Math.round(layout.boardTop)}px)`);
       }
     }
+    // A long scenario note shows one line; opening it keeps play in the first screen.
+    await page.setViewportSize({width: 1366, height: 657});
+    await open();
+    await select('spread-play-2');
+    const more = page.locator('#ballNoteMore');
+    assert.equal(await more.isVisible(), true, 'a clipped note offers the rest');
+    assert.equal(await more.textContent(), '展开说明');
+    const lineHeight = await page.locator('#ballScenarioNote').evaluate(note => note.getBoundingClientRect().height);
+    await more.click();
+    assert.equal(await more.getAttribute('aria-expanded'), 'true');
+    assert.ok(await page.locator('#ballScenarioNote').evaluate(note => note.getBoundingClientRect().height) > lineHeight * 1.5, 'the whole note is shown');
+    assert.ok(await page.locator('.speed').evaluate(speed => speed.getBoundingClientRect().bottom <= innerHeight), 'the field gives way so play stays in view');
+    await more.click();
+    assert.equal(await more.getAttribute('aria-expanded'), 'false');
     await page.setViewportSize({width: 1440, height: 1000});
+    assert.equal(await more.isVisible(), false, 'tall screens show the whole note without a button');
+  });
+
+  await caseRun('a summary that repeats the teaching goal is shown once', async () => {
+    const visible = selector => page.locator(selector).evaluate(node => node.getClientRects().length > 0);
+    await open();
+    await select('crossbuck');
+    assert.equal(await visible('#summary'), false, 'wide screens keep the copy beside the board');
+    assert.equal(await visible('#teachingGoal'), true);
+    await page.setViewportSize({width: 1024, height: 768});
+    assert.equal(await visible('#summary'), true, 'when the teaching column is below the board, the copy under the title stays');
+    assert.equal(await visible('#teachingGoal'), false);
+    await select('spread-play-1');
+    assert.equal(await visible('#summary'), true, 'a different summary is never hidden');
+    assert.equal(await visible('#teachingGoal'), true);
+    await page.setViewportSize({width: 1440, height: 1000});
+    assert.equal(await visible('#summary'), true);
   });
 
   await caseRun('phones use a catalog drawer, a full-width field and large touch targets', async () => {
@@ -764,11 +792,12 @@ try {
     await page.setViewportSize({width: 1024, height: 768});
     await open();
     await select('spread-play-2');
-    // Field size at this height is covered by the short-screen case above.
     const tablet = await page.evaluate(() => ({
+      play: document.querySelector('#play').getBoundingClientRect().bottom,
       toggle: document.querySelector('.ball-toggle').getBoundingClientRect().top,
       heading: document.querySelector('#ballChoiceHeading').getBoundingClientRect().top,
     }));
+    assert.ok(tablet.play <= 768, `1024×768: play button is in the first screen (${Math.round(tablet.play)})`);
     assert.ok(Math.abs(tablet.toggle - tablet.heading) < 12, 'the ball toggle shares the heading row');
     await page.setViewportSize({width: 390, height: 844});
     await page.selectOption('#language', 'en');
