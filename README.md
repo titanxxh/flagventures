@@ -4,7 +4,7 @@
 
 ## 直接使用
 
-- **在线使用**：[打开 Flagventures](https://titanxxh.github.io/flagventures/)。
+- **在线使用**：[打开 Flagventures](https://titanxxh.github.io/flagventures/)。可以在手机浏览器里「添加到主屏幕」，打开过一次后，在没有网络的球场也能使用。
 - **本地使用**：下载 [Flagventures.html](dist/Flagventures.html)，双击后用浏览器打开。教学内容在文件内，无需安装软件、启动服务或联网。
 
 两个版本均包含 **71 个教学条目**：原手册 64 条、补充的 In / Square In 路线，以及 6 种组合配合。运行不依赖 PDF 或原页图片。公开仓库和默认应用不包含原页图片。
@@ -62,6 +62,6 @@ npm run build
 | `app/` | 页面（`main.js` 状态与面板、`field.js` 球场绘制、`catalog.js` 目录、`navigation.js` 链接与快捷键）、场景计算与内容校验 |
 | `content/` | 71 条 YAML 与目录 |
 | `content-format/` | 格式定义、模板与示例 |
-| `tools/` | 内容打包和单文件网页构建 |
+| `tools/` | 内容打包、单文件网页构建，以及应用图标生成（`make-icons.mjs`） |
 | `tests/` | 内容、场景、导入与浏览器测试 |
 | `dist/` | 可直接使用的主 HTML 与开源许可 |

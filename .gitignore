@@ -25,3 +25,6 @@ content/default.flagbook.json
 dist/index.html
 dist/*.flagbook.json
 dist/使用说明.md
+dist/sw.js
+dist/manifest.webmanifest
+dist/*.png
