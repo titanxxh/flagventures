@@ -1,0 +1,47 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      # The README links dist/Flagventures.html for offline use, so it must match the source.
+      - name: Check that the committed offline HTML is up to date
+        run: |
+          if ! git diff --quiet -- dist/Flagventures.html; then
+            echo "::error file=dist/Flagventures.html::dist/Flagventures.html is out of date. Run npm run build and commit the result."
+            exit 1
+          fi
+      # ubuntu-latest ships Google Chrome, which the browser tests use through Playwright's chrome channel.
+      - name: Browser tests
+        env:
+          PAUSE_CHECK_MS: '3000'
+        run: npm run test:browser
+      - name: Keep browser test screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-output
+          path: tmp/
+          if-no-files-found: ignore
