@@ -11,8 +11,8 @@
     "test:browser": "node tests/ui.integration.mjs && node tests/i18n.integration.mjs && node tests/basic-routes.integration.mjs && node tests/ball.integration.mjs && node tests/ball-markers.integration.mjs && node tests/a11y.integration.mjs"
   },
   "dependencies": {
-    "ajv": "8.17.1",
-    "js-yaml": "4.1.1"
+    "ajv": "8.20.0",
+    "js-yaml": "4.3.2"
   },
   "devDependencies": {
     "axe-core": "4.13.0",
