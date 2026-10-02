@@ -36,6 +36,7 @@ let pendingImport = null;
 let importRequest = 0;
 let toastTimer;
 let lastTick;
+let tickRequest;
 let fieldNodes = {};
 let assetMap = new Map();
 let catalogNodes = new Map();
@@ -57,7 +58,9 @@ function togglePlay() {
   if (!lesson || $('play').disabled || !getScene(lesson, 0, state.choices).ready) return;
   if (state.time >= lesson.timeline.duration) state.time = 0;
   state.playing = !state.playing; lastTick = undefined; render();
+  if (state.playing) startTicking();
 }
+function startTicking() { if (tickRequest === undefined) tickRequest = requestAnimationFrame(tick); }
 function setSpeed(value) {
   state.speed = value; lastTick = undefined;
   document.querySelectorAll('[data-speed]').forEach(item => item.setAttribute('aria-pressed', String(Number(item.dataset.speed) === value)));
@@ -67,10 +70,13 @@ function stepKeyframe(direction) {
   if (frame) seek(frame.at);
 }
 // The address keeps the current lesson so a refresh or a shared link returns to it.
-function syncHash() {
+// A parent's own navigation adds a history entry so the browser Back button returns to the
+// previous lesson; everything else (first load, imports, language) replaces the current one.
+function syncHash(mode = 'replace') {
   const target = lesson ? lessonHash(lesson.id) : '';
   if (location.hash === target) return;
-  try { history.replaceState(history.state, '', target || `${location.pathname}${location.search}`); }
+  const url = target || `${location.pathname}${location.search}`;
+  try { history[mode === 'push' ? 'pushState' : 'replaceState'](null, '', url); }
   catch { if (target) location.replace(target); }
 }
 function revealEntry(id) { revealCatalogEntry($('catalog'), catalogNodes.get(id)); }
@@ -93,7 +99,7 @@ function fitField() {
   const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
   // Tall (portrait) fields would become unreadably small if forced into the first screen.
   const box = $('field').viewBox.baseVal;
-  const floor = box && box.width / box.height < 1.1 ? innerHeight * .62 : 300;
+  const floor = box && box.width / box.height < 1.1 ? innerHeight * .62 : innerHeight < 820 ? 240 : 300;
   const value = `${Math.round(Math.max(floor, Math.min(680, innerHeight - top - below)))}px`;
   if (board.style.getPropertyValue('--field-max') !== value) board.style.setProperty('--field-max', value);
 }
@@ -101,8 +107,9 @@ let fitRequest;
 addEventListener('resize', () => { cancelAnimationFrame(fitRequest); fitRequest = requestAnimationFrame(fitField); });
 function goToLesson(direction) {
   const id = lesson && order[order.indexOf(lesson.id) + direction];
-  if (id) selectLesson(id);
+  if (id) navigateTo(id);
 }
+function navigateTo(id) { selectLesson(id, false, 'push'); }
 function showDialog(id) { pause(); setCatalogOpen(false, false); $(id).showModal(); }
 function download(name, content, mime) {
   const url = URL.createObjectURL(new Blob([content], { type: mime }));
@@ -127,7 +134,7 @@ function buildCatalog() {
   catalogNodes = renderCatalog($('catalog'), {pack, canonicalPack, query: $('search').value.trim().toLocaleLowerCase(),
     currentId: lesson?.id, expandedSections, expandedGroups});
 }
-function selectLesson(id, preserve = false) {
+function selectLesson(id, preserve = false, historyMode = 'replace') {
   // Replacing focused controls fires focusout synchronously. Wait until the new
   // lesson and every control/field node agree before rendering those events.
   rebuildingLesson = true;
@@ -135,7 +142,7 @@ function selectLesson(id, preserve = false) {
   finally { rebuildingLesson = false; }
   render();
   fitField();
-  syncHash();
+  syncHash(historyMode);
 }
 // Rebuild only the SVG (zoom or screen-size changes) without touching playback state.
 function rebuildField() {
@@ -175,12 +182,13 @@ function rebuildLesson(id, preserve = false) {
   $('fieldZoom').hidden = lesson?.kind !== 'route';
   if (!lesson) {
     text($('lessonTitle'), '内容包暂无教学条目');
+    document.title = t('Flagventures · 一起看懂跑位');
     text($('summary'), '可以导入 YAML 添加战术，或从“我的战术文件”恢复内置手册。');
     for (const id of ['breadcrumb', 'lessonEnglish', 'direction', 'fieldHint', 'timingNote', 'sourceNote',
       'focusStatus', 'routeEnglish', 'routeChinese', 'routeDescription', 'routeBasis', 'routeDuties',
       'frameNumber', 'frameTitle', 'frameCue']) text($(id), '');
-    for (const id of ['field', 'roles', 'choices', 'frames', 'timelineTicks', 'notes', 'sourceReferences']) $(id).replaceChildren();
-    for (const id of ['play', 'reset', 'seek', 'previous', 'next', 'exportLesson']) $(id).disabled = true;
+    for (const id of ['field', 'roles', 'choices', 'frames', 'printFrames', 'timelineTicks', 'notes', 'sourceReferences']) $(id).replaceChildren();
+    for (const id of ['play', 'reset', 'seek', 'previous', 'next', 'headPrevious', 'headNext', 'exportLesson', 'printLesson']) $(id).disabled = true;
     $('source').hidden = $('choices').hidden = $('routeDuties').hidden = true;
     $('teamPlan').hidden = $('playerCoaching').hidden = $('routeSituation').hidden = $('sourceReferences').hidden = true;
     text($('teachingCue'), '先选择一条教学内容。'); text($('teachingQuestion'), '');
@@ -188,7 +196,7 @@ function rebuildLesson(id, preserve = false) {
     $('seek').value = 0; $('seek').max = 0;
     text($('routePerson'), '?'); text($('routeMode'), '请先选择教学条目');
     text($('play'), '暂无条目'); text($('playState'), '暂无条目');
-    text($('clock'), '0.0 / 0.0 s'); text($('lessonIndex'), '0 / 0');
+    text($('clock'), '0.0 / 0.0 s'); text($('lessonIndex'), '0 / 0'); text($('headIndex'), '0 / 0');
     return;
   }
   $('exportLesson').disabled = $('reset').disabled = false;
@@ -208,6 +216,7 @@ function rebuildLesson(id, preserve = false) {
     if (details) details.open = true;
   }
   text($('lessonTitle'), lesson.title.zh);
+  document.title = `${lesson.title.zh} · Flagventures`;
   text($('lessonEnglish'), `${lesson.title.en || ''}${lesson.source?.page ? t` · 来源第 ${lesson.source.page} 页` : ''}`);
   text($('summary'), lesson.summary);
   $('teamPlan').hidden = !lesson.teaching;
@@ -228,6 +237,9 @@ function rebuildLesson(id, preserve = false) {
   for (const [entryId, button] of catalogNodes) button.setAttribute('aria-current', String(entryId === id));
   const index = order.indexOf(id);
   text($('lessonIndex'), `${index + 1} / ${order.length}`);
+  text($('headIndex'), `${index + 1} / ${order.length}`);
+  $('headPrevious').disabled = index === 0; $('headNext').disabled = index === order.length - 1;
+  $('printLesson').disabled = false;
   $('previous').disabled = index === 0; $('next').disabled = index === order.length - 1;
   revealEntry(id);
   $('fieldZoom').setAttribute('aria-pressed', String(Boolean(state.fullField)));
@@ -289,7 +301,7 @@ function buildProvenance() {
       const item = node('div', {class: 'related-play'});
       const button = node('button', {class: 'text-button', 'data-related-lesson': reference.id}, target?.title.zh || reference.title);
       button.disabled = !target;
-      button.addEventListener('click', () => selectLesson(target.id));
+      button.addEventListener('click', () => navigateTo(target.id));
       item.append(button, node('p', {}, reference.note));
       if (!target) item.append(node('small', {}, '对应条目不在当前战术包中。'));
       $('relatedPlays').append(item);
@@ -318,7 +330,7 @@ function buildBallControls() {
   $('ballEnabled').checked = Boolean(state.showBall);
   text($('ballChoiceHeading'), lesson.kind === 'offense' ? '这次球传给谁' : '选择球的流转');
   $('ballOptions').replaceChildren(...sourceLesson.ball.scenarios.map(scenario =>
-    node('button', {'data-ball-scenario': scenario.id, 'aria-pressed': String(state.scenarioId === scenario.id), ...(state.showBall ? {} : {disabled: ''})}, scenario.title)));
+    node('button', {'data-ball-scenario': scenario.id, 'aria-pressed': String(Boolean(state.showBall) && state.scenarioId === scenario.id), ...(state.showBall ? {} : {disabled: ''})}, scenario.title)));
   text($('ballScenarioNote'), ballScenario?.note || '已切换为只看跑位。打开球路可查看传球和交接。');
   text($('ballSourceNote'), sourceLesson.ball.note);
 }
@@ -327,6 +339,12 @@ function buildFrames() {
     const button = node('button', { class: 'frame', 'data-frame': index, 'aria-pressed': 'false' });
     button.append(node('span', {}, `${String(index + 1).padStart(2, '0')} · ${frame.at.toFixed(1)}s`), node('strong', {}, frame.label));
     return button;
+  }));
+  // The printed handout lists every keyframe with its explanation, not only the current one.
+  $('printFrames').replaceChildren(...lesson.keyframes.map((frame, index) => {
+    const item = node('li');
+    item.append(node('strong', {}, `${String(index + 1).padStart(2, '0')} · ${frame.label}`), node('p', {}, frame.cue));
+    return item;
   }));
   // Keyframe dots sit under the progress bar so playback shows where the teaching stops are.
   const duration = lesson.timeline.duration;
@@ -447,7 +465,7 @@ $('language').addEventListener('change', () => {
 $('search').addEventListener('input', buildCatalog);
 $('catalog').addEventListener('click', event => {
   const button = event.target.closest('[data-lesson]'); if (!button) return;
-  selectLesson(button.dataset.lesson);
+  navigateTo(button.dataset.lesson);
   if (drawerQuery.matches) setCatalogOpen(false);
 });
 $('catalogToggle').addEventListener('click', () => setCatalogOpen(!document.body.classList.contains('catalog-open')));
@@ -456,11 +474,18 @@ $('catalogBackdrop').addEventListener('click', () => setCatalogOpen(false));
 drawerQuery.addEventListener('change', () => setCatalogOpen(false, false));
 narrowQuery.addEventListener('change', rebuildField);
 document.querySelector('.brand').addEventListener('click', event => { event.preventDefault(); scrollTo({top: 0}); });
-window.addEventListener('hashchange', () => {
+// Back/forward and edited links both arrive here; whichever event fires first does the work.
+function followAddress() {
   const id = lessonFromHash(location.hash);
   if (id && id !== lesson?.id && pack.lessons.some(item => item.id === id)) selectLesson(id);
-});
+}
+window.addEventListener('hashchange', followAddress);
+window.addEventListener('popstate', followAddress);
 $('previous').addEventListener('click', () => goToLesson(-1));
+$('headPrevious').addEventListener('click', () => goToLesson(-1));
+$('headNext').addEventListener('click', () => goToLesson(1));
+$('printLesson').addEventListener('click', () => { pause(); print(); });
+addEventListener('beforeprint', () => { if (state.playing) pause(); });
 $('next').addEventListener('click', () => goToLesson(1));
 $('play').addEventListener('click', togglePlay);
 $('fieldZoom').addEventListener('click', () => {
@@ -522,11 +547,10 @@ for (const id of ['field', 'roles']) {
     hovered = focused = null; render();
   });
   surface.addEventListener('pointermove', event => {
-    const target = event.target.closest('[data-player]');
-    const value = target?.dataset.player;
-    hovered = value || null; render();
+    const value = event.target.closest('[data-player]')?.dataset.player || null;
+    if (value !== hovered) { hovered = value; render(); }
   });
-  surface.addEventListener('pointerleave', () => { hovered = null; render(); });
+  surface.addEventListener('pointerleave', () => { if (hovered !== null) { hovered = null; render(); } });
   surface.addEventListener('focusin', event => {
     const target = event.target.closest('[data-player]');
     focused = target?.dataset.player || null; hovered = null; render();
@@ -593,14 +617,15 @@ $('exportPack').addEventListener('click', () => { download('Flagventures.flagboo
 $('exportLesson').addEventListener('click', () => { download(`${lesson.id}.yaml`, dump(canonicalPack.lessons.find(item => item.id === lesson.id), { lineWidth: 100, noRefs: true }), 'application/yaml;charset=utf-8'); notify('已开始下载当前条目。'); });
 $('downloadTemplate').addEventListener('click', () => { download('new-play.yaml', template, 'application/yaml;charset=utf-8'); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+// Frames are requested only while playing, so a paused lesson costs no CPU or battery.
 function tick(now) {
-  if (state.playing) {
-    if (lastTick !== undefined) state.time = Math.min(lesson.timeline.duration, state.time + Math.min((now - lastTick) / 1000, .1) * state.speed);
-    lastTick = now;
-    if (state.time >= lesson.timeline.duration) state.playing = false;
-    render();
-  } else lastTick = undefined;
-  requestAnimationFrame(tick);
+  tickRequest = undefined;
+  if (!state.playing || !lesson) { lastTick = undefined; return; }
+  if (lastTick !== undefined) state.time = Math.min(lesson.timeline.duration, state.time + Math.min((now - lastTick) / 1000, .1) * state.speed);
+  lastTick = now;
+  if (state.time >= lesson.timeline.duration) state.playing = false;
+  render();
+  if (state.playing) startTicking(); else lastTick = undefined;
 }
-try { validatePack(builtIn, '内置手册'); setPack(builtIn, '内置手册', lessonFromHash(location.hash)); requestAnimationFrame(tick); }
+try { validatePack(builtIn, '内置手册'); setPack(builtIn, '内置手册', lessonFromHash(location.hash)); }
 catch (error) { text($('lessonTitle'), '内置内容检查未通过'); text($('summary'), error.message); console.error(error); }

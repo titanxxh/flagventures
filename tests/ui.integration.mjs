@@ -605,6 +605,11 @@ try {
     assert.equal(await currentTime(), 0, 'typing in search never seeks');
     assert.equal(await page.locator('[data-speed="2"]').getAttribute('aria-pressed'), 'true', 'typing in search never changes speed');
     await page.locator('#search').fill('');
+    await page.locator('#summary').click();
+    await page.keyboard.press(']');
+    assert.match(await page.locator('#lessonTitle').textContent(), /第 2 号战术/, '] opens the next lesson');
+    await page.keyboard.press('[');
+    assert.match(await page.locator('#lessonTitle').textContent(), /第 1 号战术/, '[ opens the previous lesson');
   });
 
   await caseRun('on a 1440×900 screen the field, caption and controls fit without scrolling', async () => {
@@ -658,6 +663,116 @@ try {
     assert.equal(await page.locator('#catalogToggle').isVisible(), false, 'desktop shows the catalog inline');
     assert.equal(await page.locator('#library').isVisible(), true);
     await page.setViewportSize({width: 1440, height: 1000});
+  });
+
+  await caseRun('a paused lesson requests no animation frames', async () => {
+    await open();
+    await select('spread-play-1');
+    await page.evaluate(() => {
+      window.frameRequests = 0;
+      const request = window.requestAnimationFrame.bind(window);
+      window.requestAnimationFrame = callback => { window.frameRequests++; return request(callback); };
+    });
+    await page.waitForTimeout(800);
+    assert.equal(await page.evaluate(() => window.frameRequests), 0, 'idle pages stay idle');
+    await page.locator('#play').click();
+    await page.waitForFunction(() => window.frameRequests > 10);
+    await page.locator('#play').click();
+    const stopped = await page.evaluate(() => window.frameRequests);
+    await page.waitForTimeout(500);
+    assert.ok(await page.evaluate(() => window.frameRequests) <= stopped + 1, 'pausing stops the frame loop');
+    await page.locator('#seek').evaluate(range => { range.value = 9.9; range.dispatchEvent(new Event('input', {bubbles: true})); });
+    await page.locator('#play').click();
+    await page.waitForFunction(() => document.querySelector('#play').textContent.includes('再看一遍'));
+    const ended = await page.evaluate(() => window.frameRequests);
+    await page.waitForTimeout(400);
+    assert.ok(await page.evaluate(() => window.frameRequests) <= ended + 1, 'reaching the end stops the frame loop');
+  });
+
+  await caseRun('Back returns to the previous lesson and the tab title names the lesson', async () => {
+    await open();
+    const titles = await page.locator('#builtInData').evaluate(node => Object.fromEntries(JSON.parse(node.textContent).lessons.map(item => [item.id, item.title.zh])));
+    await select('spread-play-1');
+    assert.equal(await page.title(), `${titles['spread-play-1']} · Flagventures`);
+    await page.locator('#headNext').click();
+    await page.locator('#next').click();
+    await page.locator('[data-lesson="cover-2"]').evaluate(entry => entry.click());
+    assert.equal(await page.title(), `${titles['cover-2']} · Flagventures`);
+    for (const id of ['spread-play-3', 'spread-play-2', 'spread-play-1']) {
+      await page.goBack();
+      await page.waitForFunction(expected => document.querySelector('#lessonTitle').textContent === expected, titles[id]);
+      assert.equal(new URL(page.url()).hash, `#lesson=${id}`);
+    }
+    await page.goForward();
+    await page.waitForFunction(expected => document.querySelector('#lessonTitle').textContent === expected, titles['spread-play-2']);
+    await page.locator('#language').selectOption('en');
+    assert.doesNotMatch(await page.title(), /[㐀-鿿]/u, 'the title follows the language');
+    await page.locator('#language').selectOption('zh');
+  });
+
+  await caseRun('the heading pager matches the footer and stops at both ends', async () => {
+    await open();
+    const order = await ids();
+    assert.equal(await page.locator('#headIndex').textContent(), `1 / ${order.length}`);
+    assert.equal(await page.locator('#headPrevious').isDisabled(), true);
+    await page.locator('#headNext').click();
+    assert.equal(await page.locator('[aria-current="true"]').getAttribute('data-lesson'), order[1]);
+    assert.equal(await page.locator('#headIndex').textContent(), await page.locator('#lessonIndex').textContent());
+    await select(order.at(-1));
+    assert.equal(await page.locator('#headNext').isDisabled(), true);
+    await page.locator('#headPrevious').click();
+    assert.equal(await page.locator('[aria-current="true"]').getAttribute('data-lesson'), order.at(-2));
+  });
+
+  await caseRun('turning the ball layer off leaves no pass target looking selected', async () => {
+    await open();
+    await select('spread-play-1');
+    assert.equal(await page.locator('[data-ball-scenario][aria-pressed="true"]').count(), 1);
+    await page.locator('#ballEnabled').uncheck();
+    assert.equal(await page.locator('[data-ball-scenario][aria-pressed="true"]').count(), 0);
+    assert.equal(await page.locator('[data-ball-scenario]:not([disabled])').count(), 0);
+    await page.locator('#ballEnabled').check();
+    assert.equal(await page.locator('[data-ball-scenario][aria-pressed="true"]').count(), 1);
+  });
+
+  await caseRun('tablets and English phones keep the controls compact', async () => {
+    await page.setViewportSize({width: 1024, height: 768});
+    await open();
+    await select('spread-play-2');
+    const tablet = await page.evaluate(() => ({
+      play: document.querySelector('#play').getBoundingClientRect().bottom,
+      toggle: document.querySelector('.ball-toggle').getBoundingClientRect().top,
+      heading: document.querySelector('#ballChoiceHeading').getBoundingClientRect().top,
+    }));
+    assert.ok(tablet.play <= 768, `1024×768: play button is in the first screen (${Math.round(tablet.play)})`);
+    assert.ok(Math.abs(tablet.toggle - tablet.heading) < 12, 'the ball toggle shares the heading row');
+    await page.setViewportSize({width: 390, height: 844});
+    await page.selectOption('#language', 'en');
+    const phone = await page.evaluate(() => ({play: document.querySelector('#play').getBoundingClientRect().top, speed: document.querySelector('.speed').getBoundingClientRect().top}));
+    assert.ok(Math.abs(phone.play - phone.speed) < 8, 'English play, reset and speed fit on one row');
+    await page.selectOption('#language', 'zh');
+    await page.setViewportSize({width: 1440, height: 1000});
+  });
+
+  await caseRun('the printed handout shows the field, every keyframe and the talking points', async () => {
+    await open();
+    await select('spread-play-1');
+    await page.evaluate(() => { window.printed = 0; window.print = () => { window.printed++; }; });
+    await page.locator('#printLesson').click();
+    assert.equal(await page.evaluate(() => window.printed), 1);
+    const frames = await page.locator('#frames [data-frame]').count();
+    await page.emulateMedia({media: 'print'});
+    try {
+      for (const selector of ['.app-header', '.library', '.controls', '#frames', '.lesson-actions']) {
+        assert.equal(await page.locator(selector).isVisible(), false, `${selector} is not printed`);
+      }
+      for (const selector of ['#lessonTitle', '#field', '#printFrames', '.team-plan', '.mini-lesson']) {
+        assert.equal(await page.locator(selector).isVisible(), true, `${selector} is printed`);
+      }
+      assert.equal(await page.locator('#printFrames li').count(), frames);
+      assert.ok((await page.locator('#printFrames li').last().textContent()).length > 6);
+      await page.screenshot({path: join(output, 'print-handout.png'), fullPage: true});
+    } finally { await page.emulateMedia({media: 'screen'}); }
   });
 
   await caseRun('the line-of-scrimmage caption never covers a player in either language', async () => {

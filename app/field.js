@@ -43,6 +43,16 @@ function placeLineLabel(label, {width, lineY, players, unit, glyph, preferEnd}) 
   label.setAttribute('x', preferEnd ? Math.max(unit, width - 2 * unit - measured.width) : 2 * unit);
   label.setAttribute('y', lineY - 1.1 * glyph);
 }
+// Field y-positions of the yard numbers drawn beside a yard-scaled field (every 5 yards from the line).
+function yardTicks({unit, height: h, lineOfScrimmageY, endZoneDepth = 0, attackDirection}) {
+  if (unit !== 'yard' || lineOfScrimmageY === undefined) return [];
+  const majorInterval = Math.max(1, Math.ceil(h / 200)) * 5;
+  const direction = attackDirection === 'up' ? -1 : 1;
+  const limit = direction < 0 ? lineOfScrimmageY - endZoneDepth : h - endZoneDepth - lineOfScrimmageY;
+  const ticks = [];
+  for (let distance = 0; distance <= limit && ticks.length <= 200; distance += majorInterval) ticks.push(lineOfScrimmageY + direction * distance);
+  return ticks;
+}
 // Basic routes open zoomed to the route, QB and depth labels; "看全场" restores the whole field.
 function routeViewport(viewport, {lesson, choices}, labels, unit, glyph) {
   const {lineOfScrimmageY, height, endZoneDepth = 0} = lesson.field;
@@ -57,12 +67,16 @@ function routeViewport(viewport, {lesson, choices}, labels, unit, glyph) {
   let top = Math.min(...ys) - 5 * glyph, bottom = Math.max(...ys) + 6 * glyph;
   const minimum = height * .36;
   if (bottom - top < minimum) { const extra = (minimum - (bottom - top)) / 2; top -= extra; bottom += extra; }
-  // Never slice a field caption (end zones, 场地中间, 中线) in half at the crop edge.
+  // Never slice a caption (end zones, 场地中间, 中线, yard numbers) in half at the crop edge.
   const bands = [[height / 2 - unit - 1.6 * glyph, height / 2 - unit + .5 * glyph], [endZoneDepth + 4 * unit - 1.6 * glyph, endZoneDepth + 4 * unit + .5 * glyph]];
   if (endZoneDepth) bands.push([endZoneDepth / 2 - 1.4 * glyph, endZoneDepth / 2 + 1.4 * glyph], [height - endZoneDepth / 2 - 1.4 * glyph, height - endZoneDepth / 2 + 1.4 * glyph]);
-  for (const [from, to] of bands) {
-    if (top > from && top < to) top = from - .5 * glyph;
-    if (bottom > from && bottom < to) bottom = to + .5 * glyph;
+  for (const y of yardTicks(lesson.field)) bands.push([y - 1.2 * glyph, y + 1.2 * glyph]);
+  // Moving one edge can land it inside a neighbouring caption, so settle the edges in a few passes.
+  for (let pass = 0; pass < 4; pass++) {
+    for (const [from, to] of bands) {
+      if (top > from && top < to) top = from - .5 * glyph;
+      if (bottom > from && bottom < to) bottom = to + .5 * glyph;
+    }
   }
   top = Math.max(viewport.y, top); bottom = Math.min(viewport.y + viewport.height, bottom);
   return {...viewport, y: top, height: bottom - top};
