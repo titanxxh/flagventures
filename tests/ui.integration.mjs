@@ -664,7 +664,8 @@ try {
     await more.click();
     assert.equal(await more.getAttribute('aria-expanded'), 'false');
     await page.setViewportSize({width: 1440, height: 1000});
-    assert.equal(await more.isVisible(), false, 'tall screens show the whole note without a button');
+    // The resize handler runs on the next frame; wait for it rather than racing it.
+    await more.waitFor({state: 'hidden', timeout: 5000});
   });
 
   await caseRun('phones and very short windows keep play in reach with a floating button', async () => {
