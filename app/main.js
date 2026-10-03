@@ -136,15 +136,18 @@ function hintFullscreen(small) {
 // board is taller than the window (a phone held sideways) it opens full screen instead.
 let playBelow = false, boardTooTall = false;
 const floatingFullscreen = () => boardTooTall && !state.playing;
-// Measured on scroll, resize and layout changes rather than through an IntersectionObserver,
-// which WebKit did not notify after the viewport changed. Playback only updates the label.
+// Measured on scroll, after each fit, and whenever the lesson column changes size (a longer
+// caption or choice note pushes the controls down without scrolling), rather than through an
+// IntersectionObserver, which WebKit did not notify after the viewport changed. The play
+// button counts as out of reach once less than 24px of it shows above the window's edge.
 function measureFloatingPlay() {
   const rect = $('play').getBoundingClientRect();
-  playBelow = rect.height > 0 && rect.bottom > innerHeight + 1;
+  playBelow = rect.height > 0 && rect.top > innerHeight - 24;
   syncFloatingPlay();
 }
 let floatingRequest;
 addEventListener('scroll', () => { cancelAnimationFrame(floatingRequest); floatingRequest = requestAnimationFrame(measureFloatingPlay); }, {passive: true});
+new ResizeObserver(measureFloatingPlay).observe(document.querySelector('.stage'));
 document.fonts?.ready.then(measureFloatingPlay);
 function syncFloatingPlay() {
   const floating = $('floatingPlay');
