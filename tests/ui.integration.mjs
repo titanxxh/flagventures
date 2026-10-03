@@ -667,8 +667,67 @@ try {
     assert.equal(await more.isVisible(), false, 'tall screens show the whole note without a button');
   });
 
+  await caseRun('phones and very short windows keep play in reach with a floating button', async () => {
+    const floating = page.locator('#floatingPlay');
+    const playing = async () => /暂停/.test(await page.locator('#play').textContent());
+    const controlsInView = () => page.locator('.controls').evaluate(node => node.getBoundingClientRect().bottom <= innerHeight + 1);
+    // Phone held upright: the board fits the window once scrolled to.
+    await page.setViewportSize({width: 390, height: 844});
+    await open();
+    await select('crossbuck');
+    await page.evaluate(() => scrollTo(0, 0));
+    await floating.waitFor({state: 'visible'});
+    assert.equal(await floating.textContent(), '▶ 开始演示');
+    assert.equal(await page.locator('#fullscreen').textContent(), '全屏', 'an upright phone shows the whole board without full screen');
+    await floating.click();
+    assert.ok(await controlsInView(), 'the floating button brings the controls into view');
+    assert.ok(await playing(), 'and plays');
+    await floating.waitFor({state: 'hidden'});
+    await page.locator('#play').click();
+    await page.evaluate(() => scrollTo(0, 0));
+    await floating.waitFor({state: 'visible'});
+    assert.equal(await floating.textContent(), '▶ 继续播放', 'the floating button follows the play button');
+    // Phone held sideways: the board is taller than the window, so full screen is the way to watch.
+    await page.setViewportSize({width: 844, height: 390});
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.locator('#fullscreen').filter({hasText: '全屏看大图'}).waitFor();
+    await floating.waitFor({state: 'visible'});
+    assert.equal(await floating.textContent(), '▶ 全屏演示');
+    await floating.click();
+    assert.equal(await page.locator('.board.board-fullscreen').count(), 1, 'opens full screen');
+    assert.ok(await playing());
+    await page.locator('#play').click();
+    await page.locator('#fullscreen').click();
+    // A short wide window (a big phone sideways) no longer squeezes the field to its minimum.
+    await page.setViewportSize({width: 932, height: 430});
+    await open();
+    await select('crossbuck');
+    const short = await page.evaluate(() => {
+      const rect = selector => document.querySelector(selector).getBoundingClientRect();
+      return {field: rect('#field').height, fit: rect('.controls').bottom - rect('.board').top};
+    });
+    assert.ok(short.field > 170, `the field is not squeezed (${Math.round(short.field)}px)`);
+    assert.ok(short.fit <= 430, 'once scrolled to, the board fits the window');
+    await floating.click();
+    assert.ok(await controlsInView());
+    assert.ok(await playing());
+    await page.locator('#play').click();
+    // Laptops: play is already in the first screen; a small field suggests full screen.
+    await page.setViewportSize({width: 1280, height: 649});
+    await open();
+    await select('qb-option');
+    assert.equal(await floating.isVisible(), false);
+    assert.equal(await page.locator('#fullscreen').textContent(), '全屏看大图');
+    await page.setViewportSize({width: 1440, height: 1000});
+    await open();
+    await select('qb-option');
+    assert.equal(await floating.isVisible(), false);
+    assert.equal(await page.locator('#fullscreen').textContent(), '全屏');
+  });
+
   await caseRun('a summary that repeats the teaching goal is shown once', async () => {
     const visible = selector => page.locator(selector).evaluate(node => node.getClientRects().length > 0);
+    await page.setViewportSize({width: 1440, height: 1000});
     await open();
     await select('crossbuck');
     assert.equal(await visible('#summary'), false, 'wide screens keep the copy beside the board');

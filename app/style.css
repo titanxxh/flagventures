@@ -514,6 +514,25 @@ main[data-many-roles=true] .board-roles { order: 3; flex-basis: 100%; }
 .reference-meta { font-size: 12px; color: var(--muted); }
 .lesson-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
+/* Floating copy of the play button while the board's controls are below the window. */
+.floating-play {
+  position: fixed;
+  z-index: 20;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  white-space: nowrap;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #173b2f;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 6px 20px #102e2740;
+}
+
 /* Dialogs and feedback */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #163c30; color: var(--paper); box-shadow: 0 6px 35px #0002; padding: 13px 21px; border-radius: 12px; font-size: 14px; max-width: 90vw; z-index: 40; }
 dialog { border: 0; border-radius: 17px; padding: 24px; background: var(--paper); color: var(--ink); max-width: 700px; width: calc(100% - 32px); max-height: 88vh; overflow: auto; box-shadow: 0 20px 90px #0003; }
@@ -656,7 +675,7 @@ dialog hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
 /* Short laptop and tablet screens (1366×657, 1536×730, 1024×768): the field, caption and
    controls must share the first screen, so the header and heading give up their spare room.
    Keep the query in step with shortQuery in main.js. */
-@media (min-width: 901px) and (max-height: 860px) {
+@media screen and (min-width: 901px) and (max-height: 860px) {
   :root { --header-height: 52px; }
   .app-header { padding-top: 6px; padding-bottom: 6px; }
   .brand { font-size: 19px; }
@@ -686,7 +705,7 @@ dialog hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
   .app-header, .library, .catalog-backdrop, .lesson-actions, .provenance-bar, .route-orientation,
   .ball-controls-row, .choices, .board-roles, .board-status, .controls, .board-legend, .board-bottom,
   .cue, .route-distances, .frame-header, .frames, .route-card.is-empty, .related-plays, .source-notes,
-  .lesson-footer, .toast, dialog { display: none !important; }
+  .lesson-footer, .toast, .floating-play, .note-more, dialog { display: none !important; }
   .layout { display: block; padding: 0; max-width: none; }
   main { padding: 0; }
   .teaching-grid { display: block; }
