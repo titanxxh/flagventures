@@ -101,11 +101,18 @@ for (const engine of engines) {
       await page.locator('#catalog [data-lesson="hb-dive"]').click();
       await page.locator('#library').waitFor({state: 'hidden'});
       check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'phone has no horizontal scroll');
+      // The play button is below the first screen, so a floating copy brings the board in and plays.
+      await page.evaluate(() => scrollTo(0, 0));
+      await page.locator('#floatingPlay').waitFor({state: 'visible'});
+      await page.locator('#floatingPlay').click();
+      await page.waitForFunction(() => Number(document.querySelector('#seek').value) > .1);
+      check(await page.locator('.controls').evaluate(node => node.getBoundingClientRect().bottom <= innerHeight + 1), 'the floating button brings the controls into view');
+      await page.locator('#floatingPlay').waitFor({state: 'hidden'});
 
       check(errors.length === 0, `no page errors: ${errors.join(' | ')}`);
       check(requests.length === 0, 'works offline from the single file');
       await context.close();
     }
-    console.log(`PASS ${engine}: catalog, field, playback, keyframes, shortcuts, short-laptop fit, full screen, history, English, print, phone drawer, dark mode`);
+    console.log(`PASS ${engine}: catalog, field, playback, keyframes, shortcuts, short-laptop fit, full screen, history, English, print, phone drawer and floating play, dark mode`);
   } finally { await browser.close(); }
 }

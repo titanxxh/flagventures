@@ -20,7 +20,7 @@ const narrowQuery = matchMedia('(max-width: 650px)');
 const drawerQuery = matchMedia('(max-width: 900px)');
 const touchQuery = matchMedia('(hover: none)');
 // Keep in step with the short-screen block in style.css.
-const shortQuery = matchMedia('(min-width: 901px) and (max-height: 860px)');
+const shortQuery = matchMedia('screen and (min-width: 901px) and (max-height: 860px)');
 // The summary often restates the teaching goal shown with the teaching notes; say it once.
 // Built-in route summaries prefix the goal with the route name ("HITCH · …").
 function repeatsGoal(summary = '', goal = '') {
@@ -102,16 +102,51 @@ function setCatalogOpen(open, moveFocus = true) {
 // Narrow screens scroll to the board instead and use the CSS limits.
 function fitField() {
   const board = document.querySelector('.board');
-  if (drawerQuery.matches || !lesson || board.classList.contains('board-fullscreen')) { board.style.removeProperty('--field-max'); return; }
-  const top = $('field').getBoundingClientRect().top + scrollY;
+  if (drawerQuery.matches || !lesson || board.classList.contains('board-fullscreen')) {
+    board.style.removeProperty('--field-max');
+    // A phone held sideways cannot show the whole board at once; full screen can.
+    boardTooTall = Boolean(lesson) && !board.classList.contains('board-fullscreen')
+      && document.querySelector('.controls').getBoundingClientRect().bottom - board.getBoundingClientRect().top > innerHeight;
+    hintFullscreen(boardTooTall);
+    syncFloatingPlay();
+    return;
+  }
+  const fieldTop = $('field').getBoundingClientRect().top;
   const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
   // Field, caption and controls share the first screen so play is always in reach; the
   // short-screen styles trim the heading to leave the field room. Only the opt-in full-field
   // view of a route is too tall to squeeze in, so it keeps a usable height and scrolls.
   const box = $('field').viewBox.baseVal;
   const floor = box && box.width / box.height < .8 ? innerHeight * .62 : 140;
-  const value = `${Math.round(Math.max(floor, Math.min(680, innerHeight - top - below)))}px`;
+  // When not even that much fits under the heading (a big phone held sideways, a very short
+  // window), squeezing helps nobody: the board fills the window once scrolled to, and the
+  // floating play button keeps play in reach.
+  const firstScreen = innerHeight - fieldTop - scrollY - below;
+  const space = firstScreen >= floor ? firstScreen : innerHeight - (fieldTop - board.getBoundingClientRect().top) - below;
+  const value = `${Math.round(Math.max(floor, Math.min(680, space)))}px`;
   if (board.style.getPropertyValue('--field-max') !== value) board.style.setProperty('--field-max', value);
+  boardTooTall = false;
+  hintFullscreen($('field').getBoundingClientRect().height < 240);
+  syncFloatingPlay();
+}
+// A small field is easier to follow in full screen; the button says so.
+function hintFullscreen(small) {
+  text($('fullscreen'), small ? '全屏看大图' : '全屏');
+}
+// Phones, and windows too short for the board, put the play button below the first screen.
+// While it is below, a floating copy brings the board into view and plays or pauses. When the
+// board is taller than the window (a phone held sideways) it opens full screen instead.
+let playBelow = false, boardTooTall = false;
+const floatingFullscreen = () => boardTooTall && !state.playing;
+new IntersectionObserver(([entry]) => {
+  playBelow = entry.intersectionRatio < .99 && entry.boundingClientRect.bottom > (entry.rootBounds?.bottom ?? innerHeight);
+  syncFloatingPlay();
+}, {threshold: [0, .5, 1]}).observe($('play'));
+function syncFloatingPlay() {
+  const floating = $('floatingPlay');
+  floating.hidden = !playBelow || $('play').disabled;
+  const label = floatingFullscreen() ? t('▶ 全屏演示') : $('play').textContent;
+  if (floating.textContent !== label) floating.textContent = label;
 }
 let fitRequest;
 addEventListener('resize', () => { cancelAnimationFrame(fitRequest); fitRequest = requestAnimationFrame(() => { syncBallNote(); fitField(); }); });
@@ -474,6 +509,7 @@ function render() {
   text($('playState'), staticScene ? '静态站位' : !scene.ready ? '先选演示选项' : state.playing ? '演示中' : '已暂停 · 可讲解');
   text($('play'), staticScene ? '静态站位' : !scene.ready ? '先选演示选项' : state.playing ? 'Ⅱ 暂停讲解' : state.time >= lesson.timeline.duration ? '↻ 再看一遍' : state.time > 0 ? '▶ 继续播放' : '▶ 开始演示');
   $('play').disabled = staticScene || !scene.ready;
+  syncFloatingPlay();
   $('seek').disabled = staticScene || !scene.ready;
   $('seek').value = state.time;
   const progress = lesson.timeline.duration > 0 ? state.time / lesson.timeline.duration : 0;
@@ -542,6 +578,11 @@ $('fieldZoom').addEventListener('click', () => {
   rebuildField();
 });
 $('reset').addEventListener('click', () => seek(0));
+$('floatingPlay').addEventListener('click', () => {
+  if (floatingFullscreen()) setFullscreen(true);
+  else document.querySelector('.controls').scrollIntoView({block: 'end'});
+  togglePlay();
+});
 $('ballEnabled').addEventListener('change', event => {
   state.showBall = event.target.checked;
   state.time = 0; state.playing = false; state.choices = {};
