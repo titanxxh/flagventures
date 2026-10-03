@@ -687,6 +687,10 @@ try {
     await page.evaluate(() => scrollTo(0, 0));
     await floating.waitFor({state: 'visible'});
     assert.equal(await floating.textContent(), '▶ 继续播放', 'the floating button follows the play button');
+    await floating.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'play', 'keyboard focus moves to the revealed play button');
+    await page.locator('#play').click();
     // Phone held sideways: the board is taller than the window, so full screen is the way to watch.
     await page.setViewportSize({width: 844, height: 390});
     await page.evaluate(() => scrollTo(0, 0));
@@ -712,6 +716,12 @@ try {
     assert.ok(await controlsInView());
     assert.ok(await playing());
     await page.locator('#play').click();
+    // Shorter still, even the smallest field leaves the board taller than the window.
+    await page.setViewportSize({width: 932, height: 300});
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.locator('#fullscreen').filter({hasText: '全屏看大图'}).waitFor();
+    await floating.waitFor({state: 'visible'});
+    assert.equal(await floating.textContent(), '▶ 全屏演示', 'a board taller than a short wide window opens full screen');
     // Laptops: play is already in the first screen; a small field suggests full screen.
     await page.setViewportSize({width: 1280, height: 649});
     await open();
