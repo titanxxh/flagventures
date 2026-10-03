@@ -102,32 +102,30 @@ function setCatalogOpen(open, moveFocus = true) {
 // Narrow screens scroll to the board instead and use the CSS limits.
 function fitField() {
   const board = document.querySelector('.board');
-  if (drawerQuery.matches || !lesson || board.classList.contains('board-fullscreen')) {
-    board.style.removeProperty('--field-max');
-    // A phone held sideways cannot show the whole board at once; full screen can.
-    boardTooTall = Boolean(lesson) && !board.classList.contains('board-fullscreen')
-      && document.querySelector('.controls').getBoundingClientRect().bottom - board.getBoundingClientRect().top > innerHeight;
-    hintFullscreen(boardTooTall);
-    syncFloatingPlay();
-    return;
+  const fullscreen = board.classList.contains('board-fullscreen');
+  if (drawerQuery.matches || !lesson || fullscreen) board.style.removeProperty('--field-max');
+  else {
+    const fieldTop = $('field').getBoundingClientRect().top;
+    const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
+    // Field, caption and controls share the first screen so play is always in reach; the
+    // short-screen styles trim the heading to leave the field room. Only the opt-in full-field
+    // view of a route is too tall to squeeze in, so it keeps a usable height and scrolls.
+    const box = $('field').viewBox.baseVal;
+    const floor = box && box.width / box.height < .8 ? innerHeight * .62 : 140;
+    // When not even that much fits under the heading (a big phone held sideways, a very short
+    // window), squeezing helps nobody: the board fills the window once scrolled to, and the
+    // floating play button keeps play in reach.
+    const firstScreen = innerHeight - fieldTop - scrollY - below;
+    const space = firstScreen >= floor ? firstScreen : innerHeight - (fieldTop - board.getBoundingClientRect().top) - below;
+    const value = `${Math.round(Math.max(floor, Math.min(680, space)))}px`;
+    if (board.style.getPropertyValue('--field-max') !== value) board.style.setProperty('--field-max', value);
   }
-  const fieldTop = $('field').getBoundingClientRect().top;
-  const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
-  // Field, caption and controls share the first screen so play is always in reach; the
-  // short-screen styles trim the heading to leave the field room. Only the opt-in full-field
-  // view of a route is too tall to squeeze in, so it keeps a usable height and scrolls.
-  const box = $('field').viewBox.baseVal;
-  const floor = box && box.width / box.height < .8 ? innerHeight * .62 : 140;
-  // When not even that much fits under the heading (a big phone held sideways, a very short
-  // window), squeezing helps nobody: the board fills the window once scrolled to, and the
-  // floating play button keeps play in reach.
-  const firstScreen = innerHeight - fieldTop - scrollY - below;
-  const space = firstScreen >= floor ? firstScreen : innerHeight - (fieldTop - board.getBoundingClientRect().top) - below;
-  const value = `${Math.round(Math.max(floor, Math.min(680, space)))}px`;
-  if (board.style.getPropertyValue('--field-max') !== value) board.style.setProperty('--field-max', value);
-  boardTooTall = false;
-  hintFullscreen($('field').getBoundingClientRect().height < 240);
-  syncFloatingPlay();
+  // Measured after sizing: a phone held sideways or a very short window cannot show the whole
+  // board at once, and full screen can.
+  boardTooTall = Boolean(lesson) && !fullscreen
+    && document.querySelector('.controls').getBoundingClientRect().bottom - board.getBoundingClientRect().top > innerHeight + 1;
+  hintFullscreen(boardTooTall || (Boolean(lesson) && !fullscreen && !drawerQuery.matches && $('field').getBoundingClientRect().height < 240));
+  measureFloatingPlay();
 }
 // A small field is easier to follow in full screen; the button says so.
 function hintFullscreen(small) {
@@ -138,10 +136,16 @@ function hintFullscreen(small) {
 // board is taller than the window (a phone held sideways) it opens full screen instead.
 let playBelow = false, boardTooTall = false;
 const floatingFullscreen = () => boardTooTall && !state.playing;
-new IntersectionObserver(([entry]) => {
-  playBelow = entry.intersectionRatio < .99 && entry.boundingClientRect.bottom > (entry.rootBounds?.bottom ?? innerHeight);
+// Measured on scroll, resize and layout changes rather than through an IntersectionObserver,
+// which WebKit did not notify after the viewport changed. Playback only updates the label.
+function measureFloatingPlay() {
+  const rect = $('play').getBoundingClientRect();
+  playBelow = rect.height > 0 && rect.bottom > innerHeight + 1;
   syncFloatingPlay();
-}, {threshold: [0, .5, 1]}).observe($('play'));
+}
+let floatingRequest;
+addEventListener('scroll', () => { cancelAnimationFrame(floatingRequest); floatingRequest = requestAnimationFrame(measureFloatingPlay); }, {passive: true});
+document.fonts?.ready.then(measureFloatingPlay);
 function syncFloatingPlay() {
   const floating = $('floatingPlay');
   floating.hidden = !playBelow || $('play').disabled;
@@ -582,6 +586,8 @@ $('floatingPlay').addEventListener('click', () => {
   if (floatingFullscreen()) setFullscreen(true);
   else document.querySelector('.controls').scrollIntoView({block: 'end'});
   togglePlay();
+  // The floating copy hides once the controls are in view; keep keyboard focus with them.
+  $('play').focus({preventScroll: true});
 });
 $('ballEnabled').addEventListener('change', event => {
   state.showBall = event.target.checked;
