@@ -683,6 +683,12 @@ try {
     assert.ok(await controlsInView(), 'the floating button brings the controls into view');
     assert.ok(await playing(), 'and plays');
     await floating.waitFor({state: 'hidden'});
+    // A longer caption can push the controls out of view without any scrolling.
+    await page.locator('.cue').evaluate(cue => { cue.style.paddingBottom = '200px'; });
+    await floating.waitFor({state: 'visible'});
+    assert.equal(await floating.textContent(), 'Ⅱ 暂停讲解', 'the floating copy can pause what is playing');
+    await page.locator('.cue').evaluate(cue => { cue.style.paddingBottom = ''; });
+    await floating.waitFor({state: 'hidden'});
     await page.locator('#play').click();
     await page.evaluate(() => scrollTo(0, 0));
     await floating.waitFor({state: 'visible'});
