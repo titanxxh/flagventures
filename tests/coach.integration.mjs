@@ -18,7 +18,7 @@ try{
  const point=async(x,y)=>page.locator('.coach-canvas').evaluate((el,[x,y])=>{const p=new DOMPoint(x,y).matrixTransform(el.getScreenCTM());return{x:p.x,y:p.y};},[x,y]);
  const clickPoint=async(x,y)=>{const p=await point(x,y);await page.mouse.click(p.x,p.y);};
  const holdPlayer=async(id)=>{const g=page.locator(`.coach [data-hit="player"][data-id="${id}"]`);const p=await g.evaluate(el=>{const c=el.querySelector('circle'),p=new DOMPoint(+c.getAttribute('cx'),+c.getAttribute('cy')).matrixTransform(el.ownerSVGElement.getScreenCTM());return{x:p.x,y:p.y};});await page.mouse.move(p.x,p.y);await page.mouse.down();await page.waitForTimeout(620);await page.mouse.up();await page.locator('.coach-context').waitFor();};
- await page.goto(url);await page.locator('#manage').click();await action('new').click();await action('create').filter({hasText:'进攻战术'}).click();
+ await page.goto(url);await page.locator('#manage').click();await action('new').click();await action('create').filter({hasText:'进攻战术'}).click();await page.locator('.coach-canvas').waitFor();
  assert.equal(await page.locator('.coach-steps,.coach-inspector,.coach-tools').count(),0);
  assert.equal(await page.locator('.coach [data-hit="player"]').count(),5);
  await action('details').click();await page.locator('.coach [data-edit="title"]').fill('Direct board');await page.locator('.coach [data-edit="explanation"]').fill('Typed without blur');
