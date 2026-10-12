@@ -29,7 +29,7 @@ try {
   }));
   const near = (actual, expected, label) => assert.ok(Math.hypot(...actual.map((v, i) => v - expected[i])) < 1e-5, label);
   let scenarios = 0;
-  assert.equal(lessons.length, 39);
+  assert.equal(lessons.length, 45);
   for (const lesson of lessons) {
     await select(lesson.id);
     assert.equal(await page.locator('[data-ball-scenario]').count(), lesson.ball.scenarios.length);

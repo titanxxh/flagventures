@@ -527,3 +527,5 @@
     background: white;
   }
 }
+
+.coach-open #floatingPlay { display:none!important; }

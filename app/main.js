@@ -1,18 +1,31 @@
 import { initCoach } from './coach.js';
+// App state, panels and event wiring. The field drawing lives in field.js, the catalog in
+// catalog.js, and the address/keyboard rules in navigation.js.
 import { t, getLanguage, setLanguage, captureStaticTranslations } from './i18n.js';
 import { localizePack } from './localization.js';
 import { getRouteMeasurements } from './route-measurements.js';
-import { getScene, getRoutes, getActiveRoute, pathToSvg, positionAt } from './scene.js';
+import { getScene } from './scene.js';
 import { resolveBallScenario, getBallState } from './ball.js';
 import { validatePack } from './validation.js';
 import { getProvenance, resolveRelatedLesson } from './provenance.js';
+import { $, text, node } from './dom.js';
+import { buildField, renderField, renderBallLayer, colorFor, basisLabels, depthLabel, numberLabel } from './field.js';
+import { renderCatalog, revealCatalogEntry, kindLabels } from './catalog.js';
+import { lessonFromHash, lessonHash, adjacentKeyframe, shortcutFor } from './navigation.js';
 
-const $ = id => document.getElementById(id);
-const NS = 'http://www.w3.org/2000/svg';
-const types = { route: '基础路线', formation: '静态阵型', offense: '进攻战术', run: '跑球战术', defense: '防守方案' };
-const bases = { source: '来源明确命名', 'shape-match': '路线形态对照', description: '按图描述', author: '作者编写', unspecified: '资料未说明' };
-const colors = ['#80d4ff', '#ffc078', '#c7e8a2', '#fff1d5', '#ff9690', '#d7c9ff'];
 const builtIn = JSON.parse($('builtInData').textContent);
+// Phones get larger players and labels; tablets and phones open the catalog as a drawer.
+const narrowQuery = matchMedia('(max-width: 650px)');
+const drawerQuery = matchMedia('(max-width: 900px)');
+const touchQuery = matchMedia('(hover: none)');
+// Keep in step with the short-screen block in style.css.
+const shortQuery = matchMedia('screen and (min-width: 901px) and (max-height: 860px)');
+// The summary often restates the teaching goal shown with the teaching notes; say it once.
+// Built-in route summaries prefix the goal with the route name ("HITCH · …").
+function repeatsGoal(summary = '', goal = '') {
+  const clean = value => value.replace(/^[^·]{1,30} · /u, '').replace(/[\s。.]+$/u, '').trim();
+  return Boolean(goal) && clean(summary) === goal.replace(/[\s。.]+$/u, '').trim();
+}
 try { setLanguage(localStorage.getItem('flagventures.language')); } catch {}
 const updateStaticLanguage = captureStaticTranslations(document.documentElement);
 let canonicalPack = builtIn;
@@ -23,43 +36,143 @@ let sourceLesson;
 let ballScenario;
 let rebuildingLesson = false;
 let order = [];
-let state = { time: 0, playing: false, speed: 2, role: null, choices: {} };
+let state = { time: 0, playing: false, speed: 2, role: null, choices: {}, fullField: false };
 let hovered = null;
 let focused = null;
 let toastTimer;
 let lastTick;
+let tickRequest;
 let fieldNodes = {};
 let assetMap = new Map();
 let catalogNodes = new Map();
 let expandedGroups = new Set();
 let expandedSections = new Set();
 
-function text(node, value) { value = t(value); if (node.textContent !== String(value ?? '')) node.textContent = value ?? ''; }
-function node(tag, attributes = {}, value) {
-  const result = document.createElement(tag);
-  for (const [key, val] of Object.entries(attributes)) result.setAttribute(key, ['aria-label', 'title'].includes(key) ? t(val) : val);
-  if (value !== undefined) result.textContent = t(value);
-  return result;
-}
-function svg(tag, attributes = {}, value) {
-  const result = document.createElementNS(NS, tag);
-  for (const [key, val] of Object.entries(attributes)) result.setAttribute(key, ['aria-label', 'title'].includes(key) ? t(val) : val);
-  if (value !== undefined) result.textContent = t(value);
-  return result;
-}
 function notify(message) {
   text($('toast'), message); $('toast').hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').hidden = true; }, 4500);
 }
-function playerColor(player) { return player.color || colors[lesson.players.indexOf(player) % colors.length]; }
+function playerColor(player) { return colorFor(lesson, player); }
 function inspectId() { return hovered || focused || state.role; }
 function pause() { state.playing = false; lastTick = undefined; render(); }
 function seek(time) {
   if (time > 0 && !getScene(lesson, 0, state.choices).ready) { notify('先选好要演示的选项，再一起看跑位。'); return; }
   state.time = Math.max(0, Math.min(lesson.timeline.duration, time)); pause();
 }
-function showDialog(id) { pause(); $(id).showModal(); }
-function setPack(value, status) {
+function togglePlay() {
+  if (!lesson || $('play').disabled || !getScene(lesson, 0, state.choices).ready) return;
+  if (state.time >= lesson.timeline.duration) state.time = 0;
+  state.playing = !state.playing; lastTick = undefined; render();
+  if (state.playing) startTicking();
+}
+function startTicking() { if (tickRequest === undefined) tickRequest = requestAnimationFrame(tick); }
+function setSpeed(value) {
+  state.speed = value; lastTick = undefined;
+  document.querySelectorAll('[data-speed]').forEach(item => item.setAttribute('aria-pressed', String(Number(item.dataset.speed) === value)));
+}
+function stepKeyframe(direction) {
+  const frame = lesson && adjacentKeyframe(lesson.keyframes, state.time, direction);
+  if (frame) seek(frame.at);
+}
+// The address keeps the current lesson so a refresh or a shared link returns to it.
+// A parent's own navigation adds a history entry so the browser Back button returns to the
+// previous lesson; everything else (first load, imports, language) replaces the current one.
+function syncHash(mode = 'replace') {
+  const target = lesson ? lessonHash(lesson.id) : '';
+  if (location.hash === target) return;
+  const url = target || `${location.pathname}${location.search}`;
+  try { history[mode === 'push' ? 'pushState' : 'replaceState'](null, '', url); }
+  catch { if (target) location.replace(target); }
+}
+function revealEntry(id) { revealCatalogEntry($('catalog'), catalogNodes.get(id)); }
+function setCatalogOpen(open, moveFocus = true) {
+  if (document.body.classList.contains('catalog-open') === open) return;
+  document.body.classList.toggle('catalog-open', open);
+  $('catalogBackdrop').hidden = !open;
+  $('catalogToggle').setAttribute('aria-expanded', String(open));
+  if (open) {
+    revealEntry(lesson?.id);
+    if (moveFocus) (catalogNodes.get(lesson?.id) || $('search')).focus({preventScroll: true});
+  } else if (moveFocus && $('library').contains(document.activeElement)) $('catalogToggle').focus({preventScroll: true});
+}
+// On wide screens, size the field so its caption and controls fit in the first screen.
+// Narrow screens scroll to the board instead and use the CSS limits.
+function fitField() {
+  const board = document.querySelector('.board');
+  const fullscreen = board.classList.contains('board-fullscreen');
+  if (drawerQuery.matches || !lesson || fullscreen) board.style.removeProperty('--field-max');
+  else {
+    const fieldTop = $('field').getBoundingClientRect().top;
+    const below = document.querySelector('.cue').offsetHeight + document.querySelector('.controls').offsetHeight + 16;
+    // Field, caption and controls share the first screen so play is always in reach; the
+    // short-screen styles trim the heading to leave the field room. Only the opt-in full-field
+    // view of a route is too tall to squeeze in, so it keeps a usable height and scrolls.
+    const box = $('field').viewBox.baseVal;
+    const floor = box && box.width / box.height < .8 ? innerHeight * .62 : 140;
+    // When not even that much fits under the heading (a big phone held sideways, a very short
+    // window), squeezing helps nobody: the board fills the window once scrolled to, and the
+    // floating play button keeps play in reach.
+    const firstScreen = innerHeight - fieldTop - scrollY - below;
+    const space = firstScreen >= floor ? firstScreen : innerHeight - (fieldTop - board.getBoundingClientRect().top) - below;
+    const value = `${Math.round(Math.max(floor, Math.min(680, space)))}px`;
+    if (board.style.getPropertyValue('--field-max') !== value) board.style.setProperty('--field-max', value);
+  }
+  // Measured after sizing: a phone held sideways or a very short window cannot show the whole
+  // board at once, and full screen can.
+  boardTooTall = Boolean(lesson) && !fullscreen
+    && document.querySelector('.controls').getBoundingClientRect().bottom - board.getBoundingClientRect().top > innerHeight + 1;
+  hintFullscreen(boardTooTall || (Boolean(lesson) && !fullscreen && !drawerQuery.matches && $('field').getBoundingClientRect().height < 240));
+  measureFloatingPlay();
+}
+// A small field is easier to follow in full screen; the button says so.
+function hintFullscreen(small) {
+  text($('fullscreen'), small ? '全屏看大图' : '全屏');
+}
+// Phones, and windows too short for the board, put the play button below the first screen.
+// While it is below, a floating copy brings the board into view and plays or pauses. When the
+// board is taller than the window (a phone held sideways) it opens full screen instead.
+let playBelow = false, boardTooTall = false;
+const floatingFullscreen = () => boardTooTall && !state.playing;
+// Measured on scroll, after each fit, and whenever the lesson column changes size (a longer
+// caption or choice note pushes the controls down without scrolling), rather than through an
+// IntersectionObserver, which WebKit did not notify after the viewport changed. The play
+// button counts as out of reach once less than 24px of it shows above the window's edge.
+function measureFloatingPlay() {
+  const rect = $('play').getBoundingClientRect();
+  playBelow = rect.height > 0 && rect.top > innerHeight - 24;
+  syncFloatingPlay();
+}
+let floatingRequest;
+addEventListener('scroll', () => { cancelAnimationFrame(floatingRequest); floatingRequest = requestAnimationFrame(measureFloatingPlay); }, {passive: true});
+new ResizeObserver(measureFloatingPlay).observe(document.querySelector('.stage'));
+document.fonts?.ready.then(measureFloatingPlay);
+function syncFloatingPlay() {
+  const floating = $('floatingPlay');
+  floating.hidden = !playBelow || $('play').disabled;
+  const label = floatingFullscreen() ? t('▶ 全屏演示') : $('play').textContent;
+  if (floating.textContent !== label) floating.textContent = label;
+}
+let fitRequest;
+addEventListener('resize', () => { cancelAnimationFrame(fitRequest); fitRequest = requestAnimationFrame(() => { syncBallNote(); fitField(); }); });
+function goToLesson(direction) {
+  const id = lesson && order[order.indexOf(lesson.id) + direction];
+  if (id) navigateTo(id);
+}
+function navigateTo(id) { selectLesson(id, false, 'push'); }
+// Full screen keeps the field, caption and controls together on short screens (phones held
+// sideways, a TV). The CSS class does the layout; the Fullscreen API also hides browser chrome.
+function setFullscreen(on) {
+  const board = document.querySelector('.board');
+  if (board.classList.contains('board-fullscreen') === on) return;
+  board.classList.toggle('board-fullscreen', on);
+  document.body.classList.toggle('board-fullscreen-open', on);
+  $('fullscreen').setAttribute('aria-pressed', String(on));
+  if (on) board.requestFullscreen?.()?.catch(() => {});
+  else if (document.fullscreenElement) document.exitFullscreen?.()?.catch(() => {});
+  fitField();
+}
+function showDialog(id) { pause(); setCatalogOpen(false, false); $(id).showModal(); }
+function setPack(value, status, initialId) {
   canonicalPack = value; libraryStatus = status;
   pack = localizePack(value, getLanguage(), t);
   expandedGroups = new Set();
@@ -70,84 +183,34 @@ function setPack(value, status) {
   text($('libraryCount'), t`${pack.lessons.length} 个教学条目 · 本地可用`);
   $('search').value = '';
   buildCatalog();
-  selectLesson(order[0]);
+  selectLesson(order.includes(initialId) ? initialId : order[0]);
 }
 function buildCatalog() {
-  const query = $('search').value.trim().toLocaleLowerCase();
-  const lessons = new Map(pack.lessons.map(item => [item.id, item]));
-  const fragment = document.createDocumentFragment();
-  catalogNodes = new Map();
-  pack.sections.forEach((section, index) => {
-    const sectionMatches = section.title.toLocaleLowerCase().includes(query);
-    const matches = item => {
-      const haystack = [canonicalPack.lessons.find(original => original.id === item.id)?.title.zh, item.title.zh, item.title.en, item.source?.page, ...item.players.flatMap(p => [p.label.en, p.label.zh])].join(' ').toLocaleLowerCase();
-      return sectionMatches || haystack.includes(query);
-    };
-    const group = node('details', { class: 'catalog-section', 'data-catalog-section': section.id });
-    group.open = Boolean(query) || expandedSections.has(section.id);
-    const label = node('summary', { class: 'section-label' });
-    const count = node('span', { class: 'section-count', 'data-section-count': '' });
-    label.append(node('span', { class: 'section-number' }, String(index + 1).padStart(2, '0')), node('strong', { class: 'section-name' }, section.title), count);
-    const contents = node('div', { class: 'section-entries' });
-    group.append(label, contents);
-    label.addEventListener('click', () => {
-      if (query) return;
-      if (group.open) expandedSections.delete(section.id); else expandedSections.add(section.id);
-    });
-    const appendEntry = (parent, item, subgroup) => {
-      const button = node('button', { class: 'catalog-entry', 'data-lesson': item.id, 'aria-current': String(item.id === lesson?.id), title: item.title.zh });
-      const prefix = subgroup ? `${subgroup.title} · ` : '';
-      const title = subgroup && item.kind === 'formation' && item.title.zh === subgroup.title ? '阵型站位' : prefix && item.title.zh.startsWith(prefix) ? item.title.zh.slice(prefix.length) : item.title.zh;
-      button.append(node('strong', {}, title), node('small', {}, `${item.title.en || t(types[item.kind])}${item.source?.page ? ` · p${item.source.page}` : ''}`));
-      parent.append(button); catalogNodes.set(item.id, button);
-    };
-    const starts = new Map((section.groups || []).map(subgroup => [subgroup.lessonIds[0], subgroup]));
-    for (let position = 0; position < section.lessonIds.length;) {
-      const id = section.lessonIds[position];
-      const subgroup = starts.get(id);
-      if (!subgroup) {
-        const item = lessons.get(id);
-        if (matches(item)) appendEntry(contents, item);
-        position++;
-        continue;
-      }
-      position += subgroup.lessonIds.length;
-      const groupMatches = subgroup.title.toLocaleLowerCase().includes(query);
-      const entries = subgroup.lessonIds.map(id => lessons.get(id)).filter(item => groupMatches || matches(item));
-      if (!entries.length) continue;
-      const key = JSON.stringify([section.id, subgroup.id]);
-      const details = node('details', { class: 'catalog-group', 'data-catalog-group': subgroup.id });
-      details.open = Boolean(query) || expandedGroups.has(key);
-      const summary = node('summary', { class: 'catalog-group-title' });
-      summary.append(node('strong', {}, subgroup.title), node('span', { class: 'catalog-group-count' }, t`${entries.length} 项`));
-      const children = node('div', { class: 'catalog-group-entries' });
-      entries.forEach(item => appendEntry(children, item, subgroup));
-      details.append(summary, children);
-      summary.addEventListener('click', () => {
-        if (query) return;
-        if (details.open) expandedGroups.delete(key); else expandedGroups.add(key);
-      });
-      contents.append(details);
-    }
-    if (contents.children.length) {
-      text(count, t`${contents.querySelectorAll('[data-lesson]').length} 项`);
-      fragment.append(group);
-    }
-  });
-  if (!catalogNodes.size) fragment.append(node('p', { class: 'empty-search' }, '没有找到，试试英文跑法或页码。'));
-  $('catalog').replaceChildren(fragment);
+  catalogNodes = renderCatalog($('catalog'), {pack, canonicalPack, query: $('search').value.trim().toLocaleLowerCase(),
+    currentId: lesson?.id, expandedSections, expandedGroups});
 }
-function selectLesson(id, preserve = false) {
+function selectLesson(id, preserve = false, historyMode = 'replace') {
   // Replacing focused controls fires focusout synchronously. Wait until the new
   // lesson and every control/field node agree before rendering those events.
   rebuildingLesson = true;
   try { rebuildLesson(id, preserve); }
   finally { rebuildingLesson = false; }
   render();
+  fitField();
+  syncHash(historyMode);
+}
+// Rebuild only the SVG (zoom or screen-size changes) without touching playback state.
+function rebuildField() {
+  if (!lesson) return;
+  rebuildingLesson = true;
+  try { drawField(); }
+  finally { rebuildingLesson = false; }
+  render();
+  fitField();
 }
 function rebuildLesson(id, preserve = false) {
   sourceLesson = pack.lessons.find(item => item.id === id);
-  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: sourceLesson?.kind === 'route' ? sourceLesson.players.find(player => ['path', 'choice'].includes(player.motion.type))?.id || null : null, choices: {}, showBall: true, scenarioId: sourceLesson?.ball?.defaultScenario };
+  if (!preserve) state = { time: 0, playing: false, speed: state.speed, role: sourceLesson?.kind === 'route' ? sourceLesson.players.find(player => ['path', 'choice'].includes(player.motion.type))?.id || null : null, choices: {}, showBall: true, scenarioId: sourceLesson?.ball?.defaultScenario, fullField: state.fullField };
   lesson = sourceLesson;
   ballScenario = undefined;
   if (sourceLesson?.ball && state.showBall) {
@@ -167,15 +230,21 @@ function rebuildLesson(id, preserve = false) {
   $('routeOrientation').hidden = lesson?.kind !== 'route';
   $('teamPlanHeading').textContent = t(lesson?.kind === 'route' ? '这条路线怎么跑' : '这套配合想做到什么');
   $('ballControls').hidden = !sourceLesson?.ball;
+  $('ballSourceNote').hidden = !sourceLesson?.ball?.note;
   $('ballReadout').hidden = $('ballLegend').hidden = !ballScenario;
+  $('lessonMain').dataset.kind = lesson?.kind || '';
+  $('lessonMain').dataset.hasBall = String(Boolean(ballScenario));
+  $('fieldZoom').hidden = lesson?.kind !== 'route';
   if (!lesson) {
     text($('lessonTitle'), '内容包暂无教学条目');
+    document.title = t('Flagventures · 一起看懂跑位');
     text($('summary'), '可以导入 YAML 添加战术，或从“我的战术文件”恢复内置手册。');
+    $('lessonMain').dataset.summaryRepeats = 'false';
     for (const id of ['breadcrumb', 'lessonEnglish', 'direction', 'fieldHint', 'timingNote', 'sourceNote',
       'focusStatus', 'routeEnglish', 'routeChinese', 'routeDescription', 'routeBasis', 'routeDuties',
       'frameNumber', 'frameTitle', 'frameCue']) text($(id), '');
-    for (const id of ['field', 'roles', 'choices', 'frames', 'notes', 'sourceReferences']) $(id).replaceChildren();
-    for (const id of ['play', 'reset', 'seek', 'previous', 'next']) $(id).disabled = true;
+    for (const id of ['field', 'roles', 'choices', 'frames', 'printFrames', 'timelineTicks', 'notes', 'sourceReferences']) $(id).replaceChildren();
+    for (const id of ['play', 'reset', 'seek', 'previous', 'next', 'headPrevious', 'headNext', 'printLesson']) $(id).disabled = true;
     $('source').hidden = $('choices').hidden = $('routeDuties').hidden = true;
     $('teamPlan').hidden = $('playerCoaching').hidden = $('routeSituation').hidden = $('sourceReferences').hidden = true;
     text($('teachingCue'), '先选择一条教学内容。'); text($('teachingQuestion'), '');
@@ -183,7 +252,7 @@ function rebuildLesson(id, preserve = false) {
     $('seek').value = 0; $('seek').max = 0;
     text($('routePerson'), '?'); text($('routeMode'), '请先选择教学条目');
     text($('play'), '暂无条目'); text($('playState'), '暂无条目');
-    text($('clock'), '0.0 / 0.0 s'); text($('lessonIndex'), '0 / 0');
+    text($('clock'), '0.0 / 0.0 s'); text($('lessonIndex'), '0 / 0'); text($('headIndex'), '0 / 0');
     return;
   }
   $('reset').disabled = false;
@@ -196,22 +265,24 @@ function rebuildLesson(id, preserve = false) {
   const sectionNode = catalogNodes.get(id)?.closest('.catalog-section');
   if (sectionNode) sectionNode.open = true;
   const subgroup = section.groups?.find(item => item.lessonIds.includes(id));
-  text($('breadcrumb'), [section.title, subgroup?.title, t(types[lesson.kind])].filter(Boolean).join(' / '));
+  text($('breadcrumb'), [section.title, subgroup?.title, t(kindLabels[lesson.kind])].filter(Boolean).join(' / '));
   if (subgroup) {
     expandedGroups.add(JSON.stringify([section.id, subgroup.id]));
     const details = catalogNodes.get(id)?.closest('.catalog-group');
     if (details) details.open = true;
   }
   text($('lessonTitle'), lesson.title.zh);
+  document.title = `${lesson.title.zh} · Flagventures`;
   text($('lessonEnglish'), `${lesson.title.en || ''}${lesson.source?.page ? t` · 来源第 ${lesson.source.page} 页` : ''}`);
   text($('summary'), lesson.summary);
+  $('lessonMain').dataset.summaryRepeats = String(repeatsGoal(lesson.summary, lesson.teaching?.goal));
   $('teamPlan').hidden = !lesson.teaching;
   text($('teachingGoal'), lesson.teaching?.goal);
   text($('teamCooperation'), lesson.teaching?.cooperation);
   text($('teachingCue'), lesson.teaching?.cue || '「你站在哪里？」');
   text($('teachingQuestion'), lesson.teaching?.question || '「你跑的时候，队友去哪儿？」');
   text($('direction'), `${lesson.field.attackDirection === 'up' ? '↑' : '↓'} ${t('进攻方向')}${lesson.kind === 'defense' ? t(' · 防守视角') : ''}`);
-  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? lesson.field.unit === 'yard' ? '全场按码绘制 · 秒数仅为演示时间' : '全场示意 · 距离与时间用于教学' : lesson.field.unit === 'yard' ? '按码绘制的教学区域 · 秒数为演示时间' : '悬停球员看跑法 · 点击保留');
+  text($('fieldHint'), lesson.kind === 'defense' ? '区域与箭头表示分工' : lesson.kind === 'formation' ? '看站位，认识彼此的位置' : lesson.kind === 'route' ? lesson.field.unit === 'yard' ? '全场按码绘制 · 秒数仅为演示时间' : '全场示意 · 距离与时间用于教学' : lesson.field.unit === 'yard' ? '按码绘制的教学区域 · 秒数为演示时间' : touchQuery.matches ? '点一下球员，看他的跑法' : '悬停球员看跑法 · 点击保留');
   text($('timingNote'), lesson.timeline.note);
   text($('sourceNote'), lesson.source ? `${lesson.source.title}${lesson.source.page ? t`，第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}` : '来源待补：没有附带可识别的出处，也未声明自编。');
   $('notes').replaceChildren(...(lesson.notes || []).map(note => node('li', {}, note)));
@@ -223,8 +294,13 @@ function rebuildLesson(id, preserve = false) {
   for (const [entryId, button] of catalogNodes) button.setAttribute('aria-current', String(entryId === id));
   const index = order.indexOf(id);
   text($('lessonIndex'), `${index + 1} / ${order.length}`);
+  text($('headIndex'), `${index + 1} / ${order.length}`);
+  $('headPrevious').disabled = index === 0; $('headNext').disabled = index === order.length - 1;
+  $('printLesson').disabled = false;
   $('previous').disabled = index === 0; $('next').disabled = index === order.length - 1;
-  buildRoles(); buildChoices(); buildBallControls(); buildField(); buildFrames(); buildDistanceGuide();
+  revealEntry(id);
+  $('fieldZoom').setAttribute('aria-pressed', String(Boolean(state.fullField)));
+  buildRoles(); buildChoices(); buildBallControls(); drawField(); buildFrames(); buildDistanceGuide();
 }
 
 function buildProvenance() {
@@ -282,7 +358,7 @@ function buildProvenance() {
       const item = node('div', {class: 'related-play'});
       const button = node('button', {class: 'text-button', 'data-related-lesson': reference.id}, target?.title.zh || reference.title);
       button.disabled = !target;
-      button.addEventListener('click', () => selectLesson(target.id));
+      button.addEventListener('click', () => navigateTo(target.id));
       item.append(button, node('p', {}, reference.note));
       if (!target) item.append(node('small', {}, '对应条目不在当前战术包中。'));
       $('relatedPlays').append(item);
@@ -291,8 +367,11 @@ function buildProvenance() {
 }
 function buildRoles() {
   const buttons = [node('button', { class: 'role', 'data-show-all': '', 'aria-pressed': 'true' }, '看全队')];
-  for (const player of lesson.players) buttons.push(node('button', { class: 'role', 'data-player': player.id, 'aria-pressed': 'false', 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` }, player.id));
+  for (const player of lesson.players) buttons.push(node('button', { class: 'role', 'data-player': player.id, 'aria-pressed': 'false', style: `--chip-color: ${playerColor(player)}`, 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` }, player.id));
   $('roles').replaceChildren(...buttons);
+  // Offense and defense together are too many chips to share a row with the direction and
+  // full-screen button; give them their own row instead of wrapping into three.
+  $('lessonMain').dataset.manyRoles = String(lesson.players.length > 5);
 }
 function buildChoices() {
   const players = lesson.players.filter(player => player.motion.type === 'choice');
@@ -310,10 +389,27 @@ function buildBallControls() {
   if (!sourceLesson.ball) return;
   $('ballEnabled').checked = Boolean(state.showBall);
   text($('ballChoiceHeading'), lesson.kind === 'offense' ? '这次球传给谁' : '选择球的流转');
-  $('ballOptions').replaceChildren(...sourceLesson.ball.scenarios.map(scenario =>
-    node('button', {'data-ball-scenario': scenario.id, 'aria-pressed': String(state.scenarioId === scenario.id), ...(state.showBall ? {} : {disabled: ''})}, scenario.title)));
+  // Sequences often open the same way ("Y 接开球后交 Q · Q 传给 C"); say the shared part once
+  // so each button shows only what differs. The button's name keeps the full title.
+  const titles = sourceLesson.ball.scenarios.map(scenario => t(scenario.title).split(' · '));
+  let shared = 0;
+  while (titles.length > 1 && titles.every(parts => parts.length > shared + 1 && parts[shared] === titles[0][shared])) shared++;
+  const lead = shared ? [node('span', {class: 'ball-options-lead'}, `${titles[0].slice(0, shared).join(' · ')} ·`)] : [];
+  $('ballOptions').replaceChildren(...lead, ...sourceLesson.ball.scenarios.map((scenario, index) =>
+    node('button', {'data-ball-scenario': scenario.id, 'aria-pressed': String(Boolean(state.showBall) && state.scenarioId === scenario.id), ...(state.showBall ? {} : {disabled: ''}),
+      ...(shared ? {'aria-label': titles[index].join(' · ')} : {})}, titles[index].slice(shared).join(' · '))));
   text($('ballScenarioNote'), ballScenario?.note || '已切换为只看跑位。打开球路可查看传球和交接。');
   text($('ballSourceNote'), sourceLesson.ball.note);
+  syncBallNote();
+}
+// On short screens the scenario note shows one line so the play button stays in the first
+// screen; the button opens the rest when it does not fit.
+function syncBallNote() {
+  const note = $('ballScenarioNote'), more = $('ballNoteMore');
+  const open = shortQuery.matches && $('ballControls').dataset.noteOpen === 'true';
+  more.hidden = !shortQuery.matches || (!open && note.scrollWidth <= note.clientWidth + 1);
+  more.setAttribute('aria-expanded', String(open));
+  text(more, open ? '收起' : '展开说明');
 }
 function buildFrames() {
   $('frames').replaceChildren(...lesson.keyframes.map((frame, index) => {
@@ -321,9 +417,17 @@ function buildFrames() {
     button.append(node('span', {}, `${String(index + 1).padStart(2, '0')} · ${frame.at.toFixed(1)}s`), node('strong', {}, frame.label));
     return button;
   }));
+  // The printed handout lists every keyframe with its explanation, not only the current one.
+  $('printFrames').replaceChildren(...lesson.keyframes.map((frame, index) => {
+    const item = node('li');
+    item.append(node('strong', {}, `${String(index + 1).padStart(2, '0')} · ${frame.label}`), node('p', {}, frame.cue));
+    return item;
+  }));
+  // Keyframe dots sit under the progress bar so playback shows where the teaching stops are.
+  const duration = lesson.timeline.duration;
+  $('timelineTicks').replaceChildren(...(duration > 0 ? lesson.keyframes : []).map((frame, index) =>
+    node('span', {class: 'timeline-tick', 'data-tick': index, style: `--at: ${Math.min(1, frame.at / duration)}`})));
 }
-function numberLabel(value) { return Number(value.toFixed(1)).toString(); }
-function depthLabel(value) { return t`${numberLabel(value)} 码`; }
 function buildDistanceGuide() {
   text($('distanceNote'), lesson.routeGuide?.note);
   $('distanceMarks').replaceChildren(...getRouteMeasurements(lesson).map((mark, index) => {
@@ -339,272 +443,12 @@ function buildDistanceGuide() {
   }));
 }
 
-function buildField() {
-  const { width: w, height: h, lineOfScrimmageY } = lesson.field;
-  const isRoute = lesson.kind === 'route';
-  const scaled = lesson.field.unit === 'yard';
-  const unit = isRoute ? Math.min(w / 48, h / 80) : scaled ? Math.min(w / 60, h / 60) : Math.min(w / 100, h / 55);
-  const field = $('field');
-  const viewport = { x: -3 * unit, y: -3 * unit, width: w + (scaled ? 14 : 6) * unit, height: h + 6 * unit };
-  field.classList.toggle('full-route-field', isRoute);
-  field.classList.toggle('yard-play-field', scaled && !isRoute);
-  $('routeMotionHint').hidden = !isRoute;
-  field.setAttribute('viewBox', `${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}`);
-  field.style.overflow = 'hidden';
-  field.replaceChildren();
-  fieldNodes = { players: new Map(), routes: [], zones: new Map(), assignments: new Map(), facingGuides: new Map(), unit, viewport };
-  const defs = svg('defs');
-  const arrow = svg('marker', { id: 'guide-arrow', viewBox: '0 0 8 8', refX: 6, refY: 4, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' });
-  arrow.append(svg('path', { d: 'M0 0 L8 4 L0 8 L2 4 Z', fill: '#d7c9ff' })); defs.append(arrow);
-  const ballArrow = svg('marker', {id: 'ball-arrow', viewBox: '0 0 8 8', refX: 7, refY: 4, markerWidth: 4, markerHeight: 4, orient: 'auto'});
-  ballArrow.append(svg('path', {d: 'M0 0L8 4L0 8Z', fill: '#ffba75'})); defs.append(ballArrow);
-  for (const player of lesson.players) {
-    const marker = svg('marker', { id: `arrow-${player.id}`, viewBox: '0 0 8 8', refX: 6, refY: 4, markerWidth: 5, markerHeight: 5, orient: 'auto' });
-    marker.append(svg('path', { d: 'M0 0 L8 4 L0 8 L2 4 Z', fill: playerColor(player) })); defs.append(marker);
-  }
-  field.append(defs, svg('rect', { x: 0, y: 0, width: w, height: h, rx: unit, fill: '#214f40', stroke: '#ffffff3c', 'stroke-width': .18 * unit }));
-  if (scaled) {
-    const endZone = lesson.field.endZoneDepth || 0;
-    // Keep authored fields with unusually large dimensions bounded to 200 ticks.
-    const yardInterval = Math.max(1, Math.ceil(h / 200));
-    const majorInterval = yardInterval * 5;
-    const gridStart = lineOfScrimmageY === undefined ? endZone : endZone + ((lineOfScrimmageY - endZone) % majorInterval);
-    for (let y = gridStart, count = 0; y <= h - endZone && count <= 200; y += majorInterval, count++) field.append(svg('path', {d: `M0 ${y}H${w}`, stroke: '#ffffff20', 'stroke-width': .15 * unit}));
-    for (let y = endZone, count = 0; y <= h - endZone && count <= 200; y += yardInterval, count++) field.append(svg('path', {d: `M${w * .02} ${y}h${unit} M${w * .96} ${y}h${unit}`, stroke: '#ffffff30', 'stroke-width': .13 * unit}));
-    if (lineOfScrimmageY !== undefined) {
-      const direction = lesson.field.attackDirection === 'up' ? -1 : 1;
-      const limit = direction < 0 ? lineOfScrimmageY - endZone : h - endZone - lineOfScrimmageY;
-      for (let distance = 0, count = 0; distance <= limit && count <= 200; distance += majorInterval, count++) {
-        const y = lineOfScrimmageY + direction * distance;
-        field.append(svg('path', {d: `M${w} ${y}h${unit}`, stroke: '#e8cf90', 'stroke-width': .2 * unit}));
-        field.append(svg('text', {x: w + 1.8 * unit, y, fill: '#e8cf90', 'font-size': 2.2 * unit, 'dominant-baseline': 'middle', 'data-yard-tick': distance}, depthLabel(distance)));
-      }
-    }
-  } else {
-    for (let index = 1; index < 6; index++) field.append(svg('path', { d: `M0 ${h * index / 6}H${w}`, stroke: '#ffffff14', 'stroke-width': .15 * unit }));
-    for (let index = 1; index < 22; index++) {
-      const y = h * index / 22;
-      field.append(svg('path', { d: `M${w * .02} ${y}h${unit} M${w * .33} ${y}h${unit} M${w * .66} ${y}h${unit} M${w * .97} ${y}h${unit}`, stroke: '#ffffff24', 'stroke-width': .13 * unit }));
-    }
-  }
-  if (isRoute) {
-    const depth = lesson.field.endZoneDepth ?? (scaled ? 0 : h * .08);
-    for (const [y, label] of [[0, lesson.field.attackDirection === 'up' ? '进攻端区' : '己方端区'], [h - depth, lesson.field.attackDirection === 'up' ? '己方端区' : '进攻端区']]) {
-      if (!depth) continue;
-      field.append(svg('rect', {x: 0, y, width: w, height: depth, fill: '#cfdfbd', 'fill-opacity': .1, 'data-field-endzone': ''}));
-      field.append(svg('text', {x: w / 2, y: y + depth / 2, 'dominant-baseline': 'middle', 'text-anchor': 'middle', fill: '#d2dfcd', 'font-size': 2 * unit}, label));
-    }
-    field.append(svg('path', {d: `M${w / 2} ${depth}V${h - depth}`, stroke: '#ffffff40', 'stroke-width': .15 * unit, 'stroke-dasharray': `${unit} ${unit}`}));
-    field.append(svg('text', {x: w / 2, y: depth + 4 * unit, fill: '#d2dfcd', 'font-size': 1.7 * unit, 'text-anchor': 'middle'}, '场地中间'));
-    field.append(svg('path', {d: `M0 ${h / 2}H${w}`, stroke: '#ffffff45', 'stroke-width': .18 * unit}));
-    field.append(svg('text', {x: w - unit, y: h / 2 - unit, fill: '#b9d5d1', 'font-size': 1.5 * unit, 'text-anchor': 'end'}, '中线'));
-    for (const [x, angle] of [[1.8 * unit, -90], [w - 1.8 * unit, 90]]) {
-      field.append(svg('text', {transform: `translate(${x} ${h * .64}) rotate(${angle})`, 'text-anchor': 'middle', fill: '#b9d5d1', 'font-size': 1.6 * unit}, '边线'));
-    }
-  }
-  if (lineOfScrimmageY !== undefined) {
-    field.append(svg('path', { d: `M0 ${lineOfScrimmageY}H${w}`, stroke: '#9bd0db80', 'stroke-width': .25 * unit }));
-    field.append(svg('text', { x: isRoute ? w - 2 * unit : 2 * unit, y: lineOfScrimmageY - 1.1 * unit, fill: '#b9d5d1', 'font-size': (isRoute ? 1.6 : 1.35) * unit, 'text-anchor': isRoute ? 'end' : 'start' }, '开球线'));
-  }
-  for (const zone of lesson.zones || []) {
-    const group = svg('g', { 'data-zone': zone.id });
-    const attributes = { fill: '#d7c9ff', 'fill-opacity': .17, stroke: '#d7c9ff', 'stroke-width': .22 * unit, 'stroke-dasharray': `${.7 * unit} ${.5 * unit}` };
-    group.append(zone.type === 'ellipse' ? svg('ellipse', { ...attributes, cx: zone.center[0], cy: zone.center[1], rx: zone.radiusX, ry: zone.radiusY }) : svg('polygon', { ...attributes, points: zone.points.map(p => p.join(',')).join(' ') }));
-    group.append(svg('title', {}, zone.label));
-    field.append(group); fieldNodes.zones.set(zone.id, group);
-  }
-  for (const assignment of lesson.assignments || []) {
-    const group = svg('g', { 'data-assignment': assignment.id });
-    if (assignment.guide) group.append(svg('path', { d: pathToSvg(assignment.guide.from, assignment.guide.segments), fill: 'none', stroke: '#d7c9ff', 'stroke-width': .28 * unit, 'stroke-dasharray': `${.7 * unit} ${.5 * unit}`, ...(assignment.type === 'matchup' ? {} : {'marker-end': 'url(#guide-arrow)'}) }));
-    field.append(group); fieldNodes.assignments.set(assignment.id, group);
-  }
-  for (const route of getRoutes(lesson, state.choices)) {
-    const player = lesson.players.find(player => player.id === route.playerId);
-    const shape = {fill: 'none', stroke: playerColor(player), 'stroke-width': .43 * unit, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'pointer-events': 'none'};
-    const path = svg('path', { ...shape, class: 'route', 'data-player-route': player.id, d: pathToSvg(route.from, route.steps), 'marker-end': isRoute ? 'none' : `url(#arrow-${player.id})` });
-    const activeNode = isRoute ? svg('path', {...shape, 'data-active-route': player.id, 'marker-end': `url(#arrow-${player.id})`, visibility: 'hidden'}) : undefined;
-    field.append(path); fieldNodes.routes.push({ node: path, activeNode, ...route });
-  }
-  buildBallPaths(field, unit);
-  const measurements = getRouteMeasurements(lesson);
-  const distanceLabels = [];
-  for (const [index, mark] of measurements.entries()) {
-    const [x, y] = mark.position;
-    const group = svg('g', {class: 'distance-marker', 'data-distance-mark': mark.id, 'data-depth-yards': mark.depthYards, 'data-marker-x': x, 'data-marker-y': y, role: 'button', tabindex: 0, 'aria-label': `${depthLabel(mark.depthYards)} · ${mark.label}`});
-    group.append(svg('circle', {class: 'distance-marker-focus', cx: x, cy: y, r: 3.3 * unit, fill: 'none', stroke: '#ffe8a7', 'stroke-width': .25 * unit}));
-    group.append(svg('circle', {cx: x, cy: y, r: .8 * unit, fill: '#e8cf90', stroke: '#173b30', 'stroke-width': .2 * unit}));
-    group.addEventListener('click', () => seek(mark.at));
-    group.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); seek(mark.at); } });
-    const label = `${index + 1} · ${depthLabel(mark.depthYards)}`;
-    const labelNode = svg('text', {x: x + 1.7 * unit, y: y - 1.8 * unit, fill: '#ffe8a7', stroke: '#214f40', 'stroke-width': .5 * unit, 'paint-order': 'stroke', 'font-size': 2.2 * unit, 'font-weight': 700}, label);
-    group.append(labelNode);
-    field.append(group);
-    // Cuts at the same depth still need separate readable labels (for example Chair).
-    let bounds = labelNode.getBBox();
-    for (let attempt = 0; attempt < measurements.length; attempt++) {
-      const overlap = distanceLabels.some(box => bounds.x < box.x + box.width + unit && bounds.x + bounds.width + unit > box.x && bounds.y < box.y + box.height + unit && bounds.y + bounds.height + unit > box.y);
-      if (!overlap) break;
-      labelNode.setAttribute('y', Number(labelNode.getAttribute('y')) - 3.5 * unit);
-      bounds = labelNode.getBBox();
-    }
-    if (Number(labelNode.getAttribute('y')) !== y - 1.8 * unit) {
-      group.insertBefore(svg('path', {d: `M${x} ${y}L${labelNode.getAttribute('x')} ${Number(labelNode.getAttribute('y')) + .6 * unit}`, stroke: '#e8cf90', 'stroke-width': .16 * unit, 'stroke-dasharray': `${.4 * unit} ${.4 * unit}`, 'pointer-events': 'none', fill: 'none'}), group.firstChild);
-    }
-    distanceLabels.push(bounds);
-  }
-  const firstMark = measurements[0];
-  if (firstMark) {
-    const runner = lesson.players.find(player => player.id === lesson.routeGuide.player);
-    // Mark the initial straight stem separately from the route's total travel.
-    if (firstMark.step === 0 && runner.at[0] === firstMark.position[0] && runner.at[1] === lineOfScrimmageY) {
-      const x = Math.max(unit, runner.at[0] - 4 * unit), top = firstMark.position[1], bottom = lineOfScrimmageY;
-      field.append(svg('path', {d: `M${x + unit} ${top}H${x}V${bottom}h${unit}`, stroke: '#e8cf90', 'stroke-width': .2 * unit, fill: 'none', 'data-stem-bracket': ''}));
-      field.append(svg('text', {x: x - unit, y: (top + bottom) / 2, fill: '#ffe8a7', 'font-size': 2.2 * unit, 'text-anchor': 'end', 'dominant-baseline': 'middle'}, depthLabel(firstMark.depthYards)));
-    }
-  }
-  // Current-step arrows sit above distance dots so a turn marker cannot hide the arrowhead.
-  for (const route of fieldNodes.routes) if (route.activeNode) field.append(route.activeNode);
-  const facingPlayers = new Set(getRoutes(lesson).filter(route => route.steps.some(step => step.facePlayer)).map(route => route.playerId));
-  $('facingHint').hidden = facingPlayers.size === 0;
-  for (const id of facingPlayers) {
-    const guide = svg('line', {'data-facing-guide': id, stroke: '#ffe8a7', 'stroke-width': .2 * unit, 'stroke-dasharray': `${.45 * unit} ${.6 * unit}`, 'pointer-events': 'none', visibility: 'hidden'});
-    field.append(guide); fieldNodes.facingGuides.set(id, guide);
-  }
-  for (const player of lesson.players) {
-    const group = svg('g', { class: 'player', 'data-player': player.id, tabindex: 0, role: 'button', 'aria-label': t`${player.name || player.id}：${player.label.en || ''} ${player.label.zh}，点击保留` });
-    group.append(svg('circle', { class: 'focus-ring', r: 2.85 * unit, fill: 'none', stroke: '#fff8d6', 'stroke-width': .25 * unit, opacity: 0 }));
-    const common = { fill: playerColor(player), stroke: '#153b2f', 'stroke-width': .22 * unit };
-    if (player.team === 'defense') group.append(svg('path', { ...common, d: `M0 ${-2.2 * unit}L${2.2 * unit} ${1.85 * unit}L${-2.2 * unit} ${1.85 * unit}Z` }));
-    else if (player.id === 'C') group.append(svg('rect', { ...common, x: -1.85 * unit, y: -1.85 * unit, width: 3.7 * unit, height: 3.7 * unit, rx: .45 * unit }));
-    else group.append(svg('circle', { ...common, r: 1.95 * unit }));
-    if (facingPlayers.has(player.id)) group.append(svg('path', {'data-facing': '', d: `M${-1.1 * unit} ${-2.65 * unit}L0 ${-4.25 * unit}L${1.1 * unit} ${-2.65 * unit}Z`, fill: '#ffe8a7', stroke: '#153b2f', 'stroke-width': .2 * unit, visibility: 'hidden'}));
-    group.append(svg('text', { x: 0, y: (player.team === 'defense' ? .95 : .75) * unit, 'text-anchor': 'middle', 'font-size': (player.id.length > 2 ? 1.25 : player.id.length > 1 ? 1.7 : 2.2) * unit, 'font-weight': 750, fill: '#153b2f' }, player.id));
-    if (isRoute && player.id === 'QB') group.append(svg('text', {x: 0, y: 4.5 * unit, 'text-anchor': 'middle', fill: '#ffd3a2', 'font-size': 1.6 * unit}, '传球参照'));
-    group.append(svg('circle', { r: 2.7 * unit, fill: 'transparent' }));
-    field.append(group); fieldNodes.players.set(player.id, group);
-  }
-  buildBallActions(field, unit);
-  if (ballScenario) {
-    const ball = svg('g', {'data-ball': '', role: 'img', 'pointer-events': 'none'});
-    // The same small offset is used for held balls and both flight endpoints.
-    // It keeps the football visible beside a player's letter without teleporting.
-    const glyph = svg('g', {transform: `translate(${2.65 * unit} ${-1.7 * unit}) rotate(-30)`});
-    glyph.append(svg('ellipse', {rx: 1.65 * unit, ry: .96 * unit, fill: '#934725', stroke: '#fff5ce', 'stroke-width': .4 * unit}));
-    glyph.append(svg('path', {d: `M${-.85 * unit} 0H${.85 * unit} M${-.45 * unit} ${-.35 * unit}V${.35 * unit} M0 ${-.35 * unit}V${.35 * unit} M${.45 * unit} ${-.35 * unit}V${.35 * unit}`, stroke: '#fff5ce', 'stroke-width': .2 * unit, fill: 'none'}));
-    ball.append(glyph); field.append(ball); fieldNodes.ball = ball;
-    const carrier = svg('circle', {'data-ball-carrier': '', r: 2.45 * unit, stroke: '#fff5ce', 'stroke-width': .45 * unit, fill: 'none', 'pointer-events': 'none'});
-    field.insertBefore(carrier, ball); fieldNodes.carrier = carrier;
-  }
-  const tooltip = svg('g', { id: 'fieldTooltip', 'pointer-events': 'none', 'aria-hidden': 'true', style: 'display:none' });
-  tooltip.append(svg('rect', { width: 26 * unit, height: 7.5 * unit, rx: 1 * unit, fill: '#fffefa', stroke: '#d1ddc5', 'stroke-width': .15 * unit }));
-  const first = svg('text', { x: 1.2 * unit, y: 3 * unit, fill: '#183c32', 'font-size': 2 * unit, 'font-weight': 700 });
-  const second = svg('text', { x: 1.2 * unit, y: 5.8 * unit, fill: '#68775e', 'font-size': 1.35 * unit });
-  tooltip.append(first, second); field.append(tooltip);
-  Object.assign(fieldNodes, { tooltip, tooltipFirst: first, tooltipSecond: second });
-}
-
-function buildBallPaths(field, unit) {
+function drawField() {
+  fieldNodes = buildField($('field'), {lesson, choices: state.choices, ballScenario, fullField: state.fullField,
+    glyphScale: narrowQuery.matches ? 1.4 : 1, onSeek: seek});
+  $('routeMotionHint').hidden = lesson.kind !== 'route';
+  $('facingHint').hidden = fieldNodes.facingPlayers.size === 0;
   $('ballReadout').hidden = $('ballLegend').hidden = !ballScenario;
-  if (!ballScenario) return;
-  const ball = getBallState(lesson, 0, state.choices, ballScenario);
-  fieldNodes.ballPaths = ball.flights.map(flight => {
-    const group = svg('g', {class: 'ball-flight', 'data-ball-flight': flight.id});
-    const points = [flight.start, flight.end].map(([x, y]) => [x + 2.65 * unit, y - 1.7 * unit]);
-    group.append(svg('path', {d: `M${points[0].join(' ')}L${points[1].join(' ')}`, stroke: '#ffba75', 'stroke-width': .55 * unit, 'stroke-dasharray': `${1.5 * unit} ${.95 * unit}`, fill: 'none', 'marker-end': 'url(#ball-arrow)'}));
-    const middle = points[0].map((value, axis) => (value + points[1][axis]) / 2);
-    group.append(svg('text', {class: 'ball-flight-label', x: middle[0] + unit, y: middle[1] - unit, fill: '#ffd0a0', 'font-size': 1.65 * unit, 'font-weight': 700}, flight.type === 'snap' ? '开球' : '传球'));
-    field.append(group);
-    return {...flight, node: group};
-  });
-  fieldNodes.ballCarries = ball.carries.map(carry => {
-    const path = svg('path', {class: 'ball-carry', 'data-ball-carry': carry.owner, stroke: '#fff5ce', 'stroke-width': .8 * unit, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: .85, fill: 'none'});
-    const player = lesson.players.find(item => item.id === carry.owner);
-    const samples = Math.min(160, Math.max(2, Math.ceil((carry.endAt - carry.at) * 12)));
-    const points = Array.from({length: samples + 1}, (_, index) => {
-      const time = carry.at + (carry.endAt - carry.at) * index / samples;
-      return {time, point: positionAt(player, time, state.choices)};
-    });
-    field.append(path);
-    return {...carry, player, points, node: path};
-  });
-}
-
-function buildBallActions(field, unit) {
-  if (!ballScenario) return;
-  const types = {'handoff': '交递', 'fake-handoff': '假交', 'pump-fake': '假传'};
-  const actions = ballScenario.events.filter(event => types[event.type]).map(event => {
-    const position = id => positionAt(lesson.players.find(player => player.id === id), event.at, state.choices);
-    const from = position(event.from);
-    const point = event.type === 'pump-fake' ? from : from.map((value, axis) => (value + position(event.to)[axis]) / 2);
-    const next = ballScenario.events.find(item => item.at > event.at);
-    const endAt = Math.min(event.endAt ?? event.at + .6, next?.at ?? lesson.timeline.duration);
-    return {event, point, endAt};
-  });
-  const placed = [];
-  const {width, height} = lesson.field;
-  const overlap = (a, b) => Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x))
-    * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
-  const obstacles = actions.map(({point: [x, y]}) => ({x: x - 4 * unit, y: y - 4 * unit, width: 8 * unit, height: 8 * unit}));
-  for (const player of lesson.players) obstacles.push({x: player.at[0] - 3 * unit, y: player.at[1] - 3 * unit, width: 6 * unit, height: 6 * unit});
-  fieldNodes.ballActions = actions.map(({event, point: [x, y], endAt}, index) => {
-    const participants = event.type === 'handoff' ? `${event.from} → ${event.to}` : event.to ? `${event.from} / ${event.to}` : event.from;
-    const label = `${index + 1} · ${t(types[event.type])} ${participants}`;
-    const group = svg('g', {class: 'ball-action', 'data-ball-action': event.id, 'data-action-type': event.type,
-      'data-phase': 'preview', 'data-event-at': event.at, 'data-event-position': JSON.stringify([x, y]), role: 'button', tabindex: 0});
-    const leader = svg('path', {class: 'ball-action-leader', fill: 'none', 'stroke-width': .2 * unit, 'pointer-events': 'none'});
-    // Only a true exchange gets an open circle. A fake uses a label and leader;
-    // leave its meeting point clear so no location dot covers a player's letter.
-    const pin = event.type === 'handoff' ? svg('circle', {class: 'ball-action-pin', cx: x, cy: y, r: 3.2 * unit,
-      fill: 'none', stroke: '#ffce92', 'stroke-width': .35 * unit, 'pointer-events': 'none'}) : undefined;
-    const card = svg('rect', {class: 'ball-action-card', rx: 1.1 * unit, 'stroke-width': .22 * unit});
-    const title = svg('text', {class: 'ball-action-title', 'font-size': 2.25 * unit, 'font-weight': 700}, label);
-    const status = svg('text', {class: 'ball-action-status', 'font-size': 1.7 * unit});
-    group.append(leader);
-    if (pin) group.append(pin);
-    group.append(card, title, status); field.append(group);
-    let measuredWidth = title.getBBox().width;
-    for (const value of ['待演示', '此刻', '已发生']) {
-      text(status, `${event.at.toFixed(1)} s · ${t(value)}`);
-      measuredWidth = Math.max(measuredWidth, status.getBBox().width);
-    }
-    const box = {width: Math.min(measuredWidth + 2.8 * unit, width * .48), height: 7.7 * unit};
-    // Imported player IDs may be long. Keep the full identifier accessible while
-    // fitting the printed label within its callout instead of covering the field.
-    const textWidth = box.width - 2.8 * unit;
-    if (title.getBBox().width > textWidth) {
-      title.setAttribute('textLength', textWidth); title.setAttribute('lengthAdjust', 'spacingAndGlyphs');
-    }
-    // Keep callouts away from the meeting points and from one another. Their
-    // leaders stay anchored while players move; layout is stable during seeking.
-    const candidates = [];
-    for (const offset of [0, -9, 9, -18, 18, -27, 27]) {
-      candidates.push([x - box.width - 5.2 * unit, y - box.height / 2 + offset * unit]);
-      candidates.push([x + 5.2 * unit, y - box.height / 2 + offset * unit]);
-    }
-    candidates.push([x - box.width / 2, y - box.height - 5.2 * unit], [x - box.width / 2, y + 5.2 * unit]);
-    const scored = candidates.map(([cx, cy]) => {
-      const candidate = {...box, x: Math.max(unit, Math.min(width - box.width - unit, cx)), y: Math.max(unit, Math.min(height - box.height - unit, cy))};
-      const padded = {...candidate, x: candidate.x - unit, y: candidate.y - unit, width: box.width + 2 * unit, height: box.height + 2 * unit};
-      const distance = Math.hypot(candidate.x + box.width / 2 - x, candidate.y + box.height / 2 - y) / unit;
-      const score = distance + placed.reduce((sum, other) => sum + overlap(padded, other) / unit ** 2 * 100, 0)
-        + obstacles.reduce((sum, other) => sum + overlap(padded, other) / unit ** 2 * 5, 0);
-      return {candidate, score};
-    }).sort((a, b) => a.score - b.score);
-    const position = scored[0].candidate;
-    placed.push(position);
-    for (const [key, value] of Object.entries(position)) card.setAttribute(key, value);
-    title.setAttribute('x', position.x + 1.4 * unit); title.setAttribute('y', position.y + 3.05 * unit);
-    status.setAttribute('x', position.x + 1.4 * unit); status.setAttribute('y', position.y + 5.95 * unit);
-    const end = [Math.max(position.x, Math.min(position.x + box.width, x)), Math.max(position.y, Math.min(position.y + box.height, y))];
-    const length = Math.hypot(end[0] - x, end[1] - y);
-    const ratio = length > 0 ? Math.min(3.2 * unit / length, 1) : 0;
-    leader.setAttribute('d', `M${x + (end[0] - x) * ratio} ${y + (end[1] - y) * ratio}L${end.join(' ')}`);
-    group.addEventListener('click', () => seek(event.at));
-    group.addEventListener('keydown', input => {
-      if (input.key === 'Enter' || input.key === ' ') { input.preventDefault(); seek(event.at); }
-    });
-    return {event, endAt, label, node: group, status};
-  });
 }
 
 function renderBall(time) {
@@ -618,97 +462,28 @@ function renderBall(time) {
   text($('ballStatus'), status);
   const eventCue = event?.endAt !== undefined && time >= event.endAt ? event.endCue || event.cue : event?.cue;
   text($('ballEvent'), eventCue || ballScenario.title);
-  fieldNodes.ball.setAttribute('transform', `translate(${ball.position.join(' ')})`);
-  fieldNodes.ball.setAttribute('data-ball-state', ball.state);
-  fieldNodes.ball.setAttribute('data-ball-owner', ball.owner || '');
-  fieldNodes.ball.setAttribute('data-ball-position', JSON.stringify(ball.position));
-  fieldNodes.ball.setAttribute('aria-label', status);
-  fieldNodes.carrier.setAttribute('visibility', ball.owner ? 'visible' : 'hidden');
-  fieldNodes.carrier.setAttribute('data-owner', ball.owner || '');
-  fieldNodes.carrier.setAttribute('transform', `translate(${ball.position.join(' ')})`);
-  for (const path of fieldNodes.ballPaths) {
-    path.node.setAttribute('opacity', time < path.at ? .45 : time < path.endAt ? 1 : .3);
-    path.node.setAttribute('data-phase', time < path.at ? 'preview' : time < path.endAt ? 'flight' : 'complete');
-  }
-  for (const carry of fieldNodes.ballCarries) {
-    const end = Math.min(time, carry.endAt);
-    const points = carry.points.filter(item => item.time < end).map(item => item.point);
-    if (time > carry.at) points.push(positionAt(carry.player, end, state.choices));
-    carry.node.setAttribute('d', points.length > 1 ? points.map((point, index) => `${index ? 'L' : 'M'}${point.join(' ')}`).join(' ') : '');
-  }
-  for (const action of fieldNodes.ballActions) {
-    const phase = time < action.event.at ? 'preview' : time < action.endAt ? 'active' : 'complete';
-    action.node.dataset.phase = phase;
-    const status = phase === 'preview' ? '待演示' : phase === 'active' ? '此刻' : '已发生';
-    text(action.status, `${action.event.at.toFixed(1)} s · ${t(status)}`);
-    action.node.setAttribute('aria-label', t`${action.label}，${status}，点击暂停到 ${action.event.at} 秒`);
-  }
+  // The caption beside the readout often already says the same thing.
+  $('ballEvent').hidden = $('ballEvent').textContent === $('frameCue').textContent;
+  renderBallLayer(fieldNodes, {ball, time, choices: state.choices, status});
 }
 function render() {
   if (!lesson || rebuildingLesson) return;
   const scene = getScene(lesson, state.time, state.choices);
   const currentBall = ballScenario ? getBallState(lesson, scene.time, state.choices, ballScenario) : undefined;
   const inspected = inspectId();
-  for (const player of scene.players) {
-    const group = fieldNodes.players.get(player.id);
-    group.setAttribute('transform', `translate(${player.position.join(' ')})`);
-    group.setAttribute('opacity', inspected === null || player.id === inspected || player.id === currentBall?.owner || (lesson.kind === 'route' && player.id === 'QB') ? 1 : .53);
-    group.setAttribute('aria-pressed', String(player.id === state.role));
-    group.querySelector('.focus-ring').setAttribute('opacity', player.id === inspected ? 1 : 0);
-    const facing = group.querySelector('[data-facing]');
-    const guide = fieldNodes.facingGuides.get(player.id);
-    if (facing) {
-      facing.setAttribute('visibility', player.facing ? 'visible' : 'hidden');
-      facing.setAttribute('data-face-player', player.facing?.target || '');
-      guide.setAttribute('visibility', player.facing?.target ? 'visible' : 'hidden');
-      if (player.facing) {
-        const [dx, dy] = player.facing.direction;
-        facing.setAttribute('transform', `rotate(${Math.atan2(dy, dx) * 180 / Math.PI + 90})`);
-        facing.setAttribute('data-direction', JSON.stringify(player.facing.direction));
-        group.setAttribute('aria-label', player.facing.target ? t`${player.id}：面向 ${player.facing.target}，点击保留` : t`${player.id}：面朝跑动方向，点击保留`);
-        if (player.facing.target) {
-          const target = scene.players.find(item => item.id === player.facing.target);
-          for (const [key, value] of Object.entries({x1: player.position[0], y1: player.position[1], x2: target.position[0], y2: target.position[1]})) guide.setAttribute(key, value);
-        }
-      }
-    }
-  }
-  for (const route of fieldNodes.routes) {
-    const option = state.choices[route.playerId];
-    const otherOption = route.optionId && option && route.optionId !== option;
-    route.node.style.display = otherOption ? 'none' : '';
-    route.node.setAttribute('opacity', route.activeNode ? (inspected === null || route.playerId === inspected ? .28 : .12) : inspected === null ? .66 : route.playerId === inspected ? 1 : .2);
-    route.node.setAttribute('stroke-dasharray', route.optionId && !option ? `${fieldNodes.unit} ${fieldNodes.unit * .7}` : 'none');
-    route.node.setAttribute('stroke-width', (route.playerId === inspected ? .58 : .4) * fieldNodes.unit);
-    if (route.activeNode) {
-      const player = scene.players.find(item => item.id === route.playerId);
-      const active = !otherOption && (!route.optionId || option === route.optionId) ? getActiveRoute(player, scene.time, state.choices) : undefined;
-      route.activeNode.setAttribute('visibility', active ? 'visible' : 'hidden');
-      route.activeNode.setAttribute('d', active ? pathToSvg(active.from, active.steps) : '');
-      route.activeNode.setAttribute('opacity', inspected === null || route.playerId === inspected ? 1 : .35);
-      route.activeNode.setAttribute('stroke-width', .58 * fieldNodes.unit);
-    }
-  }
-  const zoneIds = new Set(scene.zones.map(zone => zone.id));
-  for (const [id, group] of fieldNodes.zones) {
-    group.style.display = zoneIds.has(id) ? '' : 'none';
-    const owner = (lesson.assignments || []).find(a => a.type === 'coverage' && a.zone === id)?.player;
-    group.setAttribute('opacity', inspected === null || inspected === owner ? 1 : .45);
-  }
-  const assignmentIds = new Set(scene.assignments.map(a => a.id));
-  for (const [id, group] of fieldNodes.assignments) {
-    group.style.display = assignmentIds.has(id) ? '' : 'none';
-    const owner = lesson.assignments.find(a => a.id === id).player;
-    group.setAttribute('opacity', inspected === null || owner === inspected ? 1 : .35);
-  }
+  const player = lesson.players.find(item => item.id === inspected);
+  renderField(fieldNodes, {lesson, scene, choices: state.choices, inspected, role: state.role, ballOwner: currentBall?.owner,
+    tooltip: {player, visible: lesson.kind !== 'route' || Boolean(hovered || focused)}});
   $('roles').querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.hasAttribute('data-show-all') ? state.role === null : button.dataset.player === state.role)));
-  const player = lesson.players.find(player => player.id === inspected);
   const scenarioMotion = ballScenario?.motions?.find(item => item.player === player?.id)?.motion;
   text($('focusStatus'), state.role === null ? '正在看全队' : t`关注 ${state.role} · 队友仍可见`);
-  text($('routePerson'), player?.id || '?'); $('routePerson').style.background = player ? playerColor(player) : '#e6eadf';
+  text($('routePerson'), player?.id || '?'); $('routePerson').style.background = player ? playerColor(player) : 'var(--surface)';
+  $('routePerson').style.color = player ? '#153b2f' : 'var(--ink)';
   text($('routeMode'), player ? t`${player.id} 的${t(lesson.kind === 'defense' ? '分工' : '跑法')} · ${t(hovered ? '悬停查看' : focused ? '键盘查看' : '已保留')}` : '认识跑法');
-  text($('routeEnglish'), player ? player.label.en || player.label.zh : '移到球员上试试');
+  $('routeCard').classList.toggle('is-empty', !player);
+  text($('routeEnglish'), player ? player.label.en || player.label.zh : touchQuery.matches ? '点一下球员试试' : '移到球员上试试');
   text($('routeChinese'), player?.label.en && player.label.en !== player.label.zh ? player.label.zh : '');
+  $('routeChinese').hidden = !$('routeChinese').textContent;
   text($('routeDescription'), scenarioMotion?.note || player?.label.description || '名称、路线和动作一起看。点击一个字母，边播放边观察他和队友怎样配合。');
   $('playerCoaching').hidden = !player?.coaching;
   text($('routeCooperation'), player?.coaching?.cooperation);
@@ -727,29 +502,19 @@ function render() {
   }) : [];
   $('routeDuties').hidden = !duties.length;
   text($('routeDuties'), duties.join(getLanguage() === 'en' ? '; ' : '；'));
-  text($('routeBasis'), scenarioMotion?.note ? ballScenario.note : player ? `${t(bases[player.label.basis])}${player.label.note ? ` · ${player.label.note}` : ''}` : '');
-  fieldNodes.tooltip.style.display = player && (lesson.kind !== 'route' || hovered || focused) ? '' : 'none';
-  if (player) {
-    const position = scene.players.find(p => p.id === player.id).position;
-    const unit = fieldNodes.unit;
-    const view = fieldNodes.viewport;
-    const x = Math.max(view.x + unit, Math.min(view.x + view.width - 27 * unit, position[0] + 3.3 * unit));
-    const above = position[1] - 9 * unit;
-    const desiredY = above > view.y + unit ? above : position[1] + 3.5 * unit;
-    const y = Math.max(view.y + unit, Math.min(view.y + view.height - 8.5 * unit, desiredY));
-    fieldNodes.tooltip.setAttribute('transform', `translate(${x} ${y})`);
-    const title = `${player.id} · ${player.label.en || player.label.zh}`;
-    text(fieldNodes.tooltipFirst, title.length > 23 ? `${title.slice(0, 22)}…` : title);
-    text(fieldNodes.tooltipSecond, (player.label.en ? player.label.zh : t(bases[player.label.basis])).slice(0, 16));
-  }
+  text($('routeBasis'), scenarioMotion?.note ? ballScenario.note : player ? `${t(basisLabels[player.label.basis])}${player.label.note ? ` · ${player.label.note}` : ''}` : '');
   const staticScene = lesson.timeline.duration === 0;
   text($('playState'), staticScene ? '静态站位' : !scene.ready ? '先选演示选项' : state.playing ? '演示中' : '已暂停 · 可讲解');
   text($('play'), staticScene ? '静态站位' : !scene.ready ? '先选演示选项' : state.playing ? 'Ⅱ 暂停讲解' : state.time >= lesson.timeline.duration ? '↻ 再看一遍' : state.time > 0 ? '▶ 继续播放' : '▶ 开始演示');
   $('play').disabled = staticScene || !scene.ready;
+  syncFloatingPlay();
   $('seek').disabled = staticScene || !scene.ready;
   $('seek').value = state.time;
+  const progress = lesson.timeline.duration > 0 ? state.time / lesson.timeline.duration : 0;
+  $('seek').style.setProperty('--progress', `calc(8px + (100% - 16px) * ${progress})`);
   text($('clock'), `${state.time.toFixed(1)} / ${lesson.timeline.duration.toFixed(1)} s`);
   const frameIndex = lesson.keyframes.indexOf(scene.keyframe);
+  $('timelineTicks').querySelectorAll('[data-tick]').forEach((tick, index) => { tick.dataset.current = String(index === frameIndex); });
   text($('frameNumber'), String(frameIndex + 1).padStart(2, '0'));
   text($('frameTitle'), scene.keyframe.label); text($('frameCue'), scene.keyframe.cue);
   $('frames').querySelectorAll('button').forEach((button, index) => {
@@ -778,15 +543,46 @@ $('language').addEventListener('change', () => {
   buildCatalog(); selectLesson(id, true);
 });
 $('search').addEventListener('input', buildCatalog);
-$('catalog').addEventListener('click', event => { const button = event.target.closest('[data-lesson]'); if (button) selectLesson(button.dataset.lesson); });
-$('previous').addEventListener('click', () => selectLesson(order[order.indexOf(lesson.id) - 1]));
-$('next').addEventListener('click', () => selectLesson(order[order.indexOf(lesson.id) + 1]));
-$('play').addEventListener('click', () => {
-  if (!getScene(lesson, 0, state.choices).ready) return;
-  if (state.time >= lesson.timeline.duration) state.time = 0;
-  state.playing = !state.playing; lastTick = undefined; render();
+$('catalog').addEventListener('click', event => {
+  const button = event.target.closest('[data-lesson]'); if (!button) return;
+  navigateTo(button.dataset.lesson);
+  if (drawerQuery.matches) setCatalogOpen(false);
+});
+$('catalogToggle').addEventListener('click', () => setCatalogOpen(!document.body.classList.contains('catalog-open')));
+$('catalogClose').addEventListener('click', () => setCatalogOpen(false));
+$('catalogBackdrop').addEventListener('click', () => setCatalogOpen(false));
+drawerQuery.addEventListener('change', () => setCatalogOpen(false, false));
+narrowQuery.addEventListener('change', rebuildField);
+document.querySelector('.brand').addEventListener('click', event => { event.preventDefault(); scrollTo({top: 0}); });
+// Back/forward and edited links both arrive here; whichever event fires first does the work.
+function followAddress() {
+  const id = lessonFromHash(location.hash);
+  if (id && id !== lesson?.id && pack.lessons.some(item => item.id === id)) selectLesson(id);
+}
+window.addEventListener('hashchange', followAddress);
+window.addEventListener('popstate', followAddress);
+$('previous').addEventListener('click', () => goToLesson(-1));
+$('headPrevious').addEventListener('click', () => goToLesson(-1));
+$('headNext').addEventListener('click', () => goToLesson(1));
+$('printLesson').addEventListener('click', () => { pause(); print(); });
+addEventListener('beforeprint', () => { if (state.playing) pause(); });
+$('next').addEventListener('click', () => goToLesson(1));
+$('play').addEventListener('click', togglePlay);
+$('fullscreen').addEventListener('click', () => setFullscreen(!document.body.classList.contains('board-fullscreen-open')));
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) setFullscreen(false); });
+$('fieldZoom').addEventListener('click', () => {
+  state.fullField = !state.fullField;
+  $('fieldZoom').setAttribute('aria-pressed', String(state.fullField));
+  rebuildField();
 });
 $('reset').addEventListener('click', () => seek(0));
+$('floatingPlay').addEventListener('click', () => {
+  if (floatingFullscreen()) setFullscreen(true);
+  else document.querySelector('.controls').scrollIntoView({block: 'end'});
+  togglePlay();
+  // The floating copy hides once the controls are in view; keep keyboard focus with them.
+  $('play').focus({preventScroll: true});
+});
 $('ballEnabled').addEventListener('change', event => {
   state.showBall = event.target.checked;
   state.time = 0; state.playing = false; state.choices = {};
@@ -799,17 +595,46 @@ $('ballOptions').addEventListener('click', event => {
   state.time = 0; state.playing = false;
   selectLesson(lesson.id, true);
 });
+$('ballNoteMore').addEventListener('click', () => {
+  const controls = $('ballControls');
+  controls.dataset.noteOpen = String(controls.dataset.noteOpen !== 'true');
+  syncBallNote(); fitField();
+});
 $('seek').addEventListener('input', event => seek(Number(event.target.value)));
 $('frames').addEventListener('click', event => { const button = event.target.closest('[data-frame]'); if (button) seek(lesson.keyframes[Number(button.dataset.frame)].at); });
-document.querySelectorAll('[data-speed]').forEach(button => button.addEventListener('click', () => {
-  state.speed = Number(button.dataset.speed);
-  lastTick = undefined;
-  document.querySelectorAll('[data-speed]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+document.querySelectorAll('[data-speed]').forEach(button => button.addEventListener('click', () => setSpeed(Number(button.dataset.speed))));
+// Shortcuts stay out of the way of typing, sliders, menus and focused buttons.
+document.addEventListener('keydown', event => {
+  if(document.querySelector('.coach:not([hidden])'))return;
+  if (event.key === 'Escape' && document.body.classList.contains('catalog-open')) { setCatalogOpen(false); return; }
+  if (event.key === 'Escape' && document.body.classList.contains('board-fullscreen-open')) { setFullscreen(false); return; }
+  if (event.defaultPrevented || !lesson || document.querySelector('dialog[open]') || document.body.classList.contains('catalog-open')) return;
+  const target = event.target instanceof Element ? event.target : null;
+  const action = shortcutFor(event, {
+    typing: Boolean(target?.closest('input, select, textarea, [contenteditable="true"]')),
+    onControl: Boolean(target?.closest('button, summary, a, [role="button"]')),
+  });
+  if (!action) return;
+  if (action.type !== 'speed') event.preventDefault();
+  if (action.type === 'toggle') togglePlay();
+  else if (action.type === 'keyframe') stepKeyframe(action.direction);
+  else if (action.type === 'speed') setSpeed(action.value);
+  else if (action.type === 'reset') seek(0);
+  else if (action.type === 'lesson') goToLesson(action.direction);
+  else if (action.type === 'fullscreen') setFullscreen(!document.body.classList.contains('board-fullscreen-open'));
+});
+// The legend opens by default on wide screens; a parent's own choice is remembered.
+try {
+  const legend = localStorage.getItem('flagventures.legend');
+  $('boardLegend').open = legend ? legend === 'open' : !drawerQuery.matches;
+} catch { $('boardLegend').open = !drawerQuery.matches; }
+$('boardLegend').querySelector('summary').addEventListener('click', () => setTimeout(() => {
+  try { localStorage.setItem('flagventures.legend', $('boardLegend').open ? 'open' : 'closed'); } catch {}
 }));
 $('choices').addEventListener('click', event => {
   const button = event.target.closest('[data-choice-player]'); if (!button) return;
   state.choices[button.dataset.choicePlayer] = button.dataset.option;
-  state.time = 0; pause();
+  state.time = 0; pause(); fitField();
 });
 for (const id of ['field', 'roles']) {
   const surface = $(id);
@@ -819,11 +644,10 @@ for (const id of ['field', 'roles']) {
     hovered = focused = null; render();
   });
   surface.addEventListener('pointermove', event => {
-    const target = event.target.closest('[data-player]');
-    const value = target?.dataset.player;
-    hovered = value || null; render();
+    const value = event.target.closest('[data-player]')?.dataset.player || null;
+    if (value !== hovered) { hovered = value; render(); }
   });
-  surface.addEventListener('pointerleave', () => { hovered = null; render(); });
+  surface.addEventListener('pointerleave', () => { if (hovered !== null) { hovered = null; render(); } });
   surface.addEventListener('focusin', event => {
     const target = event.target.closest('[data-player]');
     focused = target?.dataset.player || null; hovered = null; render();
@@ -842,20 +666,33 @@ $('source').addEventListener('click', () => {
   text($('sourceCaption'), `${lesson.source.title}${lesson.source.page ? t` · 第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}`);
   showDialog('sourceDialog');
 });
-const coach = initCoach({getCurrentLesson: () => canonicalPack.lessons.find(item => item.id === lesson.id), pauseTeaching: pause});
-$('manage').addEventListener('click', () => coach.open());
-$('copyToCoach').addEventListener('click', () => coach.copy());
+const coach=initCoach({getCurrentLesson:()=>canonicalPack.lessons.find(item=>item.id===lesson.id),pauseTeaching:()=>{setCatalogOpen(false,false);setFullscreen(false);pause();}});
+$('manage').addEventListener('click',()=>coach.open());
+$('copyToCoach').addEventListener('click',()=>coach.copy());
 $('help').addEventListener('click', () => showDialog('helpDialog'));
 document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+// Frames are requested only while playing, so a paused lesson costs no CPU or battery.
 function tick(now) {
-  if (state.playing) {
-    if (lastTick !== undefined) state.time = Math.min(lesson.timeline.duration, state.time + Math.min((now - lastTick) / 1000, .1) * state.speed);
-    lastTick = now;
-    if (state.time >= lesson.timeline.duration) state.playing = false;
-    render();
-  } else lastTick = undefined;
-  requestAnimationFrame(tick);
+  tickRequest = undefined;
+  if (!state.playing || !lesson) { lastTick = undefined; return; }
+  if (lastTick !== undefined) state.time = Math.min(lesson.timeline.duration, state.time + Math.min((now - lastTick) / 1000, .1) * state.speed);
+  lastTick = now;
+  if (state.time >= lesson.timeline.duration) state.playing = false;
+  render();
+  if (state.playing) startTicking(); else lastTick = undefined;
 }
-try { validatePack(builtIn, '内置手册'); setPack(builtIn, '内置手册'); requestAnimationFrame(tick); }
-catch (error) { text($('lessonTitle'), '内置内容检查未通过'); text($('summary'), error.message); console.error(error); }
+// The online copy installs to the home screen and works offline. The downloaded single
+// file (file://) has no manifest or service worker to load, so it skips both.
+if (location.protocol === 'https:' || location.protocol === 'http:') {
+  document.head.append(node('link', {rel: 'manifest', href: 'manifest.webmanifest'}), node('link', {rel: 'apple-touch-icon', href: 'apple-touch-icon.png'}));
+  if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+function showStartupError(error) { text($('lessonTitle'), '内置内容检查未通过'); text($('summary'), error.message); console.error(error); }
+try { setPack(builtIn, '内置手册', lessonFromHash(location.hash)); }
+catch (error) { showStartupError(error); }
+// The build already validated the built-in pack. Re-checking it here is only a safety net,
+// so it waits until the first lesson is on screen (it costs ~0.3 s on a slow phone).
+(window.requestIdleCallback || (callback => setTimeout(callback, 300)))(() => {
+  try { validatePack(builtIn, '内置手册'); } catch (error) { showStartupError(error); }
+});

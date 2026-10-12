@@ -126,7 +126,7 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
     queue = Promise.resolve(),
     saveError = "",
     loading = true;
-  let compileCache, checkCache;
+  let compileCache, checkCache, coachTick;
   let pointers = new Map(),
     gesture,
     poly = [],
@@ -1058,7 +1058,7 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
       text: "",
       status: "confirmed",
     };
-    return `<h3>${esc(tr("统一说明", "Explanation"))} · ${getLanguage() === "zh" ? "中文" : "English"}</h3><label><textarea data-edit="explanation" placeholder="${esc(tr("写下怎么跑、怎样与队友配合…", "Describe the action and teamwork…"))}">${esc(ex.text)}</textarea></label><p class="coach-help">${esc(ex.status === "review" ? tr("旧说明待核对；确认前不用于教学。", "Needs review; hidden from teaching until confirmed.") : tr("已确认的说明用于教学；缺译文时明确提示。", "Confirmed text is used for teaching; missing translations are flagged."))}</p>${btn("confirm-text", tr("确认当前语言说明适用", "Confirm this explanation"))}`;
+    return `<h3>${esc(tr("统一说明", "Explanation"))} · ${getLanguage() === "zh" ? "中文" : "English"}</h3><label><textarea aria-label="${esc(tr("统一说明", "Explanation"))}" data-edit="explanation" placeholder="${esc(tr("写下怎么跑、怎样与队友配合…", "Describe the action and teamwork…"))}">${esc(ex.text)}</textarea></label><p class="coach-help">${esc(ex.status === "review" ? tr("旧说明待核对；确认前不用于教学。", "Needs review; hidden from teaching until confirmed.") : tr("已确认的说明用于教学；缺译文时明确提示。", "Confirmed text is used for teaching; missing translations are flagged."))}</p>${btn("confirm-text", tr("确认当前语言说明适用", "Confirm this explanation"))}`;
   }
   function sourcesHtml() {
     const origin = play.origin,
@@ -1890,7 +1890,8 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
         await leave(() => {
           root.hidden = true;
           document.body.style.overflow = "";
-          for (const n of document.querySelectorAll(".app-header,.layout"))
+          document.body.classList.remove("coach-open");
+          for (const n of document.querySelectorAll(".app-header,.layout,#floatingPlay"))
             n.inert = false;
         });
       if (action === "library")
@@ -2004,6 +2005,7 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
         tool = "select";
         playing = !playing;
         lastTick = undefined;
+        if(playing&&coachTick===undefined)coachTick=requestAnimationFrame(tick);
         render();
       }
       if (action === "reset") {
@@ -2711,6 +2713,7 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
     };
   }
   function tick(now) {
+    coachTick=undefined;
     if (!root.hidden && playing) {
       const duration = compileCurrent().lesson.timeline.duration;
       if (lastTick !== undefined)
@@ -2730,15 +2733,15 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
       if (captionNode) captionNode.textContent = caption();
       if (!playing) render();
     } else lastTick = undefined;
-    requestAnimationFrame(tick);
+    if(playing&&!root.hidden)coachTick=requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
   return {
     async open() {
       pauseTeaching();
       root.hidden = false;
       document.body.style.overflow = "hidden";
-      for (const n of document.querySelectorAll(".app-header,.layout"))
+      document.body.classList.add("coach-open");
+      for (const n of document.querySelectorAll(".app-header,.layout,#floatingPlay"))
         n.inert = true;
       await ready;
       if (!play) screen = "library";
@@ -2748,7 +2751,8 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
       pauseTeaching();
       root.hidden = false;
       document.body.style.overflow = "hidden";
-      for (const n of document.querySelectorAll(".app-header,.layout"))
+      document.body.classList.add("coach-open");
+      for (const n of document.querySelectorAll(".app-header,.layout,#floatingPlay"))
         n.inert = true;
       await ready;
       await leave(() => {

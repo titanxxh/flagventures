@@ -12,7 +12,7 @@ try {
  await page.goto(url);
  await page.selectOption('#language','en');
  assert.equal(await page.locator('html').getAttribute('lang'),'en');
- assert.match(await page.title(),/^Flagventures/);
+ assert.match(await page.title(),/ · Flagventures$/);assert.doesNotMatch(await page.title(),/[\u3400-\u9fff]/u);
  const pack=JSON.parse(await readFile('content/default.flagbook.json','utf8'));
  // Walk all lessons and all player cards, including hidden source notes and choices.
  for(const lesson of pack.lessons){
@@ -47,5 +47,5 @@ try {
  // Storage restrictions must not prevent using the app.
  const blocked=await context.newPage();await blocked.addInitScript(()=>{Object.defineProperty(Storage.prototype,'getItem',{value(){throw new Error('blocked');}});Object.defineProperty(Storage.prototype,'setItem',{value(){throw new Error('blocked');}});});
  await blocked.goto(url);await blocked.selectOption('#language','en');assert.equal(await blocked.locator('html').getAttribute('lang'),'en');
- console.log('PASS English coverage for all 71 lessons; language/state persistence; narrow layout; blocked storage; offline runtime');
+ console.log('PASS English coverage for all 65 lessons; language/state persistence; narrow layout; blocked storage; offline runtime');
 } finally {await browser.close();}
