@@ -47,6 +47,15 @@ try{
  await holdPlayer('Y');await action('draw').click();const start=await point(25,50),end=await point(25,40);await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y,{steps:16});await page.mouse.up();
  assert.equal(await page.locator('.coach [data-hit="route"][data-id="Y"]').count(),1);
  for(const[width,height]of[[390,844],[768,1024],[1024,768]]){await page.setViewportSize({width,height});assert.ok(await page.locator('.coach').evaluate(n=>n.scrollWidth<=n.clientWidth+1));assert.equal(await page.locator('.coach-sheet').count(),0);assert.ok(await page.locator('.coach [data-hit="player"] circle').first().evaluate(n=>n.getBoundingClientRect().width>=43.9));await page.screenshot({path:`tmp/coach-integration/${width}.png`,fullPage:true});}
+ // A new handoff must be visible even after the coach previously hid ball actions.
+ await action('library').click();await action('new').click();await action('create').filter({hasText:'进攻战术'}).click();await page.locator('.coach-canvas').waitFor();
+ await holdPlayer('Z');await action('draw').click();const zs=await point(20,54);await page.mouse.move(zs.x,zs.y);await page.mouse.down();
+ for(const [x,y]of[[11,55],[8,53],[4,54]]){const p=await point(x,y);await page.mouse.move(p.x,p.y,{steps:12});}await page.mouse.up();
+ await holdPlayer('QB');await page.locator('.coach [data-do="ball"][data-type="pass"]').click();await clickPoint(20,54);
+ await action('more').click();await action('routes-only').click();assert.equal(await page.locator('.coach [data-hit="event"]').count(),0);
+ await holdPlayer('QB');await page.locator('.coach [data-do="ball"][data-type="handoff"]').click();await clickPoint(20,54);
+ assert.equal(await page.locator('.coach [data-hit="event"][aria-label="交递"]').count(),1,'selecting Z adds and displays the QB → Z handoff');
+ await page.screenshot({path:'tmp/coach-integration/handoff-after-routes-only.png',fullPage:true});
  await action('library').click();await action('close').click();await page.goto(pathToFileURL(resolve('dist/Flagventures.html')).href);await page.locator('#manage').click();
  await page.locator('#coachBackupInput').setInputFiles({name:'restore.backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({format:'flagventures.backup',version:3,records:data}))});
  await page.locator('.coach-modal [data-do="confirm"]').click();assert.equal(await page.locator('.coach-card').count(),1);
