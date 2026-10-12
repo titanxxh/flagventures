@@ -46,7 +46,7 @@ try{
  // A single stroke requires no separate Finish control.
  await holdPlayer('Y');await action('draw').click();const start=await point(25,50),end=await point(25,40);await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y,{steps:16});await page.mouse.up();
  assert.equal(await page.locator('.coach [data-hit="route"][data-id="Y"]').count(),1);
- for(const[width,height]of[[390,844],[768,1024],[1024,768]]){await page.setViewportSize({width,height});assert.ok(await page.locator('.coach').evaluate(n=>n.scrollWidth<=n.clientWidth+1));assert.equal(await page.locator('.coach-sheet').count(),0);await page.screenshot({path:`tmp/coach-integration/${width}.png`,fullPage:true});}
+ for(const[width,height]of[[390,844],[768,1024],[1024,768]]){await page.setViewportSize({width,height});assert.ok(await page.locator('.coach').evaluate(n=>n.scrollWidth<=n.clientWidth+1));assert.equal(await page.locator('.coach-sheet').count(),0);assert.ok(await page.locator('.coach [data-hit="player"] circle').first().evaluate(n=>n.getBoundingClientRect().width>=43.9));await page.screenshot({path:`tmp/coach-integration/${width}.png`,fullPage:true});}
  await action('library').click();await action('close').click();await page.goto(pathToFileURL(resolve('dist/Flagventures.html')).href);await page.locator('#manage').click();
  await page.locator('#coachBackupInput').setInputFiles({name:'restore.backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({format:'flagventures.backup',version:3,records:data}))});
  await page.locator('.coach-modal [data-do="confirm"]').click();assert.equal(await page.locator('.coach-card').count(),1);

@@ -306,6 +306,7 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
   }
   function renderUndo(){root.querySelector('.coach-delete-undo')?.remove();if(!undoDeletion)return;const n=document.createElement('div');n.className='coach-delete-undo';n.setAttribute('role','status');n.innerHTML=`${esc(tr('战术已删除','Tactic deleted'))}${button('restore-deleted',tr('撤销 · 10 秒','Undo · 10 s'))}`;root.append(n);}
   function tick(now){animation=undefined;if(root.hidden||!playing)return;if(lastTick!==undefined)time=Math.min(compiled().lesson.timeline.duration,time+Math.min(.1,(now-lastTick)/1000)*speed);lastTick=now;if(time>=compiled().lesson.timeline.duration){stop();render();return;}renderBoard();animation=requestAnimationFrame(tick);}
+  window.addEventListener('resize',()=>{if(!root.hidden){if(screen==='board')renderBoard();if(menu)renderOverlay();}});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();if(play&&!viewOnly)retain().catch(()=>{});}});
   window.addEventListener('beforeunload',e=>{if((store.temporary&&records.length>0)||(!root.hidden&&play&&!viewOnly&&(saveError||generation>retained))){e.preventDefault();e.returnValue='';}});
   window.visualViewport?.addEventListener('resize',()=>{root.style.setProperty('--coach-keyboard',`${Math.max(0,innerHeight-visualViewport.height-visualViewport.offsetTop)}px`);root.querySelector('.coach-sheet :focus')?.scrollIntoView({block:'nearest'});});
