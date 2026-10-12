@@ -14,7 +14,7 @@ await mkdir('tmp/coach-integration',{recursive:true});
 try{
  const context=await browser.newContext({viewport:{width:1280,height:900},acceptDownloads:true}),page=await context.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
- const action=(name)=>page.locator(`.coach [data-do="${name}"]`);
+ const action=(name)=>{const found=page.locator(`.coach [data-do="${name}"]`);return name==='dismiss'?found.last():found;};
  const point=async(x,y)=>page.locator('.coach-canvas').evaluate((el,[x,y])=>{const p=new DOMPoint(x,y).matrixTransform(el.getScreenCTM());return{x:p.x,y:p.y};},[x,y]);
  const clickPoint=async(x,y)=>{const p=await point(x,y);await page.mouse.click(p.x,p.y);};
  const holdPlayer=async(id)=>{const g=page.locator(`.coach [data-hit="player"][data-id="${id}"]`);const p=await g.evaluate(el=>{const c=el.querySelector('circle'),p=new DOMPoint(+c.getAttribute('cx'),+c.getAttribute('cy')).matrixTransform(el.ownerSVGElement.getScreenCTM());return{x:p.x,y:p.y};});await page.mouse.move(p.x,p.y);await page.mouse.down();await page.waitForTimeout(620);await page.mouse.up();await page.locator('.coach-context').waitFor();};
