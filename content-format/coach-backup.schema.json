@@ -1,0 +1,1563 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Flagventures complete editable backup v2",
+  "description": "Structural validation. Drafts may be incomplete; saved versions must also pass teaching validation.",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "records"
+  ],
+  "properties": {
+    "format": {
+      "const": "flagventures.backup"
+    },
+    "version": {
+      "const": 2
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    }
+  },
+  "$defs": {
+    "play": {
+      "type": "object",
+      "required": [
+        "format",
+        "version",
+        "id",
+        "type",
+        "title",
+        "field",
+        "origin",
+        "players",
+        "scenarios",
+        "defaultScenario",
+        "sharedEvents",
+        "bookmarks",
+        "zones",
+        "assignments",
+        "targets"
+      ],
+      "properties": {
+        "format": {
+          "const": "flagventures.play"
+        },
+        "version": {
+          "const": 2
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "offense",
+            "run",
+            "route",
+            "defense",
+            "formation"
+          ]
+        },
+        "title": {
+          "type": "object",
+          "required": [
+            "zh",
+            "en"
+          ],
+          "properties": {
+            "zh": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "en": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        },
+        "field": {
+          "type": "object",
+          "required": [
+            "width",
+            "height",
+            "lineOfScrimmageY",
+            "attackDirection"
+          ],
+          "properties": {
+            "width": {
+              "const": 30
+            },
+            "height": {
+              "const": 70
+            },
+            "lineOfScrimmageY": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "attackDirection": {
+              "enum": [
+                "up",
+                "down"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "self",
+                "adapted"
+              ]
+            }
+          }
+        },
+        "players": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "at",
+              "motion",
+              "label"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "motion": {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "path",
+                      "choice",
+                      "still",
+                      "unspecified"
+                    ]
+                  },
+                  "start": {
+                    "type": "object",
+                    "required": [
+                      "type"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "time",
+                          "action",
+                          "ball",
+                          "delay"
+                        ]
+                      },
+                      "seconds": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "offset": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "player": {
+                        "type": "string"
+                      },
+                      "action": {
+                        "type": "string"
+                      },
+                      "event": {
+                        "type": "string"
+                      },
+                      "phase": {
+                        "enum": [
+                          "start",
+                          "end"
+                        ]
+                      }
+                    }
+                  },
+                  "steps": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "type",
+                        "seconds"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "type": {
+                          "enum": [
+                            "line",
+                            "quadratic",
+                            "cubic",
+                            "pause"
+                          ]
+                        },
+                        "seconds": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "to": {
+                          "type": "array",
+                          "items": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "minItems": 2,
+                          "maxItems": 2
+                        },
+                        "control": {
+                          "type": "array",
+                          "items": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "minItems": 2,
+                          "maxItems": 2
+                        },
+                        "control1": {
+                          "type": "array",
+                          "items": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "minItems": 2,
+                          "maxItems": 2
+                        },
+                        "control2": {
+                          "type": "array",
+                          "items": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "minItems": 2,
+                          "maxItems": 2
+                        }
+                      }
+                    },
+                    "maxItems": 500
+                  },
+                  "options": {
+                    "type": "array",
+                    "maxItems": 30,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "steps"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "steps": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "type",
+                              "seconds"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "type": {
+                                "enum": [
+                                  "line",
+                                  "quadratic",
+                                  "cubic",
+                                  "pause"
+                                ]
+                              },
+                              "seconds": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "to": {
+                                "type": "array",
+                                "items": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "minItems": 2,
+                                "maxItems": 2
+                              },
+                              "control": {
+                                "type": "array",
+                                "items": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "minItems": 2,
+                                "maxItems": 2
+                              },
+                              "control1": {
+                                "type": "array",
+                                "items": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "minItems": 2,
+                                "maxItems": 2
+                              },
+                              "control2": {
+                                "type": "array",
+                                "items": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "minItems": 2,
+                                "maxItems": 2
+                              }
+                            }
+                          },
+                          "maxItems": 500
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "label": {
+                "type": "object"
+              },
+              "explanation": {
+                "type": "object",
+                "properties": {
+                  "zh": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  },
+                  "en": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "scenarios": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "mode",
+              "overrides",
+              "choices",
+              "events"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "object",
+                "required": [
+                  "zh",
+                  "en"
+                ],
+                "properties": {
+                  "zh": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                }
+              },
+              "mode": {
+                "enum": [
+                  "routes",
+                  "ball"
+                ]
+              },
+              "overrides": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "path",
+                        "choice",
+                        "still",
+                        "unspecified"
+                      ]
+                    },
+                    "start": {
+                      "type": "object",
+                      "required": [
+                        "type"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "time",
+                            "action",
+                            "ball",
+                            "delay"
+                          ]
+                        },
+                        "seconds": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "offset": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "player": {
+                          "type": "string"
+                        },
+                        "action": {
+                          "type": "string"
+                        },
+                        "event": {
+                          "type": "string"
+                        },
+                        "phase": {
+                          "enum": [
+                            "start",
+                            "end"
+                          ]
+                        }
+                      }
+                    },
+                    "steps": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "type",
+                          "seconds"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "type": {
+                            "enum": [
+                              "line",
+                              "quadratic",
+                              "cubic",
+                              "pause"
+                            ]
+                          },
+                          "seconds": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "to": {
+                            "type": "array",
+                            "items": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                          },
+                          "control": {
+                            "type": "array",
+                            "items": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                          },
+                          "control1": {
+                            "type": "array",
+                            "items": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                          },
+                          "control2": {
+                            "type": "array",
+                            "items": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                          }
+                        }
+                      },
+                      "maxItems": 500
+                    },
+                    "options": {
+                      "type": "array",
+                      "maxItems": 30,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "steps"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "steps": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "type",
+                                "seconds"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "type": {
+                                  "enum": [
+                                    "line",
+                                    "quadratic",
+                                    "cubic",
+                                    "pause"
+                                  ]
+                                },
+                                "seconds": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "to": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": [
+                                      "number",
+                                      "null"
+                                    ]
+                                  },
+                                  "minItems": 2,
+                                  "maxItems": 2
+                                },
+                                "control": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": [
+                                      "number",
+                                      "null"
+                                    ]
+                                  },
+                                  "minItems": 2,
+                                  "maxItems": 2
+                                },
+                                "control1": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": [
+                                      "number",
+                                      "null"
+                                    ]
+                                  },
+                                  "minItems": 2,
+                                  "maxItems": 2
+                                },
+                                "control2": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": [
+                                      "number",
+                                      "null"
+                                    ]
+                                  },
+                                  "minItems": 2,
+                                  "maxItems": 2
+                                }
+                              }
+                            },
+                            "maxItems": 500
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "choices": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "type",
+                    "from",
+                    "start"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "snap",
+                        "pass",
+                        "handoff",
+                        "fake-handoff",
+                        "pump-fake"
+                      ]
+                    },
+                    "from": {
+                      "type": "string"
+                    },
+                    "to": {
+                      "type": "string"
+                    },
+                    "start": {
+                      "type": "object",
+                      "required": [
+                        "type"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "time",
+                            "action",
+                            "ball",
+                            "delay"
+                          ]
+                        },
+                        "seconds": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "offset": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "player": {
+                          "type": "string"
+                        },
+                        "action": {
+                          "type": "string"
+                        },
+                        "event": {
+                          "type": "string"
+                        },
+                        "phase": {
+                          "enum": [
+                            "start",
+                            "end"
+                          ]
+                        }
+                      }
+                    },
+                    "end": {
+                      "type": "object",
+                      "required": [
+                        "type"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "time",
+                            "action",
+                            "ball",
+                            "delay"
+                          ]
+                        },
+                        "seconds": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "offset": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "player": {
+                          "type": "string"
+                        },
+                        "action": {
+                          "type": "string"
+                        },
+                        "event": {
+                          "type": "string"
+                        },
+                        "phase": {
+                          "enum": [
+                            "start",
+                            "end"
+                          ]
+                        }
+                      }
+                    },
+                    "explanation": {
+                      "type": "object",
+                      "properties": {
+                        "zh": {
+                          "type": "object",
+                          "required": [
+                            "text",
+                            "status"
+                          ],
+                          "properties": {
+                            "text": {
+                              "type": "string",
+                              "maxLength": 50000
+                            },
+                            "status": {
+                              "enum": [
+                                "confirmed",
+                                "review"
+                              ]
+                            }
+                          }
+                        },
+                        "en": {
+                          "type": "object",
+                          "required": [
+                            "text",
+                            "status"
+                          ],
+                          "properties": {
+                            "text": {
+                              "type": "string",
+                              "maxLength": 50000
+                            },
+                            "status": {
+                              "enum": [
+                                "confirmed",
+                                "review"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "maxItems": 200
+              },
+              "explanation": {
+                "type": "object",
+                "properties": {
+                  "zh": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  },
+                  "en": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "defaultScenario": {
+          "type": "string"
+        },
+        "sharedEvents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "from",
+              "start"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "snap",
+                  "pass",
+                  "handoff",
+                  "fake-handoff",
+                  "pump-fake"
+                ]
+              },
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "start": {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "time",
+                      "action",
+                      "ball",
+                      "delay"
+                    ]
+                  },
+                  "seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "offset": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "player": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string"
+                  },
+                  "event": {
+                    "type": "string"
+                  },
+                  "phase": {
+                    "enum": [
+                      "start",
+                      "end"
+                    ]
+                  }
+                }
+              },
+              "end": {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "time",
+                      "action",
+                      "ball",
+                      "delay"
+                    ]
+                  },
+                  "seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "offset": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "player": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string"
+                  },
+                  "event": {
+                    "type": "string"
+                  },
+                  "phase": {
+                    "enum": [
+                      "start",
+                      "end"
+                    ]
+                  }
+                }
+              },
+              "explanation": {
+                "type": "object",
+                "properties": {
+                  "zh": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  },
+                  "en": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "maxItems": 200
+        },
+        "bookmarks": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "binding"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "object",
+                "required": [
+                  "zh",
+                  "en"
+                ],
+                "properties": {
+                  "zh": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                }
+              },
+              "binding": {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "time",
+                      "action",
+                      "ball",
+                      "delay"
+                    ]
+                  },
+                  "seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "offset": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "player": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string"
+                  },
+                  "event": {
+                    "type": "string"
+                  },
+                  "phase": {
+                    "enum": [
+                      "start",
+                      "end"
+                    ]
+                  }
+                }
+              },
+              "explanation": {
+                "type": "object",
+                "properties": {
+                  "zh": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  },
+                  "en": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "zones": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "type"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "ellipse",
+                  "rectangle",
+                  "polygon"
+                ]
+              },
+              "center": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "radiusX": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "radiusY": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "explanation": {
+                "type": "object",
+                "properties": {
+                  "zh": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  },
+                  "en": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "assignments": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "player"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "coverage",
+                  "matchup",
+                  "rush"
+                ]
+              },
+              "player": {
+                "type": "string"
+              },
+              "end": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "explanation": {
+                "type": "object",
+                "properties": {
+                  "zh": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  },
+                  "en": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "targets": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "at",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "at": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "explanation": {
+                "type": "object",
+                "properties": {
+                  "zh": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  },
+                  "en": {
+                    "type": "object",
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 50000
+                      },
+                      "status": {
+                        "enum": [
+                          "confirmed",
+                          "review"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "explanation": {
+          "type": "object",
+          "properties": {
+            "zh": {
+              "type": "object",
+              "required": [
+                "text",
+                "status"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "maxLength": 50000
+                },
+                "status": {
+                  "enum": [
+                    "confirmed",
+                    "review"
+                  ]
+                }
+              }
+            },
+            "en": {
+              "type": "object",
+              "required": [
+                "text",
+                "status"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "maxLength": 50000
+                },
+                "status": {
+                  "enum": [
+                    "confirmed",
+                    "review"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "id",
+        "revision",
+        "draft",
+        "saved",
+        "history"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "draft": {
+          "$ref": "#/$defs/play"
+        },
+        "saved": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/play"
+            }
+          ]
+        },
+        "history": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "at",
+              "play"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "at": {
+                "type": "string"
+              },
+              "play": {
+                "$ref": "#/$defs/play"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

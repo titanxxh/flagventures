@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
-const browser=await chromium.launch({channel:'chrome',headless:true});
+const browser=await chromium.launch({headless:true});
 try {
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));

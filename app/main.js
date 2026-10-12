@@ -1,10 +1,10 @@
+import { initCoach } from './coach.js';
 import { t, getLanguage, setLanguage, captureStaticTranslations } from './i18n.js';
 import { localizePack } from './localization.js';
 import { getRouteMeasurements } from './route-measurements.js';
-import { dump } from 'js-yaml';
 import { getScene, getRoutes, getActiveRoute, pathToSvg, positionAt } from './scene.js';
 import { resolveBallScenario, getBallState } from './ball.js';
-import { prepareImport, validatePack } from './validation.js';
+import { validatePack } from './validation.js';
 import { getProvenance, resolveRelatedLesson } from './provenance.js';
 
 const $ = id => document.getElementById(id);
@@ -13,7 +13,6 @@ const types = { route: '基础路线', formation: '静态阵型', offense: '进�
 const bases = { source: '来源明确命名', 'shape-match': '路线形态对照', description: '按图描述', author: '作者编写', unspecified: '资料未说明' };
 const colors = ['#80d4ff', '#ffc078', '#c7e8a2', '#fff1d5', '#ff9690', '#d7c9ff'];
 const builtIn = JSON.parse($('builtInData').textContent);
-const template = JSON.parse($('templateData').textContent);
 try { setLanguage(localStorage.getItem('flagventures.language')); } catch {}
 const updateStaticLanguage = captureStaticTranslations(document.documentElement);
 let canonicalPack = builtIn;
@@ -27,8 +26,6 @@ let order = [];
 let state = { time: 0, playing: false, speed: 2, role: null, choices: {} };
 let hovered = null;
 let focused = null;
-let pendingImport = null;
-let importRequest = 0;
 let toastTimer;
 let lastTick;
 let fieldNodes = {};
@@ -62,12 +59,6 @@ function seek(time) {
   state.time = Math.max(0, Math.min(lesson.timeline.duration, time)); pause();
 }
 function showDialog(id) { pause(); $(id).showModal(); }
-function download(name, content, mime) {
-  const url = URL.createObjectURL(new Blob([content], { type: mime }));
-  const link = node('a', { href: url, download: name });
-  document.body.append(link); link.click(); link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
-}
 function setPack(value, status) {
   canonicalPack = value; libraryStatus = status;
   pack = localizePack(value, getLanguage(), t);
@@ -184,7 +175,7 @@ function rebuildLesson(id, preserve = false) {
       'focusStatus', 'routeEnglish', 'routeChinese', 'routeDescription', 'routeBasis', 'routeDuties',
       'frameNumber', 'frameTitle', 'frameCue']) text($(id), '');
     for (const id of ['field', 'roles', 'choices', 'frames', 'notes', 'sourceReferences']) $(id).replaceChildren();
-    for (const id of ['play', 'reset', 'seek', 'previous', 'next', 'exportLesson']) $(id).disabled = true;
+    for (const id of ['play', 'reset', 'seek', 'previous', 'next']) $(id).disabled = true;
     $('source').hidden = $('choices').hidden = $('routeDuties').hidden = true;
     $('teamPlan').hidden = $('playerCoaching').hidden = $('routeSituation').hidden = $('sourceReferences').hidden = true;
     text($('teachingCue'), '先选择一条教学内容。'); text($('teachingQuestion'), '');
@@ -195,7 +186,7 @@ function rebuildLesson(id, preserve = false) {
     text($('clock'), '0.0 / 0.0 s'); text($('lessonIndex'), '0 / 0');
     return;
   }
-  $('exportLesson').disabled = $('reset').disabled = false;
+  $('reset').disabled = false;
   if (!catalogNodes.has(id) && $('search').value) {
     $('search').value = '';
     buildCatalog();
@@ -851,53 +842,11 @@ $('source').addEventListener('click', () => {
   text($('sourceCaption'), `${lesson.source.title}${lesson.source.page ? t` · 第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}`);
   showDialog('sourceDialog');
 });
-$('manage').addEventListener('click', () => showDialog('manageDialog'));
+const coach = initCoach({getCurrentLesson: () => canonicalPack.lessons.find(item => item.id === lesson.id), pauseTeaching: pause});
+$('manage').addEventListener('click', () => coach.open());
+$('copyToCoach').addEventListener('click', () => coach.copy());
 $('help').addEventListener('click', () => showDialog('helpDialog'));
 document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
-$('chooseFiles').addEventListener('click', () => $('fileInput').click());
-$('fileInput').addEventListener('change', async event => {
-  const files = [...event.target.files]; if (!files.length) return;
-  const request = ++importRequest;
-  pendingImport = null; $('importActions').hidden = true;
-  $('importReport').hidden = false; $('importReport').className = '';
-  text($('importReport'), '正在检查文件…');
-  try {
-    if (files.length > 200) throw new Error(t('一次最多导入 200 个文件。'));
-    for (const file of files) {
-      const limit = /\.json$/i.test(file.name) ? 50 * 1024 * 1024 : 1024 * 1024;
-      if (file.size > limit) throw new Error(t`${file.name}：文件过大，YAML 上限 1 MB，战术包上限 50 MB。`);
-    }
-    const data = await Promise.all(files.map(async file => ({ name: file.name, text: await file.text() })));
-    if (request !== importRequest) return;
-    const result = prepareImport(canonicalPack, data);
-    pendingImport = result;
-    const lines = result.mode === 'pack'
-      ? [t`将替换当前的 ${pack.lessons.length} 个条目，载入战术包中的 ${result.pack.lessons.length} 个条目和 ${result.pack.sections.length} 个章节。`, '当前内容需要保留时，请先保存完整战术包。']
-      : [t`检查通过：新增 ${result.added.length} 条，整条更新 ${result.updated.length} 条。`, ...result.added.map(id => t`新增 · ${localizePack(result.pack, getLanguage(), t).lessons.find(l => l.id === id).title.zh} (${id})`), ...result.updated.map(id => t`更新 · ${localizePack(result.pack, getLanguage(), t).lessons.find(l => l.id === id).title.zh} (${id})`), ...(result.updated.length ? ['更新会替换整条内容，省略的旧字段不会保留；目录位置不变。'] : [])];
-    if (result.warnings.length) lines.push('', '提示：', ...result.warnings);
-    text($('importReport'), lines.map(line => t(line)).join('\n')); $('importActions').hidden = false;
-  } catch (error) {
-    if (request !== importRequest) return;
-    $('importReport').className = 'error';
-    text($('importReport'), t`没有改动当前手册。\n${error.message}`);
-  } finally { if (request === importRequest) $('fileInput').value = ''; }
-});
-function clearImport() { importRequest++; pendingImport = null; $('importActions').hidden = true; $('importReport').hidden = true; }
-$('manageDialog').addEventListener('close', clearImport);
-$('cancelImport').addEventListener('click', clearImport);
-$('applyImport').addEventListener('click', () => {
-  if (!pendingImport) return;
-  const result = pendingImport;
-  setPack(result.pack, '本次导入的内容');
-  if (result.mode === 'lessons') selectLesson(result.added[0] || result.updated[0] || order[0]);
-  clearImport(); $('manageDialog').close(); notify('已载入。离开前记得保存完整战术包。');
-});
-$('restore').addEventListener('click', () => {
-  clearImport(); setPack(builtIn, '内置手册'); $('manageDialog').close(); notify('已回到内置手册。');
-});
-$('exportPack').addEventListener('click', () => { download('Flagventures.flagbook.json', JSON.stringify(canonicalPack, null, 2), 'application/json;charset=utf-8'); notify('已开始保存完整战术包。'); });
-$('exportLesson').addEventListener('click', () => { download(`${lesson.id}.yaml`, dump(canonicalPack.lessons.find(item => item.id === lesson.id), { lineWidth: 100, noRefs: true }), 'application/yaml;charset=utf-8'); notify('已开始下载当前条目。'); });
-$('downloadTemplate').addEventListener('click', () => { download('new-play.yaml', template, 'application/yaml;charset=utf-8'); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 function tick(now) {
   if (state.playing) {

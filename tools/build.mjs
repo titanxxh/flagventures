@@ -9,7 +9,7 @@ const result = validatePack(pack, source);
 if (result.warnings.length) console.warn(result.warnings.join('\n'));
 const bundle = await build({ entryPoints: ['app/main.js'], bundle: true, write: false, format: 'iife', target: ['safari16', 'chrome110'], minify: true, legalComments: 'inline' });
 const html = await readFile('app/index.html', 'utf8');
-const css = await readFile('app/style.css', 'utf8');
+const css = await readFile('app/style.css', 'utf8') + '\n' + await readFile('app/coach.css', 'utf8');
 const template = await readFile('content-format/templates/new-play.yaml', 'utf8');
 const runtimePackages = ['js-yaml', 'ajv', 'fast-uri', 'fast-deep-equal', 'json-schema-traverse'];
 const licenses = [];

@@ -18,16 +18,19 @@
 - **认识跑法**：11 条基础路线显示完整球场、QB 站位参照与常驻文字讲解，说明怎么跑、内外方向和相似路线的区别。悬停球员查看中英文名称，点击保留关注；支持键盘操作。
 - **看懂配合**：36 套进攻战术补充全队目标、配合说明、记忆口令和提问；球员说明包含队友配合与启动时机，并可查看官网、视频出处。
 - **看球去哪里**：36 套进攻战术各有 C / X / Y / Z 四种传球示例，可在页面切换；9 套跑球有 14 种交接、假动作和跑传情形。球路、小球和持球提示与跑位同步；点击场内动作标记或事件关键帧，可以跳到对应动作并暂停讲解。
-- **自己加战术**：导入 YAML、预览更新、导出完整战术包，运行不依赖 PDF。
+- **教练画板**：在「我的战术」空白新建或复制内置内容，按站位、路线、配合、预览四步直接绘图。支持进攻、跑球、基础路线、阵型和五人防守。
+- **本机战术库**：在线／本地服务版自动保留草稿；手动保存更新教学版并保留最近 10 个版本。支持完整备份、逐条处理导入冲突、10 秒删除撤销；单文件版为临时编辑，请导出备份。
+- **移动编辑**：宽屏侧栏、小屏底部抽屉；点选、拖动、双指缩放与移动以及数值精调。真实手机／平板核心流程验收仍需单独完成，尺寸检查不等同于真机验收。
 
 使用与保存方式见 [中文使用说明](使用说明.md)。
 
 ## 编辑教学内容
 
-每条战术独立保存在 [content/lessons/](content/lessons/)，顺序由 [content/catalog.yaml](content/catalog.yaml) 管理。也可以下载 [新增模板](content-format/templates/new-play.yaml)，填写后直接在网页中导入。
+每条战术独立保存在 [content/lessons/](content/lessons/)，顺序由 [content/catalog.yaml](content/catalog.yaml) 管理。维护内置内容可参考 [YAML 模板](content-format/templates/new-play.yaml)；日常自编使用网页画板。网页只导入新版完整编辑备份，不支持旧 YAML／旧战术包。
 
 - [内容维护说明](content/README.md)
-- [文本格式与字段说明](content-format/README.md)
+- [内置手册维护格式](content-format/README.md)
+- [画板完整备份 v2](content-format/coach-backup.md)
 
 动画秒数是教学示意。NFL FLAG 官网与视频明确说明的相对先后、短暂等待和条件释放，分别写入对应进攻战术；条件释放需先选择教学情形再播放。资料未说明的启动先后、球权与跟防不会自动补造。每名球员的术语说明区分来源命名、形态对照与按图描述。
 
@@ -47,7 +50,7 @@ npm run build
 
 测试和构建前会自动从 YAML 与目录生成完整内容包，无需原始 PDF 或原页图片。生成的内容包与预览副本不纳入版本控制；仓库保留可直接打开的主 HTML。
 
-`npm run test:browser` 使用已安装的 Google Chrome 检查本地文件、播放与导入导出。修改源码后先运行 `npm run build`。
+修改源码后先运行 `npm run build`。开发验收使用内置浏览器。可选的 `npm run test:browser` 供维护者使用单独安装的 Playwright Chromium，不使用个人 Chrome；首次使用需安装该运行时。这类尺寸／鼠标检查不能代替真机双指和软键盘验收。
 
 推送到 `main` 后，[发布工作流](.github/workflows/pages.yml)会自动运行测试、构建并部署到 GitHub Pages。仓库的 Settings → Pages → Build and deployment → Source 应选择 **GitHub Actions**。
 

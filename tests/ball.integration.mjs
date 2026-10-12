@@ -3,14 +3,13 @@ import {readFile, mkdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
-import {load} from 'js-yaml';
 import {resolveBallScenario} from '../app/ball.js';
 import {positionAt} from '../app/scene.js';
 import {localizeLesson} from '../app/localization.js';
 
 const pack = JSON.parse(await readFile('content/default.flagbook.json', 'utf8'));
 const lessons = pack.lessons.filter(lesson => lesson.ball);
-const browser = await chromium.launch({channel: 'chrome', headless: true});
+const browser = await chromium.launch({headless: true});
 const output = resolve('tmp/ball-integration');
 await mkdir(output, {recursive: true});
 try {
@@ -128,16 +127,6 @@ try {
   await page.waitForTimeout(200);
   assert.equal(await page.locator('#seek').inputValue(), '0', 'switching targets resets and pauses');
 
-  // Export authored scenarios, not the selected runtime motion overrides/keyframes.
-  await page.locator('#manage').click();
-  const downloading = page.waitForEvent('download'); await page.locator('#exportLesson').click();
-  const download = await downloading;
-  const exported = load(await readFile(await download.path(), 'utf8'));
-  assert.deepEqual(exported, pack.lessons.find(item => item.id === 'single-back-play-1'));
-  await page.locator('#fileInput').setInputFiles({name: download.suggestedFilename(), mimeType: 'application/yaml', buffer: await readFile(await download.path())});
-  await page.locator('#applyImport').click();
-  assert.equal(await page.locator('[data-ball-scenario]').count(), 4, 'round-trip import keeps every target');
-
   for (const [id, scenario, time] of [['twins-play-2', 'pass-c', pass.at], ['hb-dive', null, 2], ['fake-double-reverse', null, 4.2]]) {
     await select(id);
     if (scenario) await page.locator(`[data-ball-scenario="${scenario}"]`).click();
@@ -153,5 +142,5 @@ try {
   assert.equal(await page.locator('#ballReadout').isVisible(), false);
   assert.equal(await page.locator('[data-ball]').count(), 0, 'switching lessons leaves no ghost ball');
   assert.deepEqual(errors, []); assert.deepEqual(requests, [], 'ball lessons work offline');
-  console.log(`PASS ${lessons.length} plays / ${scenarios} ball scenarios, all transfers and English captions, seeking, choice compatibility, export/import, narrow layout, offline`);
+  console.log(`PASS ${lessons.length} plays / ${scenarios} ball scenarios, all transfers and English captions, seeking, choice compatibility, narrow layout, offline`);
 } finally { await browser.close(); }

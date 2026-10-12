@@ -80,7 +80,7 @@
   "防守方案": "Defensive schemes",
   "进攻阵型与战术": "Offensive formations & plays",
   "防守分工": "Defense",
-  "我的战术": "My plays",
+  "我的战术": "My tactics",
   "现有原图样例": "Source-based examples",
   "自编格式演示与模板": "Custom format examples & template",
   "单跑卫阵型": "Single Back",
@@ -341,5 +341,11 @@
   "相近配合": "Related plays",
   "对应条目不在当前战术包中。": "The matching lesson is not in the current playbook.",
   "相近配合不能引用自己": "A related play cannot refer to itself",
-  "按码绘制的教学区域 · 秒数为演示时间": "Teaching area drawn in yards · Seconds are illustrative"
+  "按码绘制的教学区域 · 秒数为演示时间": "Teaching area drawn in yards · Seconds are illustrative",
+  "复制到我的战术": "Copy to my tactics",
+  "自己画战术：我的战术 → 空白新建／复制内置 → 摆站位、画路线、安排配合 → 预览保存。在线版在当前浏览器保存草稿与历史，双击文件版请导出完整备份。": "Draw a tactic: My tactics → Create or copy → Set the lineup, draw routes, arrange teamwork → Preview and save. The online version stores drafts and history in this browser. Export backups in the standalone file.",
+  "不同设备、浏览器或网址的历史不自动共享，可导出完整备份后导入。": "History is separate for each device, browser and origin. Export and import a full backup to transfer it.",
+  "和孩子一起认识腰旗橄榄球跑位。完整手册、关键帧讲解、教练画板，离线可用。": "Learn flag football routes together. A complete playbook, teaching keyframes and a coach editor, available offline.",
+  "自己画战术：我的战术 → 空白新建／复制内置 → 摆站位、画路线、安排配合 → 预览保存。在线版在当前浏览器保存草稿与历史，双击文件版请导出完整备份。教学内容可离线使用；资料链接和官方视频在点击后联网打开。": "Draw a tactic: My tactics → Create or copy → Set the lineup, draw routes, arrange teamwork → Preview and save. The online version stores drafts and history in this browser. Export backups in the standalone file. Lessons work offline; source links and videos need a connection when opened.",
+  "按 Esc 关闭弹窗。不同设备、浏览器或网址的历史不自动共享，可导出完整备份后导入。": "Press Esc to close. History is separate for each device, browser and origin. Export and import a full backup to transfer it."
 }

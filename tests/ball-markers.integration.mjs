@@ -3,10 +3,8 @@ import {readFile, mkdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
-import {dump} from 'js-yaml';
 import {resolveBallScenario} from '../app/ball.js';
 import {positionAt} from '../app/scene.js';
-import {validateLesson} from '../app/validation.js';
 
 const pack = JSON.parse(await readFile('content/default.flagbook.json', 'utf8'));
 const lessons = pack.lessons.filter(lesson => lesson.kind === 'run');
@@ -17,7 +15,7 @@ const actionText = {
 };
 const output = resolve('tmp/ball-markers-integration');
 await mkdir(output, {recursive: true});
-const browser = await chromium.launch({channel: 'chrome', headless: true});
+const browser = await chromium.launch({headless: true});
 try {
   const page = await browser.newPage({viewport: {width: 1440, height: 1050}});
   const errors = [], requests = [];
@@ -186,52 +184,6 @@ try {
     }
   }
 
-  // A valid imported lesson may use maximum-length player IDs and transfer again
-  // before the default handoff emphasis would expire. Exercise the real importer.
-  const longIds = new Map([['Q', 'Q'.padEnd(64, 'q')], ['Y', 'Y'.padEnd(64, 'y')]]);
-  const imported = JSON.parse(JSON.stringify(lessons.find(lesson => lesson.id === 'hb-dive')),
-    (_key, value) => typeof value === 'string' && longIds.has(value) ? longIds.get(value) : value);
-  delete imported.translations;
-  imported.title = {zh: '自定义交递后立即传球', en: 'Imported handoff followed by pass'};
-  imported.ball.scenarios[0].events.push({
-    id: 'quick-pass', type: 'pass', from: longIds.get('Y'), to: 'C', at: 2.2, endAt: 2.5,
-    label: '交递后传给 C', cue: 'Y 收到交递后立即传给 C。',
-    endLabel: 'C 接到球', endCue: 'C 已接到传球，成为持球人。',
-  });
-  validateLesson(imported, 'marker-import-boundary.yaml');
-  await page.locator('#manage').click();
-  await page.locator('#fileInput').setInputFiles({
-    name: 'marker-import-boundary.yaml', mimeType: 'application/yaml', buffer: Buffer.from(dump(imported)),
-  });
-  await page.locator('#applyImport').click();
-  assert.equal(await page.locator('[data-lesson="hb-dive"]').getAttribute('aria-current'), 'true');
-  for (const [at, phase] of [[2, 'active'], [2.19, 'active'], [2.2, 'complete'], [2.3, 'complete'], [2, 'active']]) {
-    await seek(at);
-    assert.equal(await marker('handoff-q-y').getAttribute('data-phase'), phase, 'a following pass ends handoff emphasis immediately, even before 0.6 seconds');
-  }
-  await seek(2.2);
-  assert.equal(await page.locator('[data-ball]').getAttribute('data-ball-state'), 'flight');
-  assert.equal(await page.locator('[data-ball]').getAttribute('data-ball-owner'), '');
-  for (const language of ['zh', 'en']) {
-    await page.selectOption('#language', language);
-    for (const width of [1440, 390]) {
-      await page.setViewportSize({width, height: 1050});
-      await page.locator('#field').scrollIntoViewIfNeeded();
-      const layout = await page.locator('#field').evaluate(field => {
-        const rect = node => { const r = node.getBoundingClientRect(); return {left: r.left, top: r.top, right: r.right, bottom: r.bottom}; };
-        return {
-          field: rect(field),
-          markerParts: [...field.querySelectorAll('[data-ball-action] rect, [data-ball-action] text')].map(rect),
-          paths: [...field.querySelectorAll('path')].map(node => node.getAttribute('d') || ''),
-        };
-      });
-      assert.ok(layout.markerParts.length >= 3, 'imported marker contains a card, title and status');
-      for (const part of layout.markerParts) {
-        assert.ok(part.left >= layout.field.left - 1 && part.right <= layout.field.right + 1 && part.top >= layout.field.top - 1 && part.bottom <= layout.field.bottom + 1, `64-character IDs: ${language}/${width} marker stays within the visible field`);
-      }
-      for (const path of layout.paths) assert.doesNotMatch(path, /NaN|Infinity/, 'imported geometry never emits a non-finite SVG path');
-    }
-  }
   await select('route-hitch');
   assert.equal(await page.locator('#field [data-ball-action]').count(), 0, 'switching to a basic route removes action markers');
   assert.equal(await page.locator('#field [data-ball-flight]').count(), 0);

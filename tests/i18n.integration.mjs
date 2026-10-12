@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
-const browser=await chromium.launch({channel:'chrome',headless:true});
+const browser=await chromium.launch({headless:true});
 try {
  const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true});
  const page=await context.newPage();const errors=[],requests=[];
@@ -40,18 +40,12 @@ try {
  await page.selectOption('#language','en');await page.waitForTimeout(150);
  assert.ok(Number(await page.locator('#seek').inputValue())>running);assert.match(await page.locator('#playState').textContent(),/Playing/);
  await page.locator('#play').click();
- await page.locator('#manage').click();
- const downloadEvent=page.waitForEvent('download');await page.locator('#exportPack').click();const download=await downloadEvent;
- const exported=JSON.parse(await readFile(await download.path(),'utf8'));assert.deepEqual(exported,pack);
- await page.locator('#fileInput').setInputFiles({name:'bad.yaml',mimeType:'application/yaml',buffer:Buffer.from('format: wrong')});
- await page.waitForFunction(()=>document.querySelector('#importReport').classList.contains('error'));
- assert.match(await page.locator('#importReport').textContent(),/unchanged/);assert.doesNotMatch(await page.locator('#importReport').textContent(),/[\u3400-\u9fff]/u);
- await page.keyboard.press('Escape');await page.reload();assert.equal(await page.locator('#language').inputValue(),'en');
+ await page.reload();assert.equal(await page.locator('#language').inputValue(),'en');
  await page.setViewportSize({width:800,height:900});assert.ok(await page.locator('#language').isVisible());
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);
  // Storage restrictions must not prevent using the app.
  const blocked=await context.newPage();await blocked.addInitScript(()=>{Object.defineProperty(Storage.prototype,'getItem',{value(){throw new Error('blocked');}});Object.defineProperty(Storage.prototype,'setItem',{value(){throw new Error('blocked');}});});
  await blocked.goto(url);await blocked.selectOption('#language','en');assert.equal(await blocked.locator('html').getAttribute('lang'),'en');
- console.log('PASS English coverage for all 65 lessons; language/state persistence; bilingual export; import errors; narrow layout; blocked storage; offline runtime');
+ console.log('PASS English coverage for all 71 lessons; language/state persistence; narrow layout; blocked storage; offline runtime');
 } finally {await browser.close();}
