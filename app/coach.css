@@ -1,531 +1,64 @@
-.coach[hidden],
-.coach [hidden] {
-  display: none !important;
-}
-.coach {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  background: #f7f6ef;
-  color: #183e32;
-  overflow: auto;
-  overscroll-behavior: contain;
-  font-size: 15px;
-}
-.coach * {
-  box-sizing: border-box;
-}
-.coach button,
-.coach input,
-.coach select,
-.coach textarea {
-  font: inherit;
-}
-.coach button,
-.coach select {
-  min-height: 44px;
-}
-.coach button {
-  cursor: pointer;
-  border: 1px solid #ced8c9;
-  border-radius: 9px;
-  background: white;
-  color: #183e32;
-  padding: 8px 13px;
-}
-.coach button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.coach button[aria-pressed="true"],
-.coach .primary {
-  background: #235c47;
-  color: white;
-  border-color: #235c47;
-}
-.coach button:focus-visible,
-.coach input:focus-visible,
-.coach textarea:focus-visible,
-.coach select:focus-visible {
-  outline: 3px solid #cc9c36;
-  outline-offset: 2px;
-}
-.coach-head {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: #f7f6eff5;
-  border-bottom: 1px solid #d6ddce;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 22px;
-  flex-wrap: wrap;
-}
-.coach-head h1 {
-  font-size: 21px;
-  margin: 0 auto 0 0;
-}
-.coach-status {
-  font-size: 13px;
-  max-width: 400px;
-}
-.coach-status.error {
-  color: #ab342d;
-}
-.coach-content {
-  max-width: 1500px;
-  margin: auto;
-  padding: 20px;
-}
-.coach-intro {
-  background: #eaf0df;
-  border-radius: 12px;
-  padding: 16px;
-  margin: 0 0 20px;
-}
-.coach-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-  align-items: center;
-  margin-bottom: 15px;
-}
-.coach-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 16px;
-}
-.coach-card {
-  border: 1px solid #d5ddce;
-  border-radius: 15px;
-  padding: 16px;
-  background: white;
-}
-.coach-card h2 {
-  font-size: 19px;
-}
-.coach-card svg {
-  width: 100%;
-  height: 140px;
-  background: #214f40;
-  border-radius: 9px;
-}
-.coach-card p {
-  font-size: 13px;
-  color: #697965;
-}
-.coach-card .coach-bar {
-  margin-bottom: 0;
-}
-.coach-steps {
-  display: flex;
-  gap: 8px;
-  overflow: auto;
-  margin: 0 0 16px;
-  padding-bottom: 3px;
-}
-.coach-steps button {
-  flex: 1;
-  min-width: 120px;
-  white-space: nowrap;
-}
-.coach-work {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 18px;
-  align-items: start;
-}
-.coach-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  background: white;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-.coach-tools summary {
-  cursor: pointer;
-  min-height: 44px;
-  padding: 12px;
-}
-.coach-tools details[open] {
-  display: contents;
-}
-.coach-board {
-  border-radius: 16px;
-  background: #214f40;
-  color: #f9f5dc;
-  padding: 10px;
-  position: relative;
-}
-.coach-canvas {
-  display: block;
-  max-width: 100%;
-  width: 100%;
-  height: min(65vh, 660px);
-  min-height: 330px;
-  touch-action: none;
-  user-select: none;
-}
-.coach-board p {
-  margin: 4px 8px;
-  font-size: 12px;
-}
-.coach-inspector {
-  border: 1px solid #d0dac6;
-  border-radius: 14px;
-  background: white;
-  max-height: 78vh;
-  overflow: auto;
-  padding: 16px;
-  position: sticky;
-  top: 85px;
-}
-.coach-inspector h2 {
-  margin: 0 0 13px;
-  font-size: 19px;
-}
-.coach-inspector h3 {
-  font-size: 15px;
-  margin: 22px 0 8px;
-}
-.coach-inspector label {
-  display: block;
-  margin: 10px 0;
-  font-size: 13px;
-}
-.coach-inspector input:not([type="checkbox"]),
-.coach-inspector select,
-.coach-inspector textarea {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #c9d6c0;
-  border-radius: 7px;
-  background: white;
-  color: #183e32;
-  min-height: 44px;
-}
-.coach-inspector textarea {
-  min-height: 105px;
-  resize: vertical;
-}
-.coach-pair {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.coach-help {
-  font-size: 13px;
-  line-height: 1.6;
-  color: #667761;
-}
-.coach-action {
-  border: 1px solid #d5ddcd;
-  border-radius: 10px;
-  padding: 10px;
-  margin: 8px 0;
-}
-.coach-action.selected {
-  border: 2px solid #cd9b30;
-}
-.coach-action button {
-  font-size: 13px;
-}
-.coach-drawer-button {
-  display: none;
-}
-.coach-frames {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 12px 0;
-}
-.coach-frames button {
-  font-size: 13px;
-}
-.coach-playback {
-  padding: 14px 0;
-}
-.coach-playback input[type="range"] {
-  width: 100%;
-  min-height: 44px;
-}
-.coach-caption {
-  padding: 14px;
-  background: #edf1e4;
-  border-radius: 10px;
-  white-space: pre-line;
-}
-.coach-problems {
-  background: #fff1dc;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-}
-.coach-problems summary {
-  cursor: pointer;
-  min-height: 44px;
-}
-.coach-problems button {
-  display: block;
-  text-align: left;
-  width: 100%;
-  margin: 6px 0;
-  border-color: #e3bda1;
-}
-.coach-undo {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 55;
-  background: #183e32;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 12px;
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-.coach-modal {
-  max-width: min(620px, 95vw);
-  border: 0;
-  border-radius: 15px;
-  color: #183e32;
-  padding: 22px;
-}
-.coach-modal::backdrop {
-  background: #102b2466;
-}
-.coach-modal h2 {
-  margin-top: 0;
-}
-.coach-modal button {
-  min-height: 44px;
-  padding: 9px 15px;
-  margin: 5px;
-  border-radius: 8px;
-  border: 1px solid #c9d6c0;
-  background: white;
-  color: #183e32;
-}
-.coach-modal input,
-.coach-modal select {
-  min-height: 44px;
-  padding: 9px;
-  width: 100%;
-  margin: 8px 0;
-}
-.coach-import-row {
-  padding: 10px;
-  border-top: 1px solid #ddd;
-}
-.coach [data-hit] {
-  cursor: pointer;
-}
-.coach [data-hit]:focus-visible {
-  outline: none;
-  stroke: #f4ca65;
-  stroke-width: 0.5;
-}
-.coach-readonly {
-  font-size: 12px;
-  background: #f2f3ec;
-  padding: 8px;
-  border-radius: 7px;
-  overflow: auto;
-  max-height: 180px;
-  white-space: pre-wrap;
-}
-.coach-toast {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  z-index: 56;
-  background: #183e32;
-  color: white;
-  max-width: min(500px, 90vw);
-  border-radius: 10px;
-  padding: 14px;
-}
-.coach-source a {
-  word-break: break-word;
-  color: #235c47;
-}
-.coach-empty {
-  padding: 40px;
-  text-align: center;
-}
-.coach-language {
-  max-width: 115px;
-}
-.coach-close-drawer {
-  display: none;
-}
-.coach [type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  vertical-align: middle;
-}
-.coach-warning {
-  color: #8a5820;
-}
-@media (max-width: 950px) {
-  .coach-head {
-    padding: 10px 12px;
-    gap: 6px;
-  }
-  .coach-head h1 {
-    font-size: 18px;
-  }
-  .coach-status {
-    width: 100%;
-    order: 4;
-    max-width: none;
-  }
-  .coach-content {
-    padding: 12px;
-  }
-  .coach-work {
-    display: block;
-  }
-  .coach-inspector {
-    position: fixed;
-    z-index: 7;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: auto;
-    max-height: 55dvh;
-    padding: 14px 18px calc(18px + env(safe-area-inset-bottom));
-    border-radius: 18px 18px 0 0;
-    box-shadow: 0 -6px 24px #16382c30;
-  }
-  .coach-inspector[data-open="false"] {
-    display: none;
-  }
-  .coach-close-drawer {
-    display: inline-block;
-    float: right;
-  }
-  .coach-drawer-button {
-    display: inline-block;
-  }
-  .coach-canvas {
-    height: 60dvh;
-  }
-  .coach-content:has(.coach-inspector[data-open="true"]) {
-    padding-bottom: 48dvh;
-  }
-  .coach-steps button {
-    min-width: 120px;
-    font-size: 13px;
-  }
-  .coach-tools {
-    gap: 5px;
-  }
-  .coach-toast {
-    bottom: 70px;
-  }
-  .coach-undo {
-    max-width: 95vw;
-    bottom: 65px;
-  }
-}
-@media (max-width: 560px) {
-  .coach-head h1 {
-    width: 100%;
-  }
-  .coach-head button {
-    padding: 8px;
-    font-size: 13px;
-  }
-  .coach-head h1 {
-    margin: 0;
-  }
-  .coach-canvas {
-    min-height: 300px;
-    height: 55dvh;
-  }
-  .coach-board {
-    padding: 6px;
-  }
-  .coach-steps {
-    gap: 5px;
-  }
-  .coach-cards {
-    grid-template-columns: 1fr;
-  }
-  .coach-tools button {
-    padding: 7px 9px;
-    font-size: 13px;
-  }
-  .coach-bar {
-    gap: 6px;
-  }
-  .coach-inspector {
-    max-height: 58dvh;
-  }
-  .coach-status {
-    font-size: 12px;
-  }
-  .coach-content {
-    padding: 10px;
-  }
-}
+.coach[hidden],.coach [hidden]{display:none!important}
+.coach{--paper:#f6f4ed;--ink:#183d33;--muted:#526858;position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;background:var(--paper);color:var(--ink);height:100dvh;overflow:hidden;font:15px/1.5 system-ui,-apple-system,"PingFang SC",sans-serif}
+.coach *{box-sizing:border-box}
+.coach button,.coach input,.coach textarea,.coach select{font:inherit;color:inherit}
+.coach button{border:0;background:none;cursor:pointer;min-height:44px;padding:0 13px;border-radius:12px;touch-action:manipulation;box-shadow:none;transition:background .12s}
+.coach button:hover{background:#dce3d780}.coach button:disabled{opacity:.35;cursor:default}
+.coach button:focus-visible,.coach input:focus-visible,.coach textarea:focus-visible,.coach select:focus-visible,.coach [tabindex]:focus-visible{outline:3px solid #b47b25;outline-offset:2px}
+.coach button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8}
+.coach .coach-icon{width:44px;min-width:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:14px}
+.coach-head{height:78px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 24px}
+.coach-heading{flex:1;min-width:0}.coach-heading h1{font-size:20px;margin:0;letter-spacing:-.03em}.coach-heading small{font-size:12px;letter-spacing:0;font-weight:400;color:var(--muted);margin-left:8px}
+.coach .coach-title{font-size:18px;font-weight:650;display:block;min-height:48px;padding:0;text-align:left;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;border-radius:0}
+.coach .coach-status{display:block;font-size:11px;color:var(--muted);padding:0;text-align:left}.coach-status.error{color:#a14433}
+.coach .primary,.coach-modal .primary{background:#183d33;color:#fffdf6;padding:0 20px;border-radius:13px;font-weight:600;min-height:44px}
+.coach .primary:hover{background:#2b5b49}
+.coach-work{position:relative;min-height:0;flex:1;padding:0 20px 16px}
+.coach-board{height:100%;position:relative;border-radius:24px;overflow:hidden;background:#234d40;box-shadow:0 8px 22px #133e2910}
+.coach-canvas{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.coach-canvas [data-hit]{cursor:pointer}.coach-canvas text{pointer-events:none}
+.coach-board-label{position:absolute;top:18px;left:22px;color:#e4eadf;font-size:12px;pointer-events:none}
+.coach .coach-fit{position:absolute;right:14px;top:9px;color:#d6e1d7}
+.coach-hint{position:absolute;bottom:82px;left:50%;transform:translateX(-50%);border-radius:30px;padding:8px 16px;background:#163629e6;color:#e5eddf;font-size:12px;pointer-events:none;max-width:90%;text-align:center;white-space:pre-line;max-height:80px;overflow:hidden}
+.coach-hud{position:absolute;bottom:18px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none;min-height:50px}
+.coach-hud>*{pointer-events:auto}
+.coach-undo-tools{display:flex;gap:4px;background:#f5f4eae8;padding:3px;border-radius:16px;box-shadow:0 5px 20px #071b1b15}
+.coach .coach-play{position:absolute;left:50%;transform:translateX(-50%);bottom:0;display:flex;align-items:center;gap:10px;background:#f5f4eaf2;border-radius:30px;padding:0 24px;min-height:50px;font-weight:650;box-shadow:0 5px 20px #071b1b15}
+.coach .coach-outcome{position:absolute;right:0;bottom:0;background:#f5f4eae8;border-radius:20px;padding:0 14px;font-size:12px;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coach .coach-problem{color:#a14433}
+.coach-backdrop{position:absolute;inset:0;z-index:10;background:transparent}
+.coach-context{position:fixed;z-index:20;width:238px;background:#fffcf6;border:1px solid #c5d0c459;box-shadow:0 12px 50px #0b2b2826;border-radius:20px;padding:7px;max-height:70dvh;overflow:auto;overscroll-behavior:contain}
+.coach-context h2{font-size:13px;margin:8px 12px;color:var(--muted);font-weight:500}
+.coach-context button{width:100%;text-align:left;padding:0 13px;min-height:44px}
+.coach-template-grid{display:grid;grid-template-columns:1fr 1fr}.coach-template-grid button{font-size:12px;padding:8px!important;min-height:50px!important}
+.coach .danger{color:#a14433}
+.coach-sheet{position:fixed;z-index:30;bottom:max(24px,var(--coach-keyboard,0px));left:50%;transform:translateX(-50%);width:min(420px,calc(100% - 32px));max-height:calc(85dvh - var(--coach-keyboard,0px));overflow:auto;overscroll-behavior:contain;background:#fffcf6;box-shadow:0 16px 60px #132d293b;border:1px solid #d8e0d0;border-radius:24px;padding:20px}
+.coach-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.coach-sheet-head h2{font-size:17px;margin:0;line-height:1.3}
+.coach-sheet label{display:block;font-size:12px;color:var(--muted);margin-top:12px}
+.coach-sheet input:not([type=checkbox]),.coach-sheet textarea{background:#f5f4ec;border:1px solid #d5dccf;border-radius:12px;width:100%;padding:12px;color:var(--ink);margin-top:6px}
+.coach-sheet textarea{min-height:94px;resize:vertical}.coach-sheet input[type=checkbox]{width:24px;height:24px;vertical-align:middle;margin-right:10px;accent-color:#285641}
+.coach-sheet a{color:#276343;overflow-wrap:anywhere}.coach-sheet ul{padding-left:18px}.coach-help{font-size:12px;color:var(--muted)}
+.coach-sheet .coach-issue{width:100%;height:auto;text-align:left;line-height:1.5;padding:10px;border:1px solid #dccabc;margin-top:8px}
+.coach-sheet details{margin-top:12px}.coach-sheet summary{cursor:pointer;min-height:44px;display:flex;align-items:center}
+.coach-toast{position:fixed;z-index:50;top:88px;left:50%;transform:translateX(-50%);margin:0;background:#fffcf6;color:var(--ink);box-shadow:0 3px 20px #132d291a;border-radius:22px;padding:10px 18px;font-size:13px;max-width:90vw;text-align:center;pointer-events:none}
+.coach-library{flex:1;min-height:0;padding:12px max(24px,calc((100vw - 1040px)/2));overflow:auto;overscroll-behavior:contain}
+.coach-library-intro{font-size:13px;color:var(--muted);margin:0 0 22px;max-width:800px}
+.coach-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding-bottom:30px}
+.coach-card{border:1px solid #dae0d0;border-radius:22px;overflow:hidden;background:#fffcf6;cursor:pointer;touch-action:pan-y;position:relative;outline-offset:3px}
+.coach-card>svg{height:175px;background:#234d40;display:block;width:100%}
+.coach-card h2{font-size:17px;margin:16px 18px 3px}.coach-card p{font-size:12px;color:var(--muted);margin:0 18px 18px}
+.coach-card>.coach-icon{position:absolute;right:8px;top:8px;color:#f7f6e9;background:#163e3060}
+.coach-empty{padding:75px 15px;text-align:center;color:var(--muted)}.coach-empty p{font-size:19px}.coach-empty button{border:1px solid #c9d4c2}
+.coach-storage-error{padding:20px;background:#f4e7d6;border-radius:16px}.coach-storage-error p{margin-top:0}
+.coach-delete-undo{position:fixed;z-index:60;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:15px;background:#183d33;color:#fffdf6;border-radius:18px;padding:7px 12px;font-size:13px;white-space:nowrap}
+.coach-delete-undo button{color:#f1d68d}
+.coach-modal{z-index:100;width:min(520px,calc(100% - 24px));max-height:85dvh;overflow:auto;border:1px solid #d8dfd0;background:#fffcf6;color:#183d33;border-radius:24px;padding:24px;font:15px/1.5 system-ui,-apple-system,"PingFang SC",sans-serif}
+.coach-modal::backdrop{background:#102d254d}.coach-modal h2{font-size:19px;margin:0 0 15px}.coach-modal button{font:inherit;min-height:44px;cursor:pointer;border:0;background:none;border-radius:12px;padding:0 15px;color:inherit}.coach-modal label{display:block;margin:12px 0}.coach-modal input,.coach-modal select{font:inherit;border:1px solid #c9d4c2;border-radius:12px;padding:12px;width:100%;color:#183d33;background:#f5f4ec}.coach-import-row{margin:14px 0;border-bottom:1px solid #e0e4d7;padding-bottom:12px}.coach-dialog-error{color:#a14433;font-size:13px}.coach-dialog-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+.coach-open #floatingPlay{display:none!important}
+@media(max-width:760px){
+ .coach-head{padding:0 12px;height:68px;gap:5px}.coach-heading h1{font-size:18px}.coach-heading small{display:none}.coach .coach-title{font-size:16px;min-height:48px}.coach .primary{padding:0 14px}.coach-work{padding:0 8px 8px}.coach-board{border-radius:19px}.coach-board-label{left:15px;top:16px;font-size:11px}.coach-hud{left:10px;right:10px;bottom:13px;gap:5px}.coach .coach-play{padding:0 16px;gap:7px;min-height:47px}.coach .coach-outcome{max-width:125px;padding:0 10px}.coach-undo-tools .coach-icon{width:44px;min-height:44px}.coach-hint{bottom:76px;font-size:11px;padding:7px 10px}.coach-context{width:225px}.coach-sheet{bottom:max(12px,var(--coach-keyboard,0px));padding:18px}.coach-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.coach-library{padding:10px 15px}.coach-card>svg{height:143px}.coach-card h2{font-size:15px;margin:13px 13px 3px}.coach-card p{margin:0 13px 14px}.coach-toast{top:73px;font-size:12px}
+}
+@media(max-width:400px){.coach .coach-outcome{max-width:102px;font-size:11px}.coach .coach-play{font-size:13px;padding:0 14px}.coach-undo-tools{gap:0;padding:2px}.coach-undo-tools .coach-icon{min-width:44px;width:44px}}
+@media(max-height:500px){.coach-head{height:54px}.coach-hint{bottom:67px;font-size:10px;padding:4px 10px}.coach-sheet{max-height:85dvh}.coach-board-label{top:9px}}
 
-.coach-tools label {
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.coach-modal .primary {
-  background: #235c47;
-  color: white;
-}
-.coach-modal input[type="radio"] {
-  width: 20px;
-  margin-right: 10px;
-  vertical-align: middle;
-}
-.coach-modal label {
-  display: block;
-}
-@media (min-width: 951px) {
-  .coach-tools summary {
-    display: none;
-  }
-}
-@media (max-width: 950px) {
-  .coach-tools details {
-    width: 100%;
-  }
-  .coach-tools details[open] {
-    display: block;
-  }
-  .coach-tools summary {
-    border: 1px solid #d3dcc9;
-    border-radius: 7px;
-  }
-  .coach-tools .coach-bar {
-    margin-top: 8px;
-  }
-}
-
-@media (max-width: 950px) {
-  .coach-inspector {
-    bottom: var(--coach-keyboard, 0px);
-  }
-  .coach-close-drawer {
-    position: sticky;
-    top: 0;
-    z-index: 3;
-    background: white;
-  }
-}
-
-.coach-open #floatingPlay { display:none!important; }
+@media(max-width:760px){.coach-sheet input:not([type=checkbox]),.coach-sheet textarea{font-size:16px}}

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Flagventures complete editable backup v2",
+  "title": "Flagventures direct drawing backup v3",
   "description": "Structural validation. Drafts may be incomplete; saved versions must also pass teaching validation.",
   "type": "object",
   "required": [
@@ -13,7 +13,7 @@
       "const": "flagventures.backup"
     },
     "version": {
-      "const": 2
+      "const": 3
     },
     "createdAt": {
       "type": "string"
@@ -51,7 +51,7 @@
           "const": "flagventures.play"
         },
         "version": {
-          "const": 2
+          "const": 3
         },
         "id": {
           "type": "string",
@@ -177,7 +177,8 @@
                           "time",
                           "action",
                           "ball",
-                          "delay"
+                          "delay",
+                          "route"
                         ]
                       },
                       "seconds": {
@@ -204,8 +205,17 @@
                       "phase": {
                         "enum": [
                           "start",
-                          "end"
+                          "end",
+                          "progress"
                         ]
+                      },
+                      "progress": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
                       }
                     }
                   },
@@ -495,7 +505,8 @@
                             "time",
                             "action",
                             "ball",
-                            "delay"
+                            "delay",
+                            "route"
                           ]
                         },
                         "seconds": {
@@ -522,8 +533,17 @@
                         "phase": {
                           "enum": [
                             "start",
-                            "end"
+                            "end",
+                            "progress"
                           ]
+                        },
+                        "progress": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       }
                     },
@@ -744,7 +764,8 @@
                             "time",
                             "action",
                             "ball",
-                            "delay"
+                            "delay",
+                            "route"
                           ]
                         },
                         "seconds": {
@@ -771,8 +792,17 @@
                         "phase": {
                           "enum": [
                             "start",
-                            "end"
+                            "end",
+                            "progress"
                           ]
+                        },
+                        "progress": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       }
                     },
@@ -787,7 +817,8 @@
                             "time",
                             "action",
                             "ball",
-                            "delay"
+                            "delay",
+                            "route"
                           ]
                         },
                         "seconds": {
@@ -814,8 +845,17 @@
                         "phase": {
                           "enum": [
                             "start",
-                            "end"
+                            "end",
+                            "progress"
                           ]
+                        },
+                        "progress": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       }
                     },
@@ -955,7 +995,8 @@
                       "time",
                       "action",
                       "ball",
-                      "delay"
+                      "delay",
+                      "route"
                     ]
                   },
                   "seconds": {
@@ -982,8 +1023,17 @@
                   "phase": {
                     "enum": [
                       "start",
-                      "end"
+                      "end",
+                      "progress"
                     ]
+                  },
+                  "progress": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
                   }
                 }
               },
@@ -998,7 +1048,8 @@
                       "time",
                       "action",
                       "ball",
-                      "delay"
+                      "delay",
+                      "route"
                     ]
                   },
                   "seconds": {
@@ -1025,8 +1076,17 @@
                   "phase": {
                     "enum": [
                       "start",
-                      "end"
+                      "end",
+                      "progress"
                     ]
+                  },
+                  "progress": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
                   }
                 }
               },
@@ -1119,7 +1179,8 @@
                       "time",
                       "action",
                       "ball",
-                      "delay"
+                      "delay",
+                      "route"
                     ]
                   },
                   "seconds": {
@@ -1146,8 +1207,17 @@
                   "phase": {
                     "enum": [
                       "start",
-                      "end"
+                      "end",
+                      "progress"
                     ]
+                  },
+                  "progress": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
                   }
                 }
               },
@@ -1506,8 +1576,7 @@
         "id",
         "revision",
         "draft",
-        "saved",
-        "history"
+        "saved"
       ],
       "properties": {
         "id": {
@@ -1533,31 +1602,9 @@
               "$ref": "#/$defs/play"
             }
           ]
-        },
-        "history": {
-          "type": "array",
-          "maxItems": 10,
-          "items": {
-            "type": "object",
-            "required": [
-              "id",
-              "at",
-              "play"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "at": {
-                "type": "string"
-              },
-              "play": {
-                "$ref": "#/$defs/play"
-              }
-            }
-          }
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }

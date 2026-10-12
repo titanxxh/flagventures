@@ -51,8 +51,7 @@ export function assertRecord(record) {
     !record ||
     typeof record.id !== "string" ||
     !Number.isInteger(record.revision) ||
-    !Array.isArray(record.history) ||
-    record.history.length > 10
+    Object.hasOwn(record, "history")
   )
     throw new Error("战术库记录损坏 / Invalid library record");
   assertPlay(record.draft);
@@ -60,7 +59,6 @@ export function assertRecord(record) {
     throw new Error("战术身份不一致 / Identity mismatch");
   for (const snapshot of [
     record.saved,
-    ...record.history.map((version) => version.play),
   ].filter(Boolean)) {
     assertPlay(snapshot);
     if (snapshot.id !== record.id || validatePlay(snapshot).errors.length)
@@ -70,7 +68,7 @@ export function assertRecord(record) {
 export function backup(records) {
   return {
     format: "flagventures.backup",
-    version: 2,
+    version: 3,
     createdAt: new Date().toISOString(),
     records: clone(records),
   };
@@ -81,7 +79,7 @@ export function parseBackup(text) {
   const data = JSON.parse(text);
   if (!checkBackup(data))
     throw new Error(
-      "仅支持新版完整编辑备份 / Only the new complete editor backup is supported",
+      "仅支持简洁画板 v3 备份 / Only direct drawing v3 backups are supported",
     );
   const ids = new Set();
   for (const record of data.records) {
@@ -93,8 +91,8 @@ export function parseBackup(text) {
   return data.records;
 }
 export const equivalent = (a, b) =>
-  JSON.stringify({ draft: a.draft, saved: a.saved, history: a.history }) ===
-  JSON.stringify({ draft: b.draft, saved: b.saved, history: b.history });
+  JSON.stringify({ draft: a.draft, saved: a.saved }) ===
+  JSON.stringify({ draft: b.draft, saved: b.saved });
 function names(record) {
   return [
     ...Object.values(record.draft.title),
@@ -139,7 +137,6 @@ export function copyRecord(record, records) {
   for (const play of [
     result.draft,
     result.saved,
-    ...result.history.map((item) => item.play),
   ].filter(Boolean))
     play.id = id;
   return result;
@@ -151,7 +148,6 @@ export function makeRecord(play) {
     updatedAt: new Date().toISOString(),
     draft: clone(play),
     saved: null,
-    history: [],
   };
 }
 export function teachingRecord(record, play) {
@@ -162,14 +158,6 @@ export function teachingRecord(record, play) {
     ...clone(record),
     draft: snapshot,
     saved: clone(snapshot),
-    history: [
-      {
-        id: uid("version"),
-        at: new Date().toISOString(),
-        play: clone(snapshot),
-      },
-      ...clone(record.history),
-    ].slice(0, 10),
   };
 }
 
@@ -188,9 +176,13 @@ export class CoachStore {
       );
     this.db = await new Promise((resolve, reject) => {
       let refused = false;
-      const request = this.indexedDB.open("flagventures-coach", 1);
-      request.onupgradeneeded = () =>
-        request.result.createObjectStore("plays", { keyPath: "id" });
+      const request = this.indexedDB.open("flagventures-coach", 2);
+      request.onupgradeneeded = (event) => {
+        if (!request.result.objectStoreNames.contains("plays"))
+          request.result.createObjectStore("plays", { keyPath: "id" });
+        else request.transaction.objectStore("plays").clear();
+        this.resetLegacy = event.oldVersion > 0;
+      };
       request.onerror = () => reject(request.error);
       request.onblocked = () => {
         refused = true;

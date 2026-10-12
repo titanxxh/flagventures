@@ -666,7 +666,7 @@ $('source').addEventListener('click', () => {
   text($('sourceCaption'), `${lesson.source.title}${lesson.source.page ? t` · 第 ${lesson.source.page} 页` : ''}${getLanguage() === 'en' ? '. ' : '。'}${lesson.source.note || ''}`);
   showDialog('sourceDialog');
 });
-const coach=initCoach({getCurrentLesson:()=>canonicalPack.lessons.find(item=>item.id===lesson.id),pauseTeaching:()=>{setCatalogOpen(false,false);setFullscreen(false);pause();}});
+const coach=initCoach({routeLessons:canonicalPack.lessons.filter(item=>item.kind==='route'),getCurrentLesson:()=>canonicalPack.lessons.find(item=>item.id===lesson.id),pauseTeaching:()=>{setCatalogOpen(false,false);setFullscreen(false);pause();}});
 $('manage').addEventListener('click',()=>coach.open());
 $('copyToCoach').addEventListener('click',()=>coach.copy());
 $('help').addEventListener('click', () => showDialog('helpDialog'));

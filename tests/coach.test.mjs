@@ -427,7 +427,7 @@ test("incomplete drafts survive full backups while malformed saved versions and 
     parseBackup('{"format":"flag-playbook","version":1,"records":[]}'),
   );
 });
-test("stored drafts and saved snapshots stay separate, and ten explicit versions survive round trips", async () => {
+test("stored drafts and saved snapshots stay separate without retaining version history", async () => {
   const db = store(),
     p = sample();
   await db.open();
@@ -440,7 +440,7 @@ test("stored drafts and saved snapshots stay separate, and ten explicit versions
       { id: r.id, expected: r.revision, record: value, enforceNames: true },
     ]);
   }
-  assert.equal(r.history.length, 10);
+  assert.equal(Object.hasOwn(r, "history"), false);
   const saved = clone(r.saved);
   r.draft.title.zh = "草稿修改";
   [r] = await db.change([{ id: r.id, expected: r.revision, record: r }]);
@@ -594,7 +594,7 @@ test("failed IndexedDB write aborts the whole batch and leaves the previous libr
 test("future database versions report an opening error and are never reset", async () => {
   const factory = new IDBFactory();
   await new Promise((resolve, reject) => {
-    const request = factory.open("flagventures-coach", 2);
+    const request = factory.open("flagventures-coach", 3);
     request.onupgradeneeded = () =>
       request.result.createObjectStore("plays", { keyPath: "id" });
     request.onsuccess = () => {
@@ -606,9 +606,9 @@ test("future database versions report an opening error and are never reset", asy
   const db = new CoachStore({ indexedDB: factory });
   await assert.rejects(db.open(), { name: "VersionError" });
   await new Promise((resolve, reject) => {
-    const request = factory.open("flagventures-coach", 2);
+    const request = factory.open("flagventures-coach", 3);
     request.onsuccess = () => {
-      assert.equal(request.result.version, 2);
+      assert.equal(request.result.version, 3);
       request.result.close();
       resolve();
     };

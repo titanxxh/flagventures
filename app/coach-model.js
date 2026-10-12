@@ -96,7 +96,7 @@ export function newPlay(type = "offense") {
   };
   return {
     format: "flagventures.play",
-    version: 2,
+    version: 3,
     id: uid("play"),
     createdAt: new Date().toISOString(),
     type,
@@ -348,7 +348,8 @@ export function adaptLesson(lesson) {
 }
 
 export function motionFor(play, scenario, player) {
-  return scenario?.overrides?.[player.id] || player.motion;
+  return scenario?.overrides && Object.hasOwn(scenario.overrides, player.id)
+    ? scenario.overrides[player.id] : player.motion;
 }
 export function stepsFor(motion, option) {
   return motion.type === "choice"
@@ -488,6 +489,21 @@ export function compilePlay(play, scenarioId = play.defaultScenario) {
       return NaN;
     }
     if (binding.type === "time") return binding.seconds;
+    if (binding.type === "route") {
+      const player = byId.get(binding.player), motion = motions.get(binding.player);
+      if (!player || !motion || !Number.isFinite(binding.progress) || binding.progress < 0 || binding.progress > 1) {
+        issue("路线停点无效 / Invalid route stop", object, 3); return NaN;
+      }
+      const steps = stepsFor(motion, scenario?.choices?.[binding.player]);
+      let from = player.at;
+      const lengths = steps.map(step => { const length = stepLength(from, step); if(step.to)from=step.to; return length; });
+      let distance = lengths.reduce((a,b)=>a+b,0) * binding.progress, at = starts.get(binding.player);
+      for(let i=0;i<steps.length;i++) {
+        if(lengths[i]>0 && distance<=lengths[i]+1e-9) return at + steps[i].seconds * Math.max(0,Math.min(1,distance/lengths[i]));
+        distance-=lengths[i]; at+=steps[i].seconds;
+      }
+      return at;
+    }
     if (binding.type === "action") {
       const action = actions.get(binding.action);
       if (!action || action.player !== binding.player) {
@@ -498,10 +514,14 @@ export function compilePlay(play, scenarioId = play.defaultScenario) {
         issue("延后时刻无效 / Invalid time offset", object, 3);
         return NaN;
       }
-      return (
-        (binding.phase === "start" ? action.start : action.end) +
-        (binding.offset || 0)
-      );
+      if (binding.phase === "progress") {
+        if (!Number.isFinite(binding.progress) || binding.progress < 0 || binding.progress > 1) {
+          issue("路线停点无效 / Invalid route stop", object, 3);
+          return NaN;
+        }
+        return action.start + (action.end - action.start) * binding.progress;
+      }
+      return (binding.phase === "start" ? action.start : action.end) + (binding.offset || 0);
     }
     issue("未知时刻类型 / Unknown time binding", object, 3);
     return NaN;
@@ -551,10 +571,15 @@ export function compilePlay(play, scenarioId = play.defaultScenario) {
         at = event
           ? frame.binding.phase === "end"
             ? (event.endAt ?? event.at)
+            : frame.binding.phase === "progress"
+              ? Number.isFinite(frame.binding.progress) && frame.binding.progress >= 0 && frame.binding.progress <= 1
+                ? event.at + ((event.endAt ?? event.at) - event.at) * frame.binding.progress
+                : NaN
             : event.at
           : NaN;
       } else at = bindingTime(frame.binding, frame.id);
-      const valid = Number.isFinite(at) && at >= 0 && at <= duration;
+      const valid = Number.isFinite(at) && at >= 0 && at <= duration + 1e-9;
+      if (valid) at = Math.min(at, duration);
       if (!valid) issue("停点待修复 / Repair teaching stop", frame.id, 3);
       return {
         ...clone(frame),
@@ -909,6 +934,7 @@ export function validatePlay(play, { name = true } = {}) {
     }
   }
   for (const frame of play.bookmarks) {
+    if (frame.marker) point(frame.marker, frame.id);
     if (frame.scenario && !play.scenarios.some((s) => s.id === frame.scenario))
       add("停点方案已删除 / Stop plan was deleted", frame.id, 3);
     if (
