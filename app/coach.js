@@ -97,7 +97,7 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
     if(['zone','target','duty','frame','event'].includes(menu.kind))return [['explain',tr('说明','Explanation')],...(!viewOnly?[['remove-object',tr('删除','Delete'),'class="danger"']]:[])];
     const list=screen==='library'?[['copy-builtin',tr('复制当前教学条目','Copy this lesson')],['export-all',tr('导出全库备份','Export library')],['import',tr('载入备份','Load backup')]]:[['details',tr('名称与说明','Name and explanation')],['sources',tr('查看出处','View sources')],['export-one',tr('导出这套战术','Export this tactic')],['reset',tr('回到站位','Reset lineup')],['speed',tr('播放速度','Playback speed')],['view',tr('球场视图 ›','Field view ›')],['snap',snap?tr('关闭 1 码吸附','Turn off 1 yd snap'):tr('开启 1 码吸附','Turn on 1 yd snap')]];
     if(screen==='board'&&['offense','run'].includes(play.type)&&play.scenarios.length>1)list.push(['outcomes',tr('切换球路结局','Choose outcome')]);
-    if(screen==='board'&&!viewOnly&&['offense','run'].includes(play.type)){list.push(['routes-only',plan().mode==='ball'?tr('仅跑位预览','Preview routes only'):tr('安排球路','Arrange ball actions')]);}
+    if(screen==='board'&&!viewOnly&&['offense','run'].includes(play.type)){list.push(['routes-only',plan().mode==='ball'?(routesOnly?tr('显示球路','Show ball actions'):tr('仅跑位预览','Preview routes only')):tr('安排球路','Arrange ball actions')]);}
     if(screen==='board'&&!viewOnly)list.push(['save-copy',tr('另存一套','Save a copy')]);
     list.push(['language',getLanguage()==='zh'?'English':'中文']);if(screen==='board')list.push(['library',tr('我的战术库','My tactics')]);return list;
   }
@@ -159,7 +159,15 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
   function pointAt(e){const svg=root.querySelector('.coach-canvas');return [new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse()).x,new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse()).y];}
   function cancelGesture(){clearTimeout(longTimer);if(gesture?.baseline){play=gesture.baseline;cache=null;}gesture=null;pointers.clear();stroke=[];}
   function activateHit(hit,point,event){
-    if(mode?.type==='ball'&&hit?.hit==='player'){const intent=mode;edit(()=>{const s=addBallAction(play,scenarioId,intent.kind,intent.player,hit.id);scenarioId=s.id;});mode=null;render();if(plan().events.some(e=>e.pending))notify(tr('交递双方还没会合：调整路线使他们碰面。','The handoff needs a meeting: adjust the routes.'));return;}
+    if(mode?.type==='ball'&&hit?.hit==='player'){
+      const intent=mode;
+      if(hit.id===intent.player){notify(tr('点另一名目标球员','Tap another target player'));return;}
+      edit(()=>{const s=addBallAction(play,scenarioId,intent.kind,intent.player,hit.id);scenarioId=s.id;});
+      routesOnly=false;selection={kind:'player',id:hit.id};mode=null;render();
+      if(plan().events.some(e=>e.pending))notify(tr('交递双方还没会合：调整路线使他们碰面。','The handoff needs a meeting: adjust the routes.'));
+      else notify(`${intent.player} → ${hit.id} · ${eventName(intent.kind)}`);
+      return;
+    }
     if(mode?.type==='duty'){const owner=mode.player,replaceId=mode.replaceId;if(mode.kind==='coverage'&&hit?.hit!=='zone'){notify(tr('点一片覆盖区域','Tap a coverage zone'));return;}edit(()=>{const type=hit?.hit==='zone'?'coverage':mode.kind||'matchup';if(replaceId)play.assignments=play.assignments.filter(d=>d.id!==replaceId);play.assignments.push({id:uid('duty'),player:owner,type,explanation:explanation(),...(type==='coverage'?{zone:hit.id}:hit?.hit==='target'?{target:hit.id}:{end:snapPoint(point,snap)})});});mode=null;render();return;}
     if(mode?.type==='target'){const at=snapPoint(point,snap);mode=null;ask(tr('对方目标','Opponent target'),`<label>${esc(tr('名称，例如对方 QB','Name, e.g. opponent QB'))}<input id="coachTargetName" value="${esc(tr('对方 QB','Opponent QB'))}"></label>`,()=>edit(()=>play.targets.push({id:uid('target'),name:dialog.querySelector('input').value||tr('对方 QB','Opponent QB'),at,explanation:explanation()})));return;}
     if(!hit){selection=null;menu=sheet=null;render();return;}

@@ -53,8 +53,10 @@ try{
  for(const [x,y]of[[11,55],[8,53],[4,54]]){const p=await point(x,y);await page.mouse.move(p.x,p.y,{steps:12});}await page.mouse.up();
  await holdPlayer('QB');await page.locator('.coach [data-do="ball"][data-type="pass"]').click();await clickPoint(20,54);
  await action('more').click();await action('routes-only').click();assert.equal(await page.locator('.coach [data-hit="event"]').count(),0);
- await holdPlayer('QB');await page.locator('.coach [data-do="ball"][data-type="handoff"]').click();await clickPoint(20,54);
+ await action('more').click();assert.equal(await action('routes-only').textContent(),'显示球路');await action('dismiss').click();
+ await holdPlayer('QB');await page.locator('.coach [data-do="ball"][data-type="handoff"]').click();await clickPoint(15,55);assert.equal(await page.locator('.coach-hint').textContent(),'点目标球员');await clickPoint(20,54);
  assert.equal(await page.locator('.coach [data-hit="event"][aria-label="交递"]').count(),1,'selecting Z adds and displays the QB → Z handoff');
+ assert.match(await page.locator('.coach-hint').textContent(),/^Z ·/);assert.equal(await page.locator('.coach-toast').textContent(),'QB → Z · 交递');
  await page.screenshot({path:'tmp/coach-integration/handoff-after-routes-only.png',fullPage:true});
  await action('library').click();await action('close').click();await page.goto(pathToFileURL(resolve('dist/Flagventures.html')).href);await page.locator('#manage').click();
  await page.locator('#coachBackupInput').setInputFiles({name:'restore.backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({format:'flagventures.backup',version:3,records:data}))});
