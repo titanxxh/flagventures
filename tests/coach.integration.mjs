@@ -59,6 +59,7 @@ try {
     .filter({ hasText: "当前内容已手动保存" })
     .waitFor();
   await page.locator('.coach [data-step="4"]').click();
+  await page.locator('.coach [data-do="select-play"]').click();
   // Real backup download and restore are tested separately from v1 lesson files.
   const download = page.waitForEvent("download");
   await page.locator('.coach [data-do="export-one"]').click();
