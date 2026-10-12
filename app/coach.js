@@ -126,7 +126,7 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
     queue = Promise.resolve(),
     saveError = "",
     loading = true;
-  let compileCache, checkCache, coachTick;
+  let compileCache, checkCache, coachTick, liveEditKey;
   let pointers = new Map(),
     gesture,
     poly = [],
@@ -260,10 +260,11 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
     updateStatus();
   }
   function mutate(work, opts = {}) {
-    checkpoint();
+    if(!opts.liveKey || liveEditKey!==opts.liveKey)checkpoint();
+    liveEditKey=opts.liveKey;
     work();
     changed(opts);
-    render();
+    if(!opts.liveKey)render();
   }
   async function retain() {
     if (!play || viewOnly) return;
@@ -1058,7 +1059,7 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
       text: "",
       status: "confirmed",
     };
-    return `<h3>${esc(tr("统一说明", "Explanation"))} · ${getLanguage() === "zh" ? "中文" : "English"}</h3><label><textarea aria-label="${esc(tr("统一说明", "Explanation"))}" data-edit="explanation" placeholder="${esc(tr("写下怎么跑、怎样与队友配合…", "Describe the action and teamwork…"))}">${esc(ex.text)}</textarea></label><p class="coach-help">${esc(ex.status === "review" ? tr("旧说明待核对；确认前不用于教学。", "Needs review; hidden from teaching until confirmed.") : tr("已确认的说明用于教学；缺译文时明确提示。", "Confirmed text is used for teaching; missing translations are flagged."))}</p>${btn("confirm-text", tr("确认当前语言说明适用", "Confirm this explanation"))}`;
+    return `<h3>${esc(tr("统一说明", "Explanation"))} · ${getLanguage() === "zh" ? "中文" : "English"}</h3><label><textarea aria-label="${esc(tr("统一说明", "Explanation"))}" data-edit="explanation" placeholder="${esc(tr("写下怎么跑、怎样与队友配合…", "Describe the action and teamwork…"))}">${esc(ex.text)}</textarea></label><p class="coach-help" data-coach-text-status>${esc(ex.status === "review" ? tr("旧说明待核对；确认前不用于教学。", "Needs review; hidden from teaching until confirmed.") : tr("已确认的说明用于教学；缺译文时明确提示。", "Confirmed text is used for teaching; missing translations are flagged."))}</p>${btn("confirm-text", tr("确认当前语言说明适用", "Confirm this explanation"))}`;
   }
   function sourcesHtml() {
     const origin = play.origin,
@@ -2311,7 +2312,7 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
     }
     current[keys.at(-1)] = value;
   }
-  function editProperty(node) {
+  function editProperty(node, live=false) {
     const key = node.dataset.edit,
       value =
         node.type === "checkbox"
@@ -2534,7 +2535,7 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
         !["name", "defaultScenario", "initialOwner"].includes(key)
       )
         markReview(play, [item]);
-    });
+    }, live ? {liveKey:`${selection.kind}:${selection.id}:${key}`} : {});
   }
   root.addEventListener("change", async (event) => {
     if (event.target.id === "coachBackupInput") {
@@ -2548,10 +2549,22 @@ export function initCoach({ getCurrentLesson, pauseTeaching }) {
       event.target.value = "";
       return;
     }
+    if(event.target.dataset.edit && liveEditKey===`${selection.kind}:${selection.id}:${event.target.dataset.edit}`){
+      liveEditKey=undefined;
+      renderBoard();
+      const problems=root.querySelector('.coach-problems');if(problems)problems.outerHTML=problemsHtml();
+      const note=root.querySelector('.coach-caption');if(note)note.textContent=caption();
+      return;
+    }
     if (event.target.dataset.edit) editProperty(event.target);
   });
   root.addEventListener("input", (event) => {
     if (event.target.dataset.edit === "seek") editProperty(event.target);
+    else if(event.target.dataset.edit && event.target.matches('input[type="text"],textarea')){
+      editProperty(event.target,true);
+      const heading=root.querySelector('.coach-head h1');if(heading)heading.textContent=`Flagventures · ${titleOf(play)}`;
+      const hint=root.querySelector('[data-coach-text-status]');if(hint && event.target.dataset.edit==='explanation')hint.textContent=tr('旧说明待核对；确认前不用于教学。','Needs review; hidden from teaching until confirmed.');
+    }
   });
   async function showImport(file) {
     if (file.size > 25 * 1024 * 1024)

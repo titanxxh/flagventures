@@ -53,6 +53,13 @@ try {
   await page.locator('.coach [data-edit="motionType"]').selectOption("path");
   await page.locator('.coach [data-edit="template"]').selectOption("SLANT");
   assert.equal(await page.locator('.coach [data-hit="player"]').count(), 5);
+  await page.locator('.coach [data-do="select-play"]').click();
+  await page.locator('.coach [data-edit="explanation"]').fill('Typing without leaving the field');
+  await page.locator('.coach-status').filter({hasText:'草稿已保留'}).waitFor();
+  await page.reload();
+  await page.locator('#manage').click();
+  await page.locator('.coach-card').filter({hasText:'Automation route'}).getByRole('button',{name:'编辑',exact:true}).click();
+  assert.equal(await page.locator('.coach [data-edit="explanation"]').inputValue(),'Typing without leaving the field','Unblurred text is retained');
   await page.locator('.coach [data-do="save"]').click();
   await page
     .locator(".coach-status")
