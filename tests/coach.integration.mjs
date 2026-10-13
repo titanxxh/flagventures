@@ -15,6 +15,7 @@ try{
  const context=await browser.newContext({viewport:{width:1280,height:900},acceptDownloads:true}),page=await context.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  const action=(name)=>{const found=page.locator(`.coach [data-do="${name}"]`);return name==='dismiss'?found.last():found;};
+ const ballAboveCenter=async()=>{const p=await page.locator('.coach [data-hit="player"][data-id="C"] circle').first().evaluate(el=>[+el.getAttribute('cx'),+el.getAttribute('cy')]);const b=await page.locator('.coach [data-coach-ball]').evaluate(el=>[+el.getAttribute('cx'),+el.getAttribute('cy')]);assert.equal(b[0],p[0]);assert.ok(b[1]<p[1],'the pre-snap ball is above C');};
  const point=async(x,y)=>page.locator('.coach-canvas').evaluate((el,[x,y])=>{const p=new DOMPoint(x,y).matrixTransform(el.getScreenCTM());return{x:p.x,y:p.y};},[x,y]);
  const clickPoint=async(x,y)=>{const p=await point(x,y);await page.mouse.click(p.x,p.y);};
  const holdPlayer=async(id)=>{const g=page.locator(`.coach [data-hit="player"][data-id="${id}"]`);const p=await g.evaluate(el=>{const c=el.querySelector('circle'),p=new DOMPoint(+c.getAttribute('cx'),+c.getAttribute('cy')).matrixTransform(el.ownerSVGElement.getScreenCTM());return{x:p.x,y:p.y};});await page.mouse.move(p.x,p.y);await page.mouse.down();await page.waitForTimeout(620);await page.mouse.up();await page.locator('.coach-context').waitFor();};
@@ -39,6 +40,10 @@ try{
  await page.locator('.coach-status').filter({hasText:'草稿已保留'}).waitFor();await action('library').click();
  await page.locator('.coach-card').filter({hasText:'Direct board'}).locator('[data-do="card-more"]').click();await action('teach-card').click();
  assert.equal(await page.locator('.coach [data-hit="player"][data-id="X"] circle').first().getAttribute('cx'),'5');
+ await ballAboveCenter();await action('play').click();await page.locator('.coach-hint').filter({hasText:'播放结束'}).waitFor();
+ await action('more').click();await action('language').click();assert.match(await page.locator('.coach-hint').textContent(),/Playback finished.*Tap any player/);
+ await page.locator('.coach [data-hit="player"][data-id="X"]').press('Enter');assert.equal(await page.locator('.coach [data-hit="player"][data-id="X"] circle').first().getAttribute('cy'),'50');await ballAboveCenter();
+ await action('more').click();await action('language').click();
  await action('edit-saved').click();assert.equal(await page.locator('.coach [data-hit="player"][data-id="X"] circle').first().getAttribute('cx'),'7');
  await page.reload();await page.locator('#manage').click();await page.locator('.coach-card').filter({hasText:'Direct board'}).click();
  await action('details').click();assert.equal(await page.locator('.coach [data-edit="explanation"]').inputValue(),'Typed without blur');await action('dismiss').click();
@@ -58,6 +63,9 @@ try{
  assert.equal(await page.locator('.coach [data-hit="event"][aria-label="交递"]').count(),1,'selecting Z adds and displays the QB → Z handoff');
  assert.match(await page.locator('.coach-hint').textContent(),/^Z ·/);assert.equal(await page.locator('.coach-toast').textContent(),'QB → Z · 交递');
  await page.screenshot({path:'tmp/coach-integration/handoff-after-routes-only.png',fullPage:true});
+ await ballAboveCenter();await action('play').click();await page.locator('.coach-hint').filter({hasText:'播放结束'}).waitFor();await page.locator('.coach [data-hit="player"][data-id="Z"]').click();
+ for(const [id,x,y]of[['QB',15,55],['C',15,50],['X',5,50],['Y',25,50],['Z',20,54]]){const c=page.locator(`.coach [data-hit="player"][data-id="${id}"] circle`).first();assert.equal(+await c.getAttribute('cx'),x);assert.equal(+await c.getAttribute('cy'),y);}
+ await ballAboveCenter();assert.doesNotMatch(await page.locator('.coach-hint').textContent(),/播放结束/);await page.screenshot({path:'tmp/coach-integration/reset-pre-snap-ball.png',fullPage:true});
  await action('library').click();await action('close').click();await page.goto(pathToFileURL(resolve('dist/Flagventures.html')).href);await page.locator('#manage').click();
  await page.locator('#coachBackupInput').setInputFiles({name:'restore.backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({format:'flagventures.backup',version:3,records:data}))});
  await page.locator('.coach-modal [data-do="confirm"]').click();assert.equal(await page.locator('.coach-card').count(),1);
