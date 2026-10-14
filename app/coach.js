@@ -169,6 +169,16 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
     svg.innerHTML=html;const n=root.querySelector('.coach-hint');if(n){n.textContent=hint();n.setAttribute('aria-live',playing?'off':'polite');}
   }
   function pointAt(e){const svg=root.querySelector('.coach-canvas');return [new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse()).x,new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse()).y];}
+  function closestLineHit(hit,point){
+    if(hit?.hit!=='event')return hit;
+    const c=compiled(),event=c.scenario.events.find(e=>e.id===hit.id);
+    if(!['snap','pass'].includes(event?.type)||event.pending||!Number.isFinite(event.at)||!Number.isFinite(event.endAt))return hit;
+    const from=positionAt(c.lesson.players.find(p=>p.id===event.from),event.at),to=positionAt(c.lesson.players.find(p=>p.id===event.to),event.endAt);
+    const ball=nearestRoutePoint({at:from,motion:{type:'path',steps:[{id:'hit',type:'line',to,seconds:1}]}},point);
+    let best;for(const player of play.players){const route=nearestRoutePoint(player,point);if(route&&(!best||route.distance<best.distance))best={...route,id:player.id};}
+    const svg=root.querySelector('.coach-canvas'),tolerance=Math.max(1.1,22/Math.min(svg.clientWidth/camera.w,svg.clientHeight/camera.h));
+    return best&&best.distance<=tolerance&&best.distance+.05<ball.distance?{hit:'route',id:best.id}:hit;
+  }
   function cancelGesture(){clearTimeout(longTimer);if(gesture?.baseline){play=gesture.baseline;cache=null;}gesture=null;pointers.clear();stroke=[];}
   function releaseCandidate(intent,to,progress){const draft=clone(play);let s,event;if(intent.replaceId){s=draft.scenarios.find(s=>s.id===scenarioId);event=s.events.find(e=>e.id===intent.replaceId);if(event.to!==to)s.title={zh:'传给 '+to,en:'Pass to '+to};event.to=to;setPassRelease(draft,s.id,event.id,progress);}else{s=addBallAction(draft,scenarioId,'pass',intent.player,to,routeRelease(draft,intent.player,progress));event=s.events.at(-1);}const c=compilePlay(draft,s.id);return{draft,scenario:s.id,event:event.id,error:passReleaseProblem(draft,c,c.scenario.events.find(e=>e.id===event.id))};}
   function applyRelease(intent,to,progress){const next=releaseCandidate(intent,to,progress);if(next.error){if(/ball is not ready|Release before crossing|Route redrawn/.test(next.error)){mode={...intent,type:'release-position',to};menu=sheet=null;render();}notify(localMessage(next.error));return false;}edit(()=>{play=next.draft;scenarioId=next.scenario;},{renderNow:false});routesOnly=false;time=0;frameId=null;selection={kind:'release',id:next.event};mode=menu=sheet=null;render();notify(`${intent.player} → ${to} · ${tr('拖动菱形调整出手位置','Drag the diamond to move the release point')}`);return true;}
@@ -207,13 +217,13 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
     select(hit.hit,hit.id);
   }
   function seekFrame(id){const f=compiled().keyframes.find(f=>f.id===id);if(!f?.valid){notify(tr('这个停点需要重新添加','Add this stop again'));return;}stop();time=f.at;frameId=id;selection={kind:'frame',id};menu=null;mode=null;sheet={kind:'frame',id};render();}
-  root.addEventListener('contextmenu',e=>{const svg=e.target.closest('.coach-canvas'),card=e.target.closest('[data-card]');if(!svg&&!card)return;e.preventDefault();if(card){menu={kind:'card',id:card.dataset.card,x:e.clientX,y:e.clientY};renderOverlay();return;}const hit=e.target.closest('[data-hit]')?.dataset;menuAt(hit?.hit||'blank',hit?.id,e);});
+  root.addEventListener('contextmenu',e=>{const svg=e.target.closest('.coach-canvas'),card=e.target.closest('[data-card]');if(!svg&&!card)return;e.preventDefault();if(card){menu={kind:'card',id:card.dataset.card,x:e.clientX,y:e.clientY};renderOverlay();return;}const hit=closestLineHit(e.target.closest('[data-hit]')?.dataset,pointAt(e));menuAt(hit?.hit||'blank',hit?.id,e);});
   root.addEventListener('pointerdown',e=>{
     const card=e.target.closest('[data-card]');if(card&&!e.target.closest('button')){gesture={type:'card',id:card.dataset.card,start:[e.clientX,e.clientY],long:false};longTimer=setTimeout(()=>{if(gesture?.type==='card'){gesture.long=true;menu={kind:'card',id:card.dataset.card,x:e.clientX,y:e.clientY};renderOverlay();}},520);return;}
     const svg=e.target.closest('.coach-canvas');if(!svg||e.button===2)return;e.preventDefault();svg.setPointerCapture(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);
     if(pointers.size===2){clearTimeout(longTimer);if(gesture?.hit?.hit==='release')time=0;if(gesture?.baseline)play=gesture.baseline;stroke=[];cache=null;const p=[...pointers.values()],center=p[0].map((v,i)=>(v+p[1][i])/2);gesture={type:'pinch',camera:{...camera},distance:Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]),center,anchor:pointAt({clientX:center[0],clientY:center[1]}),scale:Math.min(svg.clientWidth/camera.w,svg.clientHeight/camera.h)};renderBoard();return;}
     if(pointers.size>1)return;
-    const hit=e.target.closest('[data-hit]')?.dataset,point=pointAt(e);
+    const point=pointAt(e),hit=closestLineHit(e.target.closest('[data-hit]')?.dataset,point);
     if(mode?.type==='pan'){gesture={type:'pan',start:[e.clientX,e.clientY],camera:{...camera},scale:Math.min(svg.clientWidth/camera.w,svg.clientHeight/camera.h)};return;}
     if(mode?.type==='draw'||mode?.type==='zone'){gesture={type:mode.type,start:[e.clientX,e.clientY],point};stroke=mode.type==='draw'?[clone(object('player',mode.player).at)]:[snapPoint(point,snap)];return;}
     const selected=selection?.id===hit?.id;
