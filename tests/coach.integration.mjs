@@ -37,12 +37,14 @@ try{
  await clickPoint(15,52.5);const beforeRepeat=await page.locator('.coach [data-hit="frame"]').evaluateAll(nodes=>nodes.map(n=>n.dataset.id));assert.equal(beforeRepeat.length,2);await action('dismiss').click();await clickPoint(15,52.6);
  assert.deepEqual(await page.locator('.coach [data-hit="frame"]').evaluateAll(nodes=>nodes.map(n=>n.dataset.id)),beforeRepeat,'nearby taps reuse the same Snap stop');
  await action('remove-object').click();assert.equal(await page.locator('.coach [data-hit="frame"]').count(),1);assert.doesNotMatch(await page.locator('.coach-hint').textContent(),/停在这里讲解/);
+ await action('more').click();await action('reset').click();
  await action('save').click();await page.locator('.coach-status').filter({hasText:'已保存'}).waitFor();
  await action('more').click();const downloaded=page.waitForEvent('download');await action('export-one').click();const data=parseBackup(await readFile(await(await downloaded).path(),'utf8'));
  assert.equal(data.length,1);assert.equal(data[0].saved.title.zh,'Direct board');assert.equal(Object.hasOwn(data[0],'history'),false);assert.equal(data[0].saved.scenarios.length,2);
  await action('dismiss').click();
  // Select, then drag. The saved teaching version is isolated from this auto-retained draft.
  await clickPoint(5,50);const from=await point(5,50),to=await point(7,50);await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:12});await page.mouse.up();
+ assert.equal(await page.locator('.coach [data-hit="player"][data-id="X"] circle').first().getAttribute('cx'),'7','dragging X changes the draft position');
  await page.locator('.coach-status').filter({hasText:'草稿已保留'}).waitFor();await action('library').click();
  await page.locator('.coach-card').filter({hasText:'Direct board'}).locator('[data-do="card-more"]').click();await action('teach-card').click();
  assert.equal(await page.locator('.coach [data-hit="player"][data-id="X"] circle').first().getAttribute('cx'),'5');
