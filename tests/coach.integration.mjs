@@ -27,10 +27,16 @@ try{
  await holdPlayer('X');await action('templates').click();await page.locator('.coach [data-term="POST"]').click();
  // Tapping the physical path, rather than its SVG bounding-box centre, creates a stop.
  await clickPoint(5,45);assert.equal(await page.locator('.coach [data-hit="frame"]').count(),1);
- await page.locator('.coach [data-edit="explanation"]').fill('Look at QB here');await action('dismiss').click();
+ await page.locator('.coach [data-edit="explanation"]').fill('Look at QB here');
+ const routeStopId=await page.locator('.coach [data-hit="frame"]').getAttribute('data-id');await action('remove-object').click();
+ assert.equal(await page.locator('.coach [data-hit="frame"]').count(),0);assert.equal(await page.locator('.coach-sheet').count(),0);assert.doesNotMatch(await page.locator('.coach-hint').textContent(),/停在这里讲解/,'deleted stop is no longer selected');
+ await action('undo').click();await page.locator(`.coach [data-hit="frame"][data-id="${routeStopId}"]`).press('Enter');assert.equal(await page.locator('.coach [data-edit="explanation"]').inputValue(),'Look at QB here');await action('dismiss').click();
  await holdPlayer('QB');await page.locator('.coach [data-do="ball"][data-type="pass"]').click();await clickPoint(5,50);
  await holdPlayer('QB');await page.locator('.coach [data-do="ball"][data-type="pass"]').click();await clickPoint(25,50);
  await action('outcomes').click();assert.equal(await action('outcome').count(),2);await action('outcome').filter({hasText:'传给 X'}).click();
+ await clickPoint(15,52.5);const beforeRepeat=await page.locator('.coach [data-hit="frame"]').evaluateAll(nodes=>nodes.map(n=>n.dataset.id));assert.equal(beforeRepeat.length,2);await action('dismiss').click();await clickPoint(15,52.6);
+ assert.deepEqual(await page.locator('.coach [data-hit="frame"]').evaluateAll(nodes=>nodes.map(n=>n.dataset.id)),beforeRepeat,'nearby taps reuse the same Snap stop');
+ await action('remove-object').click();assert.equal(await page.locator('.coach [data-hit="frame"]').count(),1);assert.doesNotMatch(await page.locator('.coach-hint').textContent(),/停在这里讲解/);
  await action('save').click();await page.locator('.coach-status').filter({hasText:'已保存'}).waitFor();
  await action('more').click();const downloaded=page.waitForEvent('download');await action('export-one').click();const data=parseBackup(await readFile(await(await downloaded).path(),'utf8'));
  assert.equal(data.length,1);assert.equal(data[0].saved.title.zh,'Direct board');assert.equal(Object.hasOwn(data[0],'history'),false);assert.equal(data[0].saved.scenarios.length,2);
