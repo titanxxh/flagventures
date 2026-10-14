@@ -2,7 +2,7 @@ import { getLanguage } from './i18n.js';
 import { getScene, positionAt, pathToSvg } from './scene.js';
 import { getBallState } from './ball.js';
 import { clone, compilePlay, explanation, stepLength, teachingText, uid, validatePlay, zoneCenter } from './coach-model.js';
-import { simplePlay, copySimpleLesson, ROUTES, addBallAction, applyRouteTemplate, ballActors, boundPoint, drawRoute, moveObject, nearestRoutePoint, scheduleBall, simplifyStroke, snapPoint } from './coach-drawing.js';
+import { simplePlay, copySimpleLesson, ROUTES, addBallAction, applyRouteTemplate, ballActors, boundPoint, drawRoute, findNearbyStops, moveObject, nearestRoutePoint, scheduleBall, simplifyStroke, snapPoint } from './coach-drawing.js';
 import { CoachStore, backup, copyRecord, equivalent, makeRecord, parseBackup, teachingRecord } from './coach-storage.js';
 
 const palette=['#83d4ed','#f3cb7e','#c7df91','#d1c5ec','#efa9a0'];
@@ -121,7 +121,7 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
     if(!text&&item.explanation?.[lang==='zh'?'en':'zh']?.text)html+=`<p class="coach-help">${esc(tr('另一语言已有说明；本语言可后补。','An explanation exists in the other language; add this translation when ready.'))}</p>`;
     if(sheet.kind==='frame'){const f=compiled().keyframes.find(f=>f.id===sheet.id);html+=`<p class="coach-help">${Number.isFinite(f?.at)?f.at.toFixed(1)+' s · ':''}${esc(tr('全队停在这一刻；球员并非必须停跑。','The scene pauses here; this is not a running pause.'))}</p>`;if(play.type==='defense')html+=(viewOnly?'':button('reset-layers',tr('显示全部分工','Show all duties')))+`<details><summary>${esc(tr('这一停点显示的分工','Duties shown at this stop'))}</summary>${play.zones.map(z=>`<label><input type="checkbox" data-layer="zone" data-id="${esc(z.id)}" ${!item.view||item.view.zoneIds.includes(z.id)?'checked':''} ${viewOnly?'disabled':''}>${esc(z.label)}</label>`).join('')}${play.assignments.map(d=>`<label><input type="checkbox" data-layer="duty" data-id="${esc(d.id)}" ${!item.view||item.view.assignmentIds.includes(d.id)?'checked':''} ${viewOnly?'disabled':''}>${esc(d.player+' '+d.type)}</label>`).join('')}</details>`;}
     if(sheet.saveAfter)html+=button('save',tr('保存战术','Save tactic'),'class="primary"');
-    if(!viewOnly&&sheet.kind!=='play')html+=button('remove-object',tr('删除','Delete'),'class="danger"');
+    if(!viewOnly&&['zone','target','duty','frame','event'].includes(sheet.kind))html+=button('remove-object',tr('删除','Delete'),'class="danger"');
     return html;
   }
   function renderBoard(){
@@ -179,7 +179,7 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
     if(mode?.type==='target'){const at=snapPoint(point,snap);mode=null;ask(tr('对方目标','Opponent target'),`<label>${esc(tr('名称，例如对方 QB','Name, e.g. opponent QB'))}<input id="coachTargetName" value="${esc(tr('对方 QB','Opponent QB'))}"></label>`,()=>edit(()=>play.targets.push({id:uid('target'),name:dialog.querySelector('input').value||tr('对方 QB','Opponent QB'),at,explanation:explanation()})));return;}
     if(!hit){selection=null;menu=sheet=null;render();return;}
     if(hit.hit==='frame'){seekFrame(hit.id);return;}
-    if(hit.hit==='route'&&!viewOnly){const player=object('player',hit.id),near=nearestRoutePoint(player,point);if(!near)return;let f;edit(()=>{f={id:uid('stop'),title:{zh:getLanguage()==='zh'?'讲解停点':'',en:getLanguage()==='en'?'Teaching stop':''},binding:{type:'route',player:player.id,progress:near.fraction},explanation:explanation()};play.bookmarks.push(f);});seekFrame(f.id);return;}
+    if(hit.hit==='route'&&!viewOnly){const player=object('player',hit.id),near=nearestRoutePoint(player,point);if(!near)return;const binding={type:'route',player:player.id,progress:near.fraction},existing=findNearbyStops(play,binding,scenarioId)[0];if(existing){seekFrame(existing.id);notify(tr('这里已有讲解停点','A teaching stop already exists here'));return;}let f;edit(()=>{f={id:uid('stop'),title:{zh:getLanguage()==='zh'?'讲解停点':'',en:getLanguage()==='en'?'Teaching stop':''},binding,explanation:explanation()};play.bookmarks.push(f);});seekFrame(f.id);return;}
     if(hit.hit==='route'&&viewOnly){const near=nearestRoutePoint(object('player',hit.id),point);if(near){stop();time=compiled().bindingTime({type:'route',player:hit.id,progress:near.fraction},hit.id);frameId=null;selection={kind:'player',id:hit.id};render();}return;}
     if(hit.hit==='event'){
       const c=compiled(),event=c.scenario.events.find(e=>e.id===hit.id);
@@ -190,7 +190,9 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
         progress=nearestRoutePoint({at:flight.start,motion:{type:'path',steps:[{id:hit.id,type:'line',to:flight.end,seconds:1}]}},point).fraction;
       }
       if(viewOnly){stop();time=event.at+((event.endAt??event.at)-event.at)*progress;frameId=null;sheet={kind:'event',id:hit.id};render();return;}
-      let f;edit(()=>{f={id:uid('stop'),scenario:scenarioId,title:{zh:getLanguage()==='zh'?eventName(event.type)+'停点':'',en:getLanguage()==='en'?eventName(event.type)+' stop':''},binding:{type:'ball',event:hit.id,phase:'progress',progress},explanation:explanation()};play.bookmarks.push(f);});seekFrame(f.id);return;
+      const binding={type:'ball',event:hit.id,phase:'progress',progress},existing=findNearbyStops(play,binding,scenarioId)[0];
+      if(existing){seekFrame(existing.id);notify(tr('这里已有讲解停点','A teaching stop already exists here'));return;}
+      let f;edit(()=>{f={id:uid('stop'),scenario:scenarioId,title:{zh:getLanguage()==='zh'?eventName(event.type)+'停点':'',en:getLanguage()==='en'?eventName(event.type)+' stop':''},binding,explanation:explanation()};play.bookmarks.push(f);});seekFrame(f.id);return;
     }
     select(hit.hit,hit.id);
   }
@@ -279,7 +281,14 @@ export function initCoach({getCurrentLesson,pauseTeaching,routeLessons=[]}) {
     if(action==='reset-layers'){edit(()=>delete object('frame',id).view);render();return;}
     if(action==='add-stop'){const marker=menu?.point||[15,35];let frame;edit(()=>{frame={id:uid('stop'),title:{zh:getLanguage()==='zh'?'讲解停点':'',en:getLanguage()==='en'?'Teaching stop':''},binding:{type:'time',seconds:time},marker,explanation:explanation()};play.bookmarks.push(frame);});menu=null;seekFrame(frame.id);return;}
     if(action==='explain'){setSheet(kind==='route'?'player':kind,id);return;}
-    if(action==='remove-object'){edit(()=>{const key=({frame:'bookmarks',zone:'zones',target:'targets',duty:'assignments'})[kind];if(key)play[key]=play[key].filter(o=>o.id!==id);else if(kind==='event'){plan().events=plan().events.filter(o=>o.id!==id);play.bookmarks=play.bookmarks.filter(f=>f.binding.event!==id);}});selection=menu=sheet=null;render();return;}
+    if(action==='remove-object'){
+      const removedFrame=kind==='frame'?object('frame',id):undefined;
+      edit(()=>{const key=({frame:'bookmarks',zone:'zones',target:'targets',duty:'assignments'})[kind];if(key)play[key]=play[key].filter(o=>o.id!==id);else if(kind==='event'){plan().events=plan().events.filter(o=>o.id!==id);play.bookmarks=play.bookmarks.filter(f=>f.binding.event!==id);}},{renderNow:false});
+      if(frameId&&!play.bookmarks.some(f=>f.id===frameId))frameId=null;
+      selection=menu=sheet=mode=null;render();
+      if(removedFrame){const count=findNearbyStops(play,removedFrame.binding,removedFrame.scenario||scenarioId).length;notify(count?tr(`当前停点已删除；附近还有 ${count} 个停点，可撤销。`,`Stop deleted; ${count} other ${count===1?'stop is':'stops are'} nearby. Undo is available.`):tr('讲解停点已删除，可撤销。','Teaching stop deleted. Undo is available.'));}
+      return;
+    }
     if(action==='find-issue'){if(node.dataset.scenario)scenarioId=node.dataset.scenario;const objectId=node.dataset.id;const k=['player','zone','target','duty','frame','event'].find(k=>object(k,objectId));if(k){selection={kind:k,id:objectId};if(k==='frame'){const f=compiled().keyframes.find(f=>f.id===objectId);if(f?.valid){time=f.at;frameId=objectId;}}sheet={kind:k,id:objectId};}else sheet={kind:'play'};render();return;}
     if(action==='undo'||action==='redo'){stop();const list=action==='undo'?undo:redo,other=action==='undo'?redo:undo;if(list.length){other.push(clone(play));play=list.pop();if(!play.scenarios.some(s=>s.id===scenarioId))scenarioId=play.defaultScenario;changed();time=0;frameId=null;menu=sheet=mode=null;render();}return;}
     if(action==='zoom-in'||action==='zoom-out'){const ratio=action==='zoom-in'?.8:1.25;camera={x:camera.x+camera.w*(1-ratio)/2,y:camera.y+camera.h*(1-ratio)/2,w:camera.w*ratio,h:camera.h*ratio};menu=null;renderOverlay();renderBoard();return;}

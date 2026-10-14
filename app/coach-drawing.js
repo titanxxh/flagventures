@@ -59,6 +59,35 @@ export function nearestRoutePoint(player, point) {
   return best;
 }
 
+/** Reuse a stop within 0.25 yd along the same route or ball action, rather than stacking touch jitter. */
+export function findNearbyStops(play, binding, scenarioId = play.defaultScenario) {
+  if (!['route', 'ball'].includes(binding?.type) || !Number.isFinite(binding.progress)) return [];
+  const compiled = compilePlay(play, scenarioId);
+  let length = 0;
+  if (binding.type === 'route') {
+    const player = compiled.lesson.players.find(p => p.id === binding.player);
+    if (!player) return [];
+    let from = player.at;
+    for (const step of player.motion.steps || []) { length += stepLength(from, step); if (step.to) from = step.to; }
+  } else {
+    if (binding.phase !== 'progress') return [];
+    const event = compiled.scenario.events.find(e => e.id === binding.event);
+    if (!event) return [];
+    if (['snap', 'pass'].includes(event.type)) {
+      const from = compiled.lesson.players.find(p => p.id === event.from), to = compiled.lesson.players.find(p => p.id === event.to);
+      if (!from || !to || !Number.isFinite(event.endAt)) return [];
+      const a = positionAt(from, event.at), b = positionAt(to, event.endAt);
+      length = Math.hypot(a[0] - b[0], a[1] - b[1]);
+    }
+  }
+  return compiled.keyframes.filter(frame => {
+    const other = frame.binding;
+    return frame.valid && other.type === binding.type && Number.isFinite(other.progress)
+      && (binding.type === 'route' ? other.player === binding.player : other.event === binding.event && other.phase === binding.phase)
+      && (length>0 ? Math.abs(other.progress - binding.progress) * length <= .25 + 1e-9 : Math.abs(other.progress - binding.progress) <= 1e-9);
+  }).sort((a, b) => Math.abs(a.binding.progress - binding.progress) - Math.abs(b.binding.progress - binding.progress));
+}
+
 export function replaceRoute(play, player, steps, term = "") {
   player.motion = { type: "path", start: { type: "delay", seconds: 0 }, steps };
   player.label.en = term;

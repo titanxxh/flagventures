@@ -2,10 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {IDBFactory} from 'fake-indexeddb';
-import {addBallAction,applyRouteTemplate,copySimpleLesson,drawRoute,moveObject,nearestRoutePoint,scheduleBall,simplePlay} from '../app/coach-drawing.js';
+import {addBallAction,applyRouteTemplate,copySimpleLesson,drawRoute,findNearbyStops,moveObject,nearestRoutePoint,scheduleBall,simplePlay} from '../app/coach-drawing.js';
 import {clone,compilePlay,explanation,validatePlay} from '../app/coach-model.js';
 import {assertPlay,backup,CoachStore,makeRecord,parseBackup} from '../app/coach-storage.js';
 import {getBallState} from '../app/ball.js';
+
+test('nearby stops stay scoped to the same player, ball action and phase without changing teaching data',()=>{
+  const p=simplePlay();drawRoute(p,p.players.find(p=>p.id==='X'),[[5,40]]);drawRoute(p,p.players.find(p=>p.id==='Y'),[[25,40]]);
+  const s=addBallAction(p,p.defaultScenario,'pass','QB','X'),snap=s.events.find(e=>e.type==='snap');
+  const frame=(id,binding)=>({id,title:{zh:id,en:id},binding,explanation:explanation('保留讲解','Keep the explanation')});
+  p.bookmarks=[frame('x',{type:'route',player:'X',progress:.2}),frame('y',{type:'route',player:'Y',progress:.2}),frame('snap',{type:'ball',event:snap.id,phase:'progress',progress:.5}),frame('catch',{type:'ball',event:snap.id,phase:'end'})];
+  const fakePlan=addBallAction(p,s.id,'pump-fake','QB','X'),fake=fakePlan.events.at(-1);
+  p.bookmarks.push({...frame('later-fake',{type:'ball',event:fake.id,phase:'progress',progress:.6}),scenario:fakePlan.id});
+  const before=clone(p);
+  assert.deepEqual(findNearbyStops(p,{type:'route',player:'X',progress:.21}).map(f=>f.id),['x']);
+  assert.deepEqual(findNearbyStops(p,{type:'ball',event:snap.id,phase:'progress',progress:.52}).map(f=>f.id),['snap']);
+  assert.deepEqual(findNearbyStops(p,{type:'ball',event:snap.id,phase:'progress',progress:.8}),[]);
+  assert.deepEqual(findNearbyStops(p,{type:'ball',event:fake.id,phase:'progress',progress:0},fakePlan.id),[],'stationary ball actions keep distinct teaching moments');
+  assert.deepEqual(p,before);
+});
 import {positionAt} from '../app/scene.js';
 
 test('one continuous straight stroke is a playable route; moving it keeps the whole shape on the field',()=>{
