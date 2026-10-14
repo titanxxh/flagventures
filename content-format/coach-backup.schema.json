@@ -901,6 +901,31 @@
                           }
                         }
                       }
+                    },
+                    "release": {
+                      "type": "object",
+                      "required": [
+                        "player",
+                        "progress",
+                        "actions"
+                      ],
+                      "properties": {
+                        "player": {
+                          "type": "string"
+                        },
+                        "progress": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "actions": {
+                          "type": "array",
+                          "maxItems": 500,
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -1129,6 +1154,31 @@
                           "review"
                         ]
                       }
+                    }
+                  }
+                }
+              },
+              "release": {
+                "type": "object",
+                "required": [
+                  "player",
+                  "progress",
+                  "actions"
+                ],
+                "properties": {
+                  "player": {
+                    "type": "string"
+                  },
+                  "progress": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "actions": {
+                    "type": "array",
+                    "maxItems": 500,
+                    "items": {
+                      "type": "string"
                     }
                   }
                 }

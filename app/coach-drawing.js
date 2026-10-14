@@ -1,5 +1,5 @@
 import { positionAt } from "./scene.js";
-import { adaptLesson, clone, compilePlay, explanation, motionFor, newPlay, retime, stepLength, stepsFor, uid, validatePlay } from "./coach-model.js";
+import { adaptLesson, clone, compilePlay, explanation, motionFor, newPlay, passReleaseProblem, retime, routeProgressTime, stepLength, stepsFor, uid, validatePlay } from "./coach-model.js";
 
 export const ROUTES = {
   HITCH: "急停回身", SLANT: "短斜内切", OUT: "向外横切", IN: "向内横切",
@@ -167,6 +167,17 @@ export function moveObject(play, kind, id, to, key) {
 
 function qbOf(play) {return play.players.find(p=>["QB","Q"].includes(p.id));}
 export function simplePlay(type="offense") {return newPlay(type);}
+export function routeRelease(play, playerId, progress) {
+  const player = play.players.find(p => p.id === playerId);
+  return { player: playerId, progress, actions: (player?.motion.steps || []).map(s => s.id) };
+}
+export function setPassRelease(play, scenarioId, eventId, progress) {
+  const event = play.scenarios.find(s => s.id === scenarioId)?.events.find(e => e.id === eventId);
+  if (event?.type !== 'pass') return;
+  event.release = routeRelease(play, event.from, progress);
+  scheduleBall(play);
+  return event;
+}
 function withoutClock(text = "") {
   return text.split(/(?<=[。！？])\s*|(?<=[.!?])\s+|\n/u).filter(line => !/(?:\d[\d.]*\s*(?:秒|seconds?\b|secs?\b|s\b))/iu.test(line)).join(" ").trim();
 }
@@ -265,8 +276,16 @@ export function scheduleBall(play) {
       const target=byId.get(e.to),from=byId.get(e.from);
       if(e.type==="snap")end=start+.35;
       else if(e.type==="pass") {
-        const finishes=target?.motion.type==="path" ? target.motion.startAt+target.motion.steps.reduce((v,a)=>v+a.seconds,0) : 0;
-        end=Math.max(until+.7,finishes);start=Math.max(until,end-.65);
+        if(e.release) {
+          const original=play.players.find(p=>p.id===e.from),valid=e.release.player===e.from&&Array.isArray(e.release.actions)&&JSON.stringify(e.release.actions)===JSON.stringify(original?.motion.steps?.map(s=>s.id));
+          start=valid?routeProgressTime(from,e.release.progress):NaN;
+          // An exchange wait may hold this exact position until the ball arrives.
+          if(Number.isFinite(start)&&start<until&&Array.from({length:33},(_,i)=>positionAt(from,start+(until-start)*i/32)).every(p=>Math.hypot(...p.map((v,i)=>v-positionAt(from,start)[i]))<1e-7))start=until;
+          if(!Number.isFinite(start)){start=null;end=null;e.pending='release';}else end=start+.65;
+        } else {
+          const finishes=target?.motion.type==="path" ? target.motion.startAt+target.motion.steps.reduce((v,a)=>v+a.seconds,0) : 0;
+          end=Math.max(until+.7,finishes);start=Math.max(until,end-.65);
+        }
       } else if(["handoff","fake-handoff"].includes(e.type)&&from&&target) {
         const duration=Math.max(until,...actors.map(p=>(p.motion.startAt||0)+(p.motion.steps||[]).reduce((a,b)=>a+b.seconds,0)));
         let meet=meetingTime(from,target,until,duration);
@@ -287,14 +306,16 @@ export function scheduleBall(play) {
       m.steps.forEach(a=>a.id=uid('timing'));
       Object.defineProperty(s.overrides,actor.id,{value:m,enumerable:true,configurable:true,writable:true});
     }
+    const compiled=compilePlay(play,s.id);
+    for(const event of compiled.scenario.events)if(event.release&&passReleaseProblem(play,compiled,event))s.events.find(e=>e.id===event.id).pending='release';
   }
 }
 
 function endOwner(play,scenario) {
   return scenario.events.filter(e=>["snap","pass","handoff"].includes(e.type)).at(-1)?.to || (play.initialOwner === "C" ? qbOf(play)?.id : play.initialOwner);
 }
-export function ballActors(play,scenario) {return new Set([qbOf(play)?.id,endOwner(play,scenario)]);}
-export function addBallAction(play,scenarioId,type,from,to) {
+export function ballActors(play,scenario) {return new Set([qbOf(play)?.id,endOwner(play,scenario),...scenario.events.filter(e=>['snap','pass','handoff'].includes(e.type)).map(e=>e.to)]);}
+export function addBallAction(play,scenarioId,type,from,to,release) {
   let scenario=play.scenarios.find(s=>s.id===scenarioId);
   if(!scenario||from===to)return scenario;
   // Selecting the QB again makes another ending, rather than an impossible second throw.
@@ -302,13 +323,13 @@ export function addBallAction(play,scenarioId,type,from,to) {
   if(transfer>=0&&endOwner(play,scenario)!==from) {
     const prefix=scenario.events.slice(0,transfer);
     const existing=play.scenarios.find(s=>s.events.at(-1)?.type===type&&s.events.at(-1)?.from===from&&s.events.at(-1)?.to===to&&
-      s.events.length===prefix.length+1&&s.events.slice(0,-1).every((e,i)=>e.type===prefix[i].type&&e.from===prefix[i].from&&e.to===prefix[i].to));
+      s.events.length===prefix.length+1&&s.events.slice(0,-1).every((e,i)=>e.type===prefix[i].type&&e.from===prefix[i].from&&e.to===prefix[i].to&&JSON.stringify(e.release)===JSON.stringify(prefix[i].release))&&JSON.stringify(s.events.at(-1)?.release)===JSON.stringify(release));
     if(existing)return existing;
     scenario={id:uid("plan"),title:{zh:"",en:""},mode:"ball",choices:{},overrides:{},events:prefix.map(e=>({...clone(e),id:uid("ball")})),explanation:explanation()};
     play.scenarios.push(scenario);
   }
   scenario.mode="ball";
-  scenario.events.push({id:uid("ball"),type,from,to,start:{type:"time",seconds:0},label:type,cue:"",auto:true,explanation:explanation()});
+  scenario.events.push({id:uid("ball"),type,from,to,start:{type:"time",seconds:0},...(release?{release:clone(release)}:{}),label:type,cue:"",auto:true,explanation:explanation()});
   scenario.title={zh:(type==="pass"?"传给 ":type==="handoff"?"交给 ":type==="fake-handoff"?"假交给 ":"假传给 ")+to,
     en:(type==="pass"?"Pass to ":type==="handoff"?"Handoff to ":type==="fake-handoff"?"Fake to ":"Pump fake to ")+to};
   scheduleBall(play);

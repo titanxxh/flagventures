@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {IDBFactory} from 'fake-indexeddb';
-import {addBallAction,applyRouteTemplate,copySimpleLesson,drawRoute,findNearbyStops,moveObject,nearestRoutePoint,scheduleBall,simplePlay} from '../app/coach-drawing.js';
+import {addBallAction,applyRouteTemplate,ballActors,copySimpleLesson,drawRoute,findNearbyStops,moveObject,nearestRoutePoint,routeRelease,scheduleBall,setPassRelease,simplePlay} from '../app/coach-drawing.js';
 import {clone,compilePlay,explanation,validatePlay} from '../app/coach-model.js';
 import {assertPlay,backup,CoachStore,makeRecord,parseBackup} from '../app/coach-storage.js';
 import {getBallState} from '../app/ball.js';
@@ -22,6 +22,41 @@ test('nearby stops stay scoped to the same player, ball action and phase without
   assert.deepEqual(p,before);
 });
 import {positionAt} from '../app/scene.js';
+
+function exchangePlay(){const p=simplePlay();p.title.en='Handoff then pass';const z=p.players.find(p=>p.id==='Z'),x=p.players.find(p=>p.id==='X'),y=p.players.find(p=>p.id==='Y');drawRoute(p,z,[[15,55],[12,52],[12,45]]);applyRouteTemplate(p,x,'FLY');applyRouteTemplate(p,y,'FLY');const s=addBallAction(p,p.defaultScenario,'handoff','QB','Z');return{p,s,z};}
+test('a route-position pass follows the actual carrier after handoff and catches a moving receiver',()=>{
+  const {p,s,z}=exchangePlay(),hit=nearestRoutePoint(z,[12,52]);addBallAction(p,s.id,'pass','Z','X',routeRelease(p,'Z',hit.fraction));
+  let c=compilePlay(p),pass=c.scenario.events.at(-1),handoff=c.scenario.events.at(-2);
+  assert.ok(pass.at>handoff.at);assert.deepEqual(positionAt(c.lesson.players.find(p=>p.id==='Z'),pass.at),[12,52]);
+  assert.equal(getBallState(c.lesson,pass.at-.01,{},c.scenario).owner,'Z');assert.equal(getBallState(c.lesson,pass.at+.1,{},c.scenario).state,'flight');assert.equal(getBallState(c.lesson,pass.endAt,{},c.scenario).owner,'X');
+  assert.ok(positionAt(c.lesson.players.find(p=>p.id==='X'),pass.endAt)[1]>32,'catch occurs on the route before its end');assert.deepEqual(validatePlay(p).errors,[]);
+  const first=s.events.at(-1);setPassRelease(p,s.id,first.id,nearestRoutePoint(z,[13,53]).fraction);c=compilePlay(p);pass=c.scenario.events.at(-1);assert.ok(Math.hypot(...positionAt(c.lesson.players.find(p=>p.id==='Z'),pass.at).map((v,i)=>v-[13,53][i]))<1e-8);
+  const b=makeRecord(p);assert.deepEqual(parseBackup(JSON.stringify(backup([b]))),[b]);
+});
+test('release timing includes automatic exchange waits; alternatives preserve the complete earlier chain',()=>{
+  const {p,s,z}=exchangePlay(),q=p.players.find(p=>p.id==='QB');q.at=[10,59];drawRoute(p,q,[[10,62],[15,55],[15,51]]);
+  const release=routeRelease(p,'Z',nearestRoutePoint(z,[13,53]).fraction);
+  const x=addBallAction(p,s.id,'pass','Z','X',release),y=addBallAction(p,x.id,'pass','Z','Y',release);
+  assert.equal(p.scenarios.length,2);assert.deepEqual(y.events.map(e=>[e.type,e.from,e.to]),[['snap','C','QB'],['handoff','QB','Z'],['pass','Z','Y']]);
+  for(const scenario of [x,y]){const c=compilePlay(p,scenario.id),pass=c.scenario.events.at(-1);assert.ok(scenario.overrides.Z.steps.some(s=>s.type==='pause'));assert.ok(Math.hypot(...positionAt(c.lesson.players.find(p=>p.id==='Z'),pass.at).map((v,i)=>v-[13,53][i]))<.01);}
+  assert.deepEqual(validatePlay(p).errors,[]);
+  assert.ok(ballActors(p,x).has('Z'),'an earlier holder remains editable for a different ending');
+  const fake=simplePlay();drawRoute(fake,fake.players.find(p=>p.id==='Z'),[[15,55]]);const f=addBallAction(fake,fake.defaultScenario,'fake-handoff','QB','Z');assert.equal(ballActors(fake,f).has('Z'),false);
+});
+test('moving a route keeps its release binding; redrawing requires an explicit new point',()=>{
+  const {p,s,z}=exchangePlay();addBallAction(p,s.id,'pass','Z','X',routeRelease(p,'Z',nearestRoutePoint(z,[12,52]).fraction));
+  const event=s.events.at(-1),release=clone(event.release);moveObject(p,'player','QB',[16,55]);moveObject(p,'player','Z',[21,54]);
+  assert.deepEqual(event.release,release);const c=compilePlay(p),pass=c.scenario.events.at(-1);assert.ok(Math.hypot(...positionAt(c.lesson.players.find(p=>p.id==='Z'),pass.at).map((v,i)=>v-[13,52][i]))<1e-8);
+  drawRoute(p,z,[[16,55],[12,51],[12,40]]);assert.equal(event.pending,'release');assert.ok(validatePlay(p).errors.some(e=>/Route redrawn/.test(e.message)));
+  setPassRelease(p,s.id,event.id,nearestRoutePoint(z,[14,53]).fraction);assert.deepEqual(validatePlay(p).errors,[]);
+});
+test('positioned passes reject a point before possession, crossing the LOS, and a second forward throw',()=>{
+  const {p,s,z}=exchangePlay();addBallAction(p,s.id,'pass','Z','X',routeRelease(p,'Z',.1));assert.ok(validatePlay(p).errors.some(e=>/ball is not ready/.test(e.message)));
+  setPassRelease(p,s.id,s.events.at(-1).id,nearestRoutePoint(z,[12,47]).fraction);assert.ok(validatePlay(p).errors.some(e=>/Release before crossing/.test(e.message)));
+  const direct=simplePlay();direct.title.en='Two throws';for(const id of ['X','Y'])applyRouteTemplate(direct,direct.players.find(p=>p.id===id),'FLY');
+  const first=addBallAction(direct,direct.defaultScenario,'pass','QB','X');addBallAction(direct,first.id,'pass','X','Y',routeRelease(direct,'X',1));assert.ok(validatePlay(direct).errors.some(e=>/Release before crossing|already has a forward pass/.test(e.message)));
+  const back=exchangePlay();drawRoute(back.p,back.z,[[15,55],[12,49],[12,53]]);addBallAction(back.p,back.s.id,'pass','Z','X',routeRelease(back.p,'Z',1));assert.ok(validatePlay(back.p).errors.some(e=>/Release before crossing/.test(e.message)),'returning behind the LOS does not restore passing eligibility');
+});
 
 test('one continuous straight stroke is a playable route; moving it keeps the whole shape on the field',()=>{
   const p=simplePlay('route'),x=p.players.find(p=>p.id==='X');p.title.zh='直跑';

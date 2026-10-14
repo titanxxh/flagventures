@@ -63,7 +63,7 @@ try{
  // A new handoff must be visible even after the coach previously hid ball actions.
  await action('library').click();await action('new').click();await action('create').filter({hasText:'进攻战术'}).click();await page.locator('.coach-canvas').waitFor();
  await holdPlayer('Z');await action('draw').click();const zs=await point(20,54);await page.mouse.move(zs.x,zs.y);await page.mouse.down();
- for(const [x,y]of[[11,55],[8,53],[4,54]]){const p=await point(x,y);await page.mouse.move(p.x,p.y,{steps:12});}await page.mouse.up();
+ for(const [x,y]of[[15,55],[12,52],[12,45]]){const p=await point(x,y);await page.mouse.move(p.x,p.y,{steps:12});}await page.mouse.up();
  await holdPlayer('QB');await page.locator('.coach [data-do="ball"][data-type="pass"]').click();await clickPoint(20,54);
  await action('more').click();await action('routes-only').click();assert.equal(await page.locator('.coach [data-hit="event"]').count(),0);
  await action('more').click();assert.equal(await action('routes-only').textContent(),'显示球路');await action('dismiss').click();
@@ -74,6 +74,25 @@ try{
  await ballAboveCenter();await action('play').click();await page.locator('.coach-hint').filter({hasText:'播放结束'}).waitFor();await page.locator('.coach [data-hit="player"][data-id="Z"]').click();
  for(const [id,x,y]of[['QB',15,55],['C',15,50],['X',5,50],['Y',25,50],['Z',20,54]]){const c=page.locator(`.coach [data-hit="player"][data-id="${id}"] circle`).first();assert.equal(+await c.getAttribute('cx'),x);assert.equal(+await c.getAttribute('cy'),y);}
  await ballAboveCenter();assert.doesNotMatch(await page.locator('.coach-hint').textContent(),/播放结束/);await page.screenshot({path:'tmp/coach-integration/reset-pre-snap-ball.png',fullPage:true});
+ // Spatial release after handoff uses the same simple board in Chinese and English.
+ for(const id of ['X','Y']){await holdPlayer(id);await action('templates').click();await page.locator('.coach [data-term="FLY"]').click();}
+ const release=await point(12,52);await page.mouse.click(release.x,release.y,{button:'right'});await action('pass-here').click();assert.equal(await action('cancel-tool').count(),1);await clickPoint(5,50);
+ assert.equal(await page.locator('.coach [data-hit="release"]').count(),1);const releaseId=await page.locator('.coach [data-hit="release"]').getAttribute('data-id');
+ const releaseBefore=await page.locator('.coach [data-hit="release"] circle').first().getAttribute('cy');const earlier=await point(13,53);await page.mouse.move(release.x,release.y);await page.mouse.down();await page.mouse.move(earlier.x,earlier.y,{steps:10});await page.mouse.up();
+ assert.ok(+await page.locator('.coach [data-hit="release"] circle').first().getAttribute('cy')>+releaseBefore);await action('undo').click();assert.ok(Math.abs(+await page.locator('.coach [data-hit="release"] circle').first().getAttribute('cy')-52)<.05);
+ await page.locator('.coach [data-hit="release"]').click({button:'right'});await action('release-alternative').click();await clickPoint(25,50);await action('outcomes').click();await action('outcome').filter({hasText:'传给 X'}).click();
+ assert.equal(await page.locator(`.coach [data-hit="release"][data-id="${releaseId}"]`).count(),1);assert.equal(await page.locator('.coach [data-hit="event"][aria-label="交递"]').count(),1);
+ // Stop and release are separate objects; deleting a stop cannot remove the pass.
+ const stopPoint=await point(12,52);await page.mouse.click(stopPoint.x,stopPoint.y,{button:'right'});await action('release-explain').click();assert.match(await page.locator('.coach-sheet').textContent(),/到出手点时传球/);await action('dismiss').click();
+ const separateStop=await point(12,48.5);await page.mouse.click(separateStop.x,separateStop.y,{button:'right'});await action('route-stop').click();await action('remove-object').click();assert.equal(await page.locator('.coach [data-hit="release"]').count(),1);
+ await action('details').click();await page.locator('.coach [data-edit="title"]').fill('Handoff and positioned pass');await action('dismiss').click();await action('save').click();await page.locator('.coach-status').filter({hasText:'已保存'}).waitFor();
+ await action('more').click();const chainDownload=page.waitForEvent('download');await action('export-one').click();const chain=parseBackup(await readFile(await(await chainDownload).path(),'utf8'));assert.equal(chain[0].saved.scenarios.find(s=>s.id===chain[0].saved.defaultScenario).events.at(-1).release.player,'Z');await action('dismiss').click();
+ await page.reload();await page.locator('#manage').click();await page.locator('.coach-card').filter({hasText:'Handoff and positioned pass'}).click();assert.equal(await page.locator('.coach [data-hit="release"]').count(),1);
+ await action('more').click();await action('language').click();await page.locator('.coach [data-hit="release"]').click({button:'right'});assert.equal(await action('release-position').textContent(),'Move release point');await action('dismiss').click();await action('more').click();await action('language').click();
+ for(const[width,height]of[[390,844],[768,1024]]){await page.setViewportSize({width,height});const r=page.locator('.coach [data-hit="release"] circle');assert.ok(await r.evaluate(n=>n.getBoundingClientRect().width>=43.9));await page.screenshot({path:`tmp/coach-integration/release-${width}.png`,fullPage:true});}
+ // Redraw preserves the ball action as an explicit repair item, rather than moving it silently.
+ await holdPlayer('Z');await action('draw').click();const zstart=await point(20,54);await page.mouse.move(zstart.x,zstart.y);await page.mouse.down();for(const[x,y]of[[15,55],[13,52],[13,44]]){const p=await point(x,y);await page.mouse.move(p.x,p.y,{steps:10});}await page.mouse.up();
+ assert.equal(await page.locator('.coach [data-hit="release"]').count(),0);await action('save').click();assert.match(await page.locator('.coach-sheet').textContent(),/路线已改画/);await action('dismiss').click();await action('undo').click();assert.equal(await page.locator('.coach [data-hit="release"]').count(),1);
  await action('library').click();await action('close').click();await page.goto(pathToFileURL(resolve('dist/Flagventures.html')).href);await page.locator('#manage').click();
  await page.locator('#coachBackupInput').setInputFiles({name:'restore.backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({format:'flagventures.backup',version:3,records:data}))});
  await page.locator('.coach-modal [data-do="confirm"]').click();assert.equal(await page.locator('.coach-card').count(),1);

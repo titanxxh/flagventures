@@ -22,6 +22,7 @@
 .coach-hint{position:absolute;bottom:82px;left:50%;transform:translateX(-50%);border-radius:30px;padding:8px 16px;background:#163629e6;color:#e5eddf;font-size:12px;pointer-events:none;max-width:90%;text-align:center;white-space:pre-line;max-height:80px;overflow:hidden}
 .coach-hud{position:absolute;bottom:18px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none;min-height:50px}
 .coach-hud>*{pointer-events:auto}
+.coach .coach-cancel-tool{position:absolute;right:18px;top:54px;z-index:5;background:#fff9eb;color:#183d33;border-radius:24px;min-height:44px;padding:0 16px}
 .coach-undo-tools{display:flex;gap:4px;background:#f5f4eae8;padding:3px;border-radius:16px;box-shadow:0 5px 20px #071b1b15}
 .coach .coach-play{position:absolute;left:50%;transform:translateX(-50%);bottom:0;display:flex;align-items:center;gap:10px;background:#f5f4eaf2;border-radius:30px;padding:0 24px;min-height:50px;font-weight:650;box-shadow:0 5px 20px #071b1b15}
 .coach .coach-outcome{position:absolute;right:0;bottom:0;background:#f5f4eae8;border-radius:20px;padding:0 14px;font-size:12px;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

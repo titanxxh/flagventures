@@ -380,6 +380,56 @@ export function stepLength(from, step) {
   }
   return total;
 }
+/** Resolve a spatial route position against a compiled motion, including exchange waits. */
+export function routeProgressTime(player, progress) {
+  if (!player || !Number.isFinite(progress) || progress < 0 || progress > 1 || player.motion.type !== 'path') return NaN;
+  let from = player.at;
+  const lengths = player.motion.steps.map(step => { const n = stepLength(from, step); if (step.to) from = step.to; return n; });
+  const total = lengths.reduce((a, b) => a + b, 0);
+  if (!total) return NaN;
+  let distance = total * progress, at = player.motion.startAt ?? player.motion.start?.seconds ?? 0;
+  for (let i = 0; i < lengths.length; i++) {
+    if (lengths[i] > 0 && distance <= lengths[i] + 1e-9) return at + player.motion.steps[i].seconds * Math.max(0, Math.min(1, distance / lengths[i]));
+    distance -= lengths[i]; at += player.motion.steps[i].seconds;
+  }
+  return at;
+}
+
+/** Only explicitly positioned passes opt into these NFL FLAG checks; legacy timings stay intact. */
+export function passReleaseProblem(play, compiled, event) {
+  const release = event.release;
+  if (!release) return '';
+  const original = play.players.find(p => p.id === event.from), runner = compiled.lesson.players.find(p => p.id === event.from);
+  if (release.player !== event.from || !Number.isFinite(release.progress) || release.progress < 0 || release.progress > 1
+    || original?.motion.type !== 'path' || !original.motion.steps.some(s => s.type !== 'pause')
+    || !Array.isArray(release.actions) || JSON.stringify(release.actions) !== JSON.stringify(original.motion.steps.map(s => s.id)))
+    return '路线已改画，请重新选择出手位置 / Route redrawn; choose a new release point';
+  const events = compiled.scenario.events, index = events.findIndex(e => e.id === event.id), before = events.slice(0, index);
+  if (before.some(e => !Number.isFinite(e.at) || (e.endAt !== undefined && !Number.isFinite(e.endAt))))
+    return '先修复前面的球动作 / Repair the earlier ball action first';
+  let owner = play.initialOwner, acquired = 0, until = 0;
+  for (const e of before) {
+    if (['snap', 'pass', 'handoff'].includes(e.type)) { owner = e.to; acquired = e.endAt ?? e.at; }
+    until = e.endAt ?? e.at;
+  }
+  if (owner !== event.from || !Number.isFinite(event.at) || event.at < until - 1e-7)
+    return '此处尚未拿到球或前一动作未完成，请选更后的出手位置 / The ball is not ready here; choose a later release point';
+  const target = compiled.lesson.players.find(p => p.id === event.to);
+  if (!runner || !target || !Number.isFinite(event.endAt)) return '请选择另一名接球人 / Choose another receiver';
+  const up = play.field.attackDirection === 'up', los = play.field.lineOfScrimmageY;
+  const crossed = point => up ? point[1] <= los : point[1] >= los;
+  // Check the whole carry, so crossing and returning behind the LOS cannot enable a throw.
+  const times = [acquired, event.at]; let t = runner.motion.startAt || 0;
+  for (const step of runner.motion.steps || []) { for (let i = 0; i <= 32; i++) { const at = t + step.seconds * i / 32; if (at >= acquired && at <= event.at) times.push(at); } t += step.seconds; }
+  if (times.some(at => crossed(positionAt(runner, at)))) return '持球过线前才能传球，请选开球线后的位置 / Release before crossing the line of scrimmage';
+  const from = positionAt(runner, event.at), to = positionAt(target, event.endAt), forward = up ? to[1] < from[1] : to[1] > from[1];
+  if (forward) {
+    if (!crossed(to)) return '接球位置须过开球线，请调整接球人的路线 / The forward pass must be caught beyond the line of scrimmage';
+    if (before.some(e => e.type === 'pass' && (() => { const a = compiled.lesson.players.find(p => p.id === e.from), b = compiled.lesson.players.find(p => p.id === e.to); if (!a || !b) return false; const start = positionAt(a, e.at), end = positionAt(b, e.endAt); return up ? end[1] < start[1] : end[1] > start[1]; })()))
+      return '本次配合已有向前传球，不能再向前传 / This play already has a forward pass';
+  }
+  return '';
+}
 export function retime(player, motion) {
   for (const steps of motion.type === "choice"
     ? motion.options.map((option) => option.steps)
@@ -882,6 +932,8 @@ export function validatePlay(play, { name = true } = {}) {
           plan.id,
         );
       for (const event of compiled.scenario.events) {
+        const releaseError = passReleaseProblem(play, compiled, event);
+        if (releaseError) add(releaseError, event.id, 3, plan.id);
         if (
           !Number.isFinite(event.at) ||
           event.at < until ||
